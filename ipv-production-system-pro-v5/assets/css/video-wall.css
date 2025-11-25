@@ -1,0 +1,365 @@
+/**
+ * Video Wall Styles
+ * IPV Production System Pro v5
+ * Compatible with Influencers theme
+ */
+
+/* Container principale */
+.ipv-video-wall {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Filtri - Stile contenuto, non full-wide */
+.ipv-wall-filters {
+    background: #ffffff;
+    padding: 20px 25px;
+    border-radius: 8px;
+    margin: 0 auto 40px;
+    max-width: 1000px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e8e8e8;
+}
+
+.ipv-filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.ipv-filter-item {
+    flex: 1 1 200px;
+    min-width: 180px;
+}
+
+.ipv-filter-item label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #2c3e50;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+}
+
+.ipv-filter-input,
+.ipv-filter-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.ipv-filter-input:focus,
+.ipv-filter-select:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.ipv-filter-reset {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+}
+
+.ipv-btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.ipv-btn-reset {
+    background: #95a5a6;
+    color: white;
+}
+
+.ipv-btn-reset:hover {
+    background: #7f8c8d;
+    transform: translateY(-1px);
+}
+
+.ipv-filters-info {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 13px;
+    padding-top: 12px;
+    border-top: 1px solid #ecf0f1;
+    font-weight: 500;
+}
+
+/* Loading */
+.ipv-loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.ipv-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: ipv-spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes ipv-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Video Grid */
+.ipv-video-grid {
+    display: grid;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.ipv-video-grid.ipv-columns-2 {
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+
+.ipv-video-grid.ipv-columns-3 {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.ipv-video-grid.ipv-columns-4 {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+
+/* Video Card */
+.ipv-video-card {
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 1px solid #f0f0f0;
+}
+
+.ipv-video-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    border-color: #e0e0e0;
+}
+
+.ipv-video-thumb {
+    position: relative;
+    padding-top: 56.25%; /* 16:9 */
+    overflow: hidden;
+    background: #000;
+}
+
+.ipv-video-thumb img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.ipv-video-card:hover .ipv-video-thumb img {
+    transform: scale(1.05);
+}
+
+.ipv-video-duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.ipv-video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ipv-video-card:hover .ipv-video-overlay {
+    opacity: 1;
+}
+
+.ipv-play-btn {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #007bff;
+}
+
+.ipv-video-info {
+    padding: 20px;
+}
+
+.ipv-video-title {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.ipv-video-title a {
+    color: #2c3e50;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.ipv-video-title a:hover {
+    color: #3498db;
+}
+
+.ipv-video-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 12px;
+    font-size: 13px;
+    color: #666;
+}
+
+.ipv-video-tax {
+    margin-bottom: 12px;
+}
+
+.ipv-tax-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.ipv-tax-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+}
+
+.ipv-tax-relatore {
+    background: #ecf5ff;
+    color: #2980b9;
+    border: 1px solid #d6eaff;
+}
+
+.ipv-tax-argomento {
+    background: #f8f3ff;
+    color: #8e44ad;
+    border: 1px solid #ead9ff;
+}
+
+.ipv-video-actions {
+    margin-top: 12px;
+}
+
+.ipv-btn-youtube {
+    background: #e74c3c;
+    color: white;
+    text-align: center;
+    display: block;
+    font-size: 13px;
+    padding: 8px 12px;
+}
+
+.ipv-btn-youtube:hover {
+    background: #c0392b;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Paginazione */
+.ipv-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.ipv-pagination-inner {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.ipv-page-btn {
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.ipv-page-btn:hover {
+    border-color: #3498db;
+    background: #ecf5ff;
+    color: #3498db;
+}
+
+.ipv-page-btn.ipv-page-active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.ipv-page-btn.ipv-page-active:hover {
+    background: #2980b9;
+    border-color: #2980b9;
+}
+
+.ipv-page-dots {
+    color: #999;
+    padding: 0 5px;
+}
+
+.ipv-no-results {
+    text-align: center;
+    padding: 80px 20px;
+    color: #666;
+    font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ipv-filters-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ipv-video-grid.ipv-columns-2,
+    .ipv-video-grid.ipv-columns-3,
+    .ipv-video-grid.ipv-columns-4 {
+        grid-template-columns: 1fr;
+    }
+}
