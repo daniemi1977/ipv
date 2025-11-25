@@ -98,35 +98,21 @@
 }
 
 .ipv-video-grid .ipv-video-card {
-    flex: 1 1 calc(50% - 15px);
+    flex: 0 0 auto;
     min-width: 0;
-    max-width: calc(50% - 15px);
 }
 
-/* Prime 2 card: 50% ciascuna (prima riga) */
-.ipv-video-grid .ipv-video-card:nth-child(-n+2) {
-    flex-basis: calc(50% - 15px);
-    max-width: calc(50% - 15px);
+/* PRIMA RIGA: 2 video al 50% ciascuno */
+.ipv-video-grid .ipv-video-card:nth-child(5n+1),
+.ipv-video-grid .ipv-video-card:nth-child(5n+2) {
+    width: calc(50% - 15px);
 }
 
-/* Card 3-5: 33.333% ciascuna (seconda riga) */
-.ipv-video-grid .ipv-video-card:nth-child(n+3):nth-child(-n+5) {
-    flex-basis: calc(33.333% - 20px);
-    max-width: calc(33.333% - 20px);
-}
-
-/* Se ci sono più di 5 video, continua con pattern 2+3 */
-.ipv-video-grid .ipv-video-card:nth-child(6n+6),
-.ipv-video-grid .ipv-video-card:nth-child(6n+7) {
-    flex-basis: calc(50% - 15px);
-    max-width: calc(50% - 15px);
-}
-
-.ipv-video-grid .ipv-video-card:nth-child(6n+8),
-.ipv-video-grid .ipv-video-card:nth-child(6n+9),
-.ipv-video-grid .ipv-video-card:nth-child(6n+10) {
-    flex-basis: calc(33.333% - 20px);
-    max-width: calc(33.333% - 20px);
+/* SECONDA RIGA: 3 video al 33.333% ciascuno */
+.ipv-video-grid .ipv-video-card:nth-child(5n+3),
+.ipv-video-grid .ipv-video-card:nth-child(5n+4),
+.ipv-video-grid .ipv-video-card:nth-child(5n+5) {
+    width: calc(33.333% - 20px);
 }
 
 /* Video Card */
@@ -371,27 +357,26 @@
 
 /* Backwards compatibility for column-based layouts */
 .ipv-video-grid.ipv-columns-2 .ipv-video-card {
-    flex-basis: calc(50% - 15px) !important;
-    max-width: calc(50% - 15px) !important;
+    width: calc(50% - 15px) !important;
 }
 
 .ipv-video-grid.ipv-columns-3 .ipv-video-card {
-    flex-basis: calc(33.333% - 20px) !important;
-    max-width: calc(33.333% - 20px) !important;
+    width: calc(33.333% - 20px) !important;
 }
 
 .ipv-video-grid.ipv-columns-4 .ipv-video-card {
-    flex-basis: calc(25% - 22.5px) !important;
-    max-width: calc(25% - 22.5px) !important;
+    width: calc(25% - 22.5px) !important;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .ipv-video-grid .ipv-video-card,
-    .ipv-video-grid .ipv-video-card:nth-child(-n+2),
-    .ipv-video-grid .ipv-video-card:nth-child(n+3):nth-child(-n+5) {
-        flex-basis: calc(50% - 15px);
-        max-width: calc(50% - 15px);
+    /* Su tablet: 2 colonne per tutte le card */
+    .ipv-video-grid .ipv-video-card:nth-child(5n+1),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+2),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+3),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+4),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+5) {
+        width: calc(50% - 15px);
     }
 }
 
@@ -414,11 +399,13 @@
         gap: 20px;
     }
 
-    .ipv-video-grid .ipv-video-card,
-    .ipv-video-grid .ipv-video-card:nth-child(-n+2),
-    .ipv-video-grid .ipv-video-card:nth-child(n+3):nth-child(-n+5) {
-        flex-basis: 100%;
-        max-width: 100%;
+    /* Su mobile: 1 colonna (100% larghezza) */
+    .ipv-video-grid .ipv-video-card:nth-child(5n+1),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+2),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+3),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+4),
+    .ipv-video-grid .ipv-video-card:nth-child(5n+5) {
+        width: 100%;
     }
 
     .ipv-pagination-wrapper {
