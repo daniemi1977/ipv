@@ -38,7 +38,7 @@ class IPV_Prod_Video_Wall {
     public static function render_shortcode( $atts ) {
         // Usa le impostazioni salvate come default
         $defaults = [
-            'per_page'     => get_option( 'ipv_wall_per_page', 12 ),
+            'per_page'     => get_option( 'ipv_wall_per_page', 5 ),
             'layout'       => get_option( 'ipv_wall_layout', 'grid' ),
             'columns'      => get_option( 'ipv_wall_columns', 3 ),
             'show_filters' => get_option( 'ipv_wall_show_filters', 'yes' ),
