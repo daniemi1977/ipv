@@ -1,0 +1,6 @@
+
+.markdown-notion h1{font-size:2em;margin:20px 0;}
+.markdown-notion h2{font-size:1.6em;margin:18px 0;}
+.markdown-notion ul{margin-left:20px;list-style:disc;}
+.markdown-notion pre{background:#f4f4f4;padding:10px;border-radius:6px;}
+.markdown-notion blockquote{border-left:4px solid #ccc;padding-left:10px;color:#555;}
