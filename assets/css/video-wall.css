@@ -167,6 +167,23 @@
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
+/* Thumbnail Placeholder */
+.ipv-thumbnail-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.ipv-thumbnail-placeholder svg {
+    opacity: 0.8;
+}
+
 /* Duration Badge */
 .ipv-video-duration {
     position: absolute;
