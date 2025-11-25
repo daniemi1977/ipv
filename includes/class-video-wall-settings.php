@@ -22,7 +22,13 @@ class IPV_Prod_Video_Wall_Settings {
 
         register_setting( 'ipv_video_wall_settings', 'ipv_wall_layout', [
             'type'              => 'string',
-            'default'           => 'grid',
+            'default'           => '2-3',
+            'sanitize_callback' => 'sanitize_text_field',
+        ]);
+
+        register_setting( 'ipv_video_wall_settings', 'ipv_wall_pagination_type', [
+            'type'              => 'string',
+            'default'           => 'load_more',
             'sanitize_callback' => 'sanitize_text_field',
         ]);
 
@@ -46,9 +52,33 @@ class IPV_Prod_Video_Wall_Settings {
         );
 
         add_settings_field(
+            'ipv_wall_layout',
+            'Layout Video',
+            [ __CLASS__, 'render_layout_field' ],
+            'ipv_video_wall_settings',
+            'ipv_video_wall_section'
+        );
+
+        add_settings_field(
             'ipv_wall_per_page',
             'Video per pagina',
             [ __CLASS__, 'render_per_page_field' ],
+            'ipv_video_wall_settings',
+            'ipv_video_wall_section'
+        );
+
+        add_settings_field(
+            'ipv_wall_pagination_type',
+            'Tipo paginazione',
+            [ __CLASS__, 'render_pagination_type_field' ],
+            'ipv_video_wall_settings',
+            'ipv_video_wall_section'
+        );
+
+        add_settings_field(
+            'ipv_wall_columns',
+            'Numero colonne (se layout griglia)',
+            [ __CLASS__, 'render_columns_field' ],
             'ipv_video_wall_settings',
             'ipv_video_wall_section'
         );
@@ -67,11 +97,50 @@ class IPV_Prod_Video_Wall_Settings {
         echo '<p><strong>Nota:</strong> I video YouTube Shorts (durata inferiore a 60 secondi) sono automaticamente esclusi dalla visualizzazione.</p>';
     }
 
+    public static function render_layout_field() {
+        $value = get_option( 'ipv_wall_layout', '2-3' );
+        ?>
+        <select name="ipv_wall_layout">
+            <option value="2-3" <?php selected( $value, '2-3' ); ?>>2+3 (2 video sopra, 3 sotto) - Default</option>
+            <option value="grid" <?php selected( $value, 'grid' ); ?>>Griglia uniforme (usa numero colonne)</option>
+        </select>
+        <p class="description">Scegli il layout di visualizzazione dei video</p>
+        <?php
+    }
+
     public static function render_per_page_field() {
         $value = get_option( 'ipv_wall_per_page', 5 );
         ?>
         <input type="number" name="ipv_wall_per_page" value="<?php echo esc_attr( $value ); ?>" min="1" max="50" class="small-text">
-        <p class="description">Numero di video da visualizzare per pagina (default: 5 - layout 2+3)</p>
+        <p class="description">Numero di video da visualizzare per pagina/caricamento (default: 5 per layout 2+3)</p>
+        <?php
+    }
+
+    public static function render_pagination_type_field() {
+        $value = get_option( 'ipv_wall_pagination_type', 'load_more' );
+        ?>
+        <label>
+            <input type="radio" name="ipv_wall_pagination_type" value="load_more" <?php checked( $value, 'load_more' ); ?>>
+            Bottone "Carica altri" (default)
+        </label>
+        <br>
+        <label style="margin-top: 10px; display: inline-block;">
+            <input type="radio" name="ipv_wall_pagination_type" value="pagination" <?php checked( $value, 'pagination' ); ?>>
+            Paginazione tradizionale (Precedente/Successivo)
+        </label>
+        <p class="description">Tipo di navigazione tra i video</p>
+        <?php
+    }
+
+    public static function render_columns_field() {
+        $value = get_option( 'ipv_wall_columns', 3 );
+        ?>
+        <select name="ipv_wall_columns">
+            <option value="2" <?php selected( $value, 2 ); ?>>2 colonne</option>
+            <option value="3" <?php selected( $value, 3 ); ?>>3 colonne</option>
+            <option value="4" <?php selected( $value, 4 ); ?>>4 colonne</option>
+        </select>
+        <p class="description">Numero di colonne quando il layout è impostato su "Griglia uniforme"</p>
         <?php
     }
 

@@ -287,61 +287,72 @@
     margin: 0;
 }
 
-/* Pagination */
+/* Load More Button */
 .ipv-video-pagination {
     margin-top: 40px;
 }
 
-.ipv-pagination-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
+.ipv-load-more-wrapper {
+    text-align: center;
 }
 
-.ipv-page-btn {
-    padding: 12px 24px;
-    background: #2271b1;
+.ipv-load-more-btn {
+    padding: 15px 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
     border: none;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 50px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
-.ipv-page-btn:hover:not(:disabled) {
-    background: #135e96;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.ipv-load-more-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
 
-.ipv-page-btn:disabled {
+.ipv-load-more-btn:disabled {
     background: #ccc;
     cursor: not-allowed;
     opacity: 0.6;
+    box-shadow: none;
 }
 
-.ipv-page-btn .dashicons {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+.ipv-load-more-btn .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    animation: ipv-rotate 2s linear infinite;
 }
 
-.ipv-page-info {
-    font-size: 15px;
+.ipv-load-more-btn:disabled .dashicons {
+    animation-play-state: paused;
+}
+
+@keyframes ipv-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.ipv-load-more-info {
+    margin-top: 15px;
+    font-size: 14px;
     color: #666;
-    font-weight: 500;
 }
 
-.ipv-current-page {
+.ipv-videos-loaded {
     font-weight: 700;
     color: #2271b1;
-    font-size: 17px;
+}
+
+.ipv-videos-total {
+    font-weight: 600;
 }
 
 /* Backwards compatibility for column-based layouts */
@@ -392,13 +403,9 @@
         width: 100%;
     }
 
-    .ipv-pagination-wrapper {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .ipv-page-btn {
+    .ipv-load-more-btn {
         width: 100%;
+        max-width: 300px;
         justify-content: center;
     }
 }

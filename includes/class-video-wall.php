@@ -290,14 +290,14 @@ class IPV_Prod_Video_Wall {
         }
 
         ?>
-        <div class="ipv-pagination-wrapper">
-            <button class="ipv-page-btn ipv-page-prev" data-page="prev" disabled>
-                <i class="dashicons dashicons-arrow-left-alt2"></i> Precedente
+        <div class="ipv-load-more-wrapper">
+            <button class="ipv-load-more-btn" data-page="1" data-total-pages="<?php echo esc_attr( $total_pages ); ?>">
+                <i class="dashicons dashicons-update"></i>
+                <span class="ipv-load-more-text">Carica altri 5 video</span>
             </button>
-            <span class="ipv-page-info">Pagina <span class="ipv-current-page">1</span> di <?php echo esc_html( $total_pages ); ?></span>
-            <button class="ipv-page-btn ipv-page-next" data-page="next">
-                Successiva <i class="dashicons dashicons-arrow-right-alt2"></i>
-            </button>
+            <div class="ipv-load-more-info">
+                <span class="ipv-videos-loaded">5</span> di <span class="ipv-videos-total"><?php echo esc_html( $query->found_posts ); ?></span> video
+            </div>
         </div>
         <?php
     }
