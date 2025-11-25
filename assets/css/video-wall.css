@@ -1,0 +1,453 @@
+/**
+ * IPV Video Wall Styles
+ * Layout 2+3: 2 video sopra (50% ciascuno), 3 video sotto (33% ciascuno)
+ */
+
+/* Container principale */
+.ipv-video-wall-container {
+    margin: 40px 0;
+    padding: 0;
+}
+
+/* Filtri */
+.ipv-video-filters {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.ipv-filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.ipv-filter-group {
+    flex: 1 1 200px;
+    min-width: 200px;
+}
+
+.ipv-filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.ipv-filter-select,
+.ipv-filter-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.ipv-filter-select:focus,
+.ipv-filter-input:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.1);
+}
+
+.ipv-filter-button {
+    padding: 10px 25px;
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.ipv-filter-button:hover {
+    background: #135e96;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ipv-filter-button .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Video Grid - Layout 2+3 (2 video sopra, 3 video sotto) */
+.ipv-video-grid-wrapper {
+    position: relative;
+    min-height: 400px;
+}
+
+.ipv-video-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.ipv-video-grid .ipv-video-card {
+    flex: 1 1 calc(50% - 15px);
+    min-width: 0;
+    max-width: calc(50% - 15px);
+}
+
+/* Prime 2 card: 50% ciascuna (prima riga) */
+.ipv-video-grid .ipv-video-card:nth-child(-n+2) {
+    flex-basis: calc(50% - 15px);
+    max-width: calc(50% - 15px);
+}
+
+/* Card 3-5: 33.333% ciascuna (seconda riga) */
+.ipv-video-grid .ipv-video-card:nth-child(n+3):nth-child(-n+5) {
+    flex-basis: calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
+}
+
+/* Se ci sono più di 5 video, continua con pattern 2+3 */
+.ipv-video-grid .ipv-video-card:nth-child(6n+6),
+.ipv-video-grid .ipv-video-card:nth-child(6n+7) {
+    flex-basis: calc(50% - 15px);
+    max-width: calc(50% - 15px);
+}
+
+.ipv-video-grid .ipv-video-card:nth-child(6n+8),
+.ipv-video-grid .ipv-video-card:nth-child(6n+9),
+.ipv-video-grid .ipv-video-card:nth-child(6n+10) {
+    flex-basis: calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
+}
+
+/* Video Card */
+.ipv-video-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.ipv-video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.ipv-video-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Thumbnail */
+.ipv-video-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    background: #000;
+    overflow: hidden;
+}
+
+.ipv-video-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.ipv-video-card:hover .ipv-video-thumbnail img {
+    transform: scale(1.05);
+}
+
+/* Play Overlay con pulsante rosso YouTube */
+.ipv-play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ipv-video-card:hover .ipv-play-overlay {
+    opacity: 1;
+}
+
+.ipv-play-button {
+    width: 68px;
+    height: 48px;
+    transition: transform 0.2s ease;
+}
+
+.ipv-video-card:hover .ipv-play-button {
+    transform: scale(1.1);
+}
+
+.ipv-play-button svg {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Duration Badge */
+.ipv-video-duration {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Video Info */
+.ipv-video-info {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.ipv-video-title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 12px 0;
+    color: #333;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ipv-video-card:hover .ipv-video-title {
+    color: #2271b1;
+}
+
+.ipv-video-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 13px;
+    color: #666;
+    margin-top: auto;
+}
+
+.ipv-video-views,
+.ipv-video-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.ipv-video-meta .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #999;
+}
+
+/* Loading Spinner */
+.ipv-video-loading {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.ipv-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2271b1;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: ipv-spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes ipv-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.ipv-video-loading p {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+/* No Videos Message */
+.ipv-no-videos {
+    text-align: center;
+    padding: 80px 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.ipv-no-videos p {
+    font-size: 18px;
+    color: #999;
+    margin: 0;
+}
+
+/* Pagination */
+.ipv-video-pagination {
+    margin-top: 40px;
+}
+
+.ipv-pagination-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.ipv-page-btn {
+    padding: 12px 24px;
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ipv-page-btn:hover:not(:disabled) {
+    background: #135e96;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.ipv-page-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.ipv-page-btn .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.ipv-page-info {
+    font-size: 15px;
+    color: #666;
+    font-weight: 500;
+}
+
+.ipv-current-page {
+    font-weight: 700;
+    color: #2271b1;
+    font-size: 17px;
+}
+
+/* Backwards compatibility for column-based layouts */
+.ipv-video-grid.ipv-columns-2 .ipv-video-card {
+    flex-basis: calc(50% - 15px) !important;
+    max-width: calc(50% - 15px) !important;
+}
+
+.ipv-video-grid.ipv-columns-3 .ipv-video-card {
+    flex-basis: calc(33.333% - 20px) !important;
+    max-width: calc(33.333% - 20px) !important;
+}
+
+.ipv-video-grid.ipv-columns-4 .ipv-video-card {
+    flex-basis: calc(25% - 22.5px) !important;
+    max-width: calc(25% - 22.5px) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .ipv-video-grid .ipv-video-card,
+    .ipv-video-grid .ipv-video-card:nth-child(-n+2),
+    .ipv-video-grid .ipv-video-card:nth-child(n+3):nth-child(-n+5) {
+        flex-basis: calc(50% - 15px);
+        max-width: calc(50% - 15px);
+    }
+}
+
+@media (max-width: 768px) {
+    .ipv-filters-row {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .ipv-filter-group {
+        width: 100%;
+    }
+
+    .ipv-filter-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .ipv-video-grid {
+        gap: 20px;
+    }
+
+    .ipv-video-grid .ipv-video-card,
+    .ipv-video-grid .ipv-video-card:nth-child(-n+2),
+    .ipv-video-grid .ipv-video-card:nth-child(n+3):nth-child(-n+5) {
+        flex-basis: 100%;
+        max-width: 100%;
+    }
+
+    .ipv-pagination-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .ipv-page-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .ipv-video-filters {
+        padding: 15px;
+    }
+
+    .ipv-video-title {
+        font-size: 14px;
+    }
+
+    .ipv-video-meta {
+        font-size: 12px;
+        gap: 10px;
+    }
+
+    .ipv-play-button {
+        width: 48px;
+        height: 34px;
+    }
+}
