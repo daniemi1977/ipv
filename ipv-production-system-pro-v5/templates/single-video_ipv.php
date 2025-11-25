@@ -128,6 +128,42 @@ if ( function_exists( 'get_template_part' ) ) {
 											</div>
 										<?php endif; ?>
 									</div>
+
+									<!-- File e Slide Scaricabili -->
+									<?php
+									$files = get_post_meta( get_the_ID(), '_ipv_files', true );
+									if ( ! empty( $files ) && is_array( $files ) ) :
+										?>
+										<div class="ipv-video-files">
+											<h3 class="ipv-files-title">
+												<i class="fa fa-download"></i> Materiale Scaricabile
+											</h3>
+											<div class="ipv-files-grid">
+												<?php foreach ( $files as $file ) :
+													$file_url = isset( $file['url'] ) ? $file['url'] : '';
+													$file_name = isset( $file['name'] ) ? $file['name'] : '';
+													$file_size = isset( $file['size'] ) ? size_format( $file['size'], 2 ) : '';
+													$file_type = isset( $file['type'] ) ? strtoupper( $file['type'] ) : '';
+													?>
+													<a href="<?php echo esc_url( $file_url ); ?>" class="ipv-file-download" download target="_blank">
+														<div class="ipv-file-icon">
+															<i class="fa fa-file-pdf-o"></i>
+														</div>
+														<div class="ipv-file-details">
+															<div class="ipv-file-name"><?php echo esc_html( $file_name ); ?></div>
+															<div class="ipv-file-meta">
+																<?php if ( $file_type ) : ?><span class="ipv-file-type"><?php echo esc_html( $file_type ); ?></span><?php endif; ?>
+																<?php if ( $file_size ) : ?><span class="ipv-file-size"><?php echo esc_html( $file_size ); ?></span><?php endif; ?>
+															</div>
+														</div>
+														<div class="ipv-file-action">
+															<i class="fa fa-download"></i>
+														</div>
+													</a>
+												<?php endforeach; ?>
+											</div>
+										</div>
+									<?php endif; ?>
 								</article>
 							</div>
 							<?php

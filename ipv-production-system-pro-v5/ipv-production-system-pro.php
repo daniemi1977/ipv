@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro v5
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione avanzato per "Il Punto di Vista" con supporto Elementor, tassonomie intelligenti, video wall e compatibilità Influencers/WoodMart
- * Version: 6.2.2
+ * Version: 6.3.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 5.8
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'IPV_PROD_VERSION', '6.2.2' );
+define( 'IPV_PROD_VERSION', '6.3.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -34,6 +34,7 @@ require_once IPV_PROD_PLUGIN_DIR . 'includes/class-rss-importer.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-api.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-bulk-import.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-list-columns.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-relatore-access.php';
 
 // Elementor Integration
 require_once IPV_PROD_PLUGIN_DIR . 'elementor/class-elementor-integration.php';
@@ -301,6 +302,16 @@ class IPV_Production_System_Pro {
             [],
             IPV_PROD_VERSION
         );
+
+        // Single Video CSS
+        if ( is_singular( 'video_ipv' ) || is_tax( 'ipv_relatore' ) ) {
+            wp_enqueue_style(
+                'ipv-single-video',
+                IPV_PROD_PLUGIN_URL . 'assets/css/single-video.css',
+                [],
+                IPV_PROD_VERSION
+            );
+        }
 
         // Video Wall JS
         wp_enqueue_script(

@@ -108,6 +108,15 @@ class IPV_Prod_CPT {
         );
 
         add_meta_box(
+            'ipv_files',
+            '<span class="dashicons dashicons-media-document"></span> File e Slide',
+            [ __CLASS__, 'render_files_meta_box' ],
+            self::POST_TYPE,
+            'normal',
+            'default'
+        );
+
+        add_meta_box(
             'ipv_stats',
             '<span class="dashicons dashicons-chart-bar"></span> Statistiche YouTube',
             [ __CLASS__, 'render_stats_meta_box' ],
@@ -225,6 +234,137 @@ class IPV_Prod_CPT {
         <?php
     }
 
+    public static function render_files_meta_box( $post ) {
+        $files = get_post_meta( $post->ID, '_ipv_files', true );
+        if ( ! is_array( $files ) ) {
+            $files = [];
+        }
+        ?>
+        <style>
+            .ipv-files-list { margin-bottom: 15px; }
+            .ipv-file-item { display: flex; align-items: center; gap: 10px; padding: 10px; background: #f5f5f5; border-radius: 4px; margin-bottom: 8px; }
+            .ipv-file-icon { font-size: 24px; }
+            .ipv-file-info { flex: 1; }
+            .ipv-file-name { font-weight: 600; display: block; margin-bottom: 3px; }
+            .ipv-file-meta { font-size: 12px; color: #666; }
+            .ipv-file-remove { color: #d63638; cursor: pointer; text-decoration: none; }
+            .ipv-file-remove:hover { color: #a00; }
+        </style>
+
+        <div class="ipv-files-list" id="ipv-files-list">
+            <?php if ( ! empty( $files ) ) : ?>
+                <?php foreach ( $files as $index => $file ) :
+                    $file_url = isset( $file['url'] ) ? $file['url'] : '';
+                    $file_name = isset( $file['name'] ) ? $file['name'] : '';
+                    $file_size = isset( $file['size'] ) ? size_format( $file['size'], 2 ) : '';
+                    $file_type = isset( $file['type'] ) ? $file['type'] : '';
+                    ?>
+                    <div class="ipv-file-item" data-index="<?php echo esc_attr( $index ); ?>">
+                        <span class="ipv-file-icon dashicons dashicons-media-document"></span>
+                        <div class="ipv-file-info">
+                            <span class="ipv-file-name"><?php echo esc_html( $file_name ); ?></span>
+                            <span class="ipv-file-meta">
+                                <?php echo esc_html( $file_size ); ?>
+                                <?php if ( $file_type ) : ?>| <?php echo esc_html( $file_type ); ?><?php endif; ?>
+                            </span>
+                        </div>
+                        <a href="<?php echo esc_url( $file_url ); ?>" target="_blank" class="button button-small">
+                            <span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
+                        </a>
+                        <a href="#" class="ipv-file-remove" data-index="<?php echo esc_attr( $index ); ?>">
+                            <span class="dashicons dashicons-trash"></span>
+                        </a>
+                        <input type="hidden" name="ipv_files[<?php echo esc_attr( $index ); ?>][url]" value="<?php echo esc_attr( $file_url ); ?>">
+                        <input type="hidden" name="ipv_files[<?php echo esc_attr( $index ); ?>][name]" value="<?php echo esc_attr( $file_name ); ?>">
+                        <input type="hidden" name="ipv_files[<?php echo esc_attr( $index ); ?>][size]" value="<?php echo esc_attr( $file['size'] ?? 0 ); ?>">
+                        <input type="hidden" name="ipv_files[<?php echo esc_attr( $index ); ?>][type]" value="<?php echo esc_attr( $file_type ); ?>">
+                    </div>
+                <?php endforeach; ?>
+            <?php else : ?>
+                <p class="description">Nessun file caricato. Clicca su "Aggiungi File" per caricare slide o documenti.</p>
+            <?php endif; ?>
+        </div>
+
+        <button type="button" class="button button-secondary" id="ipv-add-file-btn">
+            <span class="dashicons dashicons-plus-alt" style="vertical-align: middle;"></span>
+            Aggiungi File/Slide
+        </button>
+
+        <p class="description" style="margin-top: 10px;">
+            Carica slide PDF, PowerPoint, o altri documenti relativi al video. Saranno disponibili per il download nella pagina del video.
+        </p>
+
+        <script>
+        jQuery(document).ready(function($) {
+            var fileIndex = <?php echo count( $files ); ?>;
+            var fileFrame;
+
+            $('#ipv-add-file-btn').on('click', function(e) {
+                e.preventDefault();
+
+                if (fileFrame) {
+                    fileFrame.open();
+                    return;
+                }
+
+                fileFrame = wp.media({
+                    title: 'Seleziona File',
+                    button: { text: 'Aggiungi File' },
+                    multiple: true
+                });
+
+                fileFrame.on('select', function() {
+                    var attachments = fileFrame.state().get('selection').toJSON();
+
+                    attachments.forEach(function(attachment) {
+                        var html = '<div class="ipv-file-item" data-index="' + fileIndex + '">' +
+                            '<span class="ipv-file-icon dashicons dashicons-media-document"></span>' +
+                            '<div class="ipv-file-info">' +
+                                '<span class="ipv-file-name">' + attachment.filename + '</span>' +
+                                '<span class="ipv-file-meta">' +
+                                    (attachment.filesizeHumanReadable || '') +
+                                    (attachment.subtype ? ' | ' + attachment.subtype : '') +
+                                '</span>' +
+                            '</div>' +
+                            '<a href="' + attachment.url + '" target="_blank" class="button button-small">' +
+                                '<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>' +
+                            '</a>' +
+                            '<a href="#" class="ipv-file-remove" data-index="' + fileIndex + '">' +
+                                '<span class="dashicons dashicons-trash"></span>' +
+                            '</a>' +
+                            '<input type="hidden" name="ipv_files[' + fileIndex + '][url]" value="' + attachment.url + '">' +
+                            '<input type="hidden" name="ipv_files[' + fileIndex + '][name]" value="' + attachment.filename + '">' +
+                            '<input type="hidden" name="ipv_files[' + fileIndex + '][size]" value="' + (attachment.filesizeInBytes || 0) + '">' +
+                            '<input type="hidden" name="ipv_files[' + fileIndex + '][type]" value="' + (attachment.subtype || '') + '">' +
+                        '</div>';
+
+                        $('#ipv-files-list').append(html);
+                        fileIndex++;
+                    });
+
+                    // Rimuovi messaggio "Nessun file"
+                    $('#ipv-files-list .description').remove();
+                });
+
+                fileFrame.open();
+            });
+
+            $(document).on('click', '.ipv-file-remove', function(e) {
+                e.preventDefault();
+                if (confirm('Rimuovere questo file?')) {
+                    $(this).closest('.ipv-file-item').remove();
+
+                    // Se non ci sono più file, mostra messaggio
+                    if ($('#ipv-files-list .ipv-file-item').length === 0) {
+                        $('#ipv-files-list').html('<p class="description">Nessun file caricato. Clicca su "Aggiungi File" per caricare slide o documenti.</p>');
+                    }
+                }
+            });
+        });
+        </script>
+        <?php
+    }
+
     public static function render_stats_meta_box( $post ) {
         $view_count    = get_post_meta( $post->ID, '_ipv_yt_view_count', true );
         $like_count    = get_post_meta( $post->ID, '_ipv_yt_like_count', true );
@@ -336,6 +476,24 @@ class IPV_Prod_CPT {
 
         if ( isset( $_POST['ipv_transcript'] ) ) {
             update_post_meta( $post_id, '_ipv_transcript', sanitize_textarea_field( wp_unslash( $_POST['ipv_transcript'] ) ) );
+        }
+
+        // Salva files/slide
+        if ( isset( $_POST['ipv_files'] ) && is_array( $_POST['ipv_files'] ) ) {
+            $files = [];
+            foreach ( $_POST['ipv_files'] as $file ) {
+                if ( ! empty( $file['url'] ) ) {
+                    $files[] = [
+                        'url'  => esc_url_raw( $file['url'] ),
+                        'name' => sanitize_text_field( $file['name'] ),
+                        'size' => absint( $file['size'] ),
+                        'type' => sanitize_text_field( $file['type'] ),
+                    ];
+                }
+            }
+            update_post_meta( $post_id, '_ipv_files', $files );
+        } else {
+            delete_post_meta( $post_id, '_ipv_files' );
         }
     }
 }

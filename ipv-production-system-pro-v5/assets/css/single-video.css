@@ -1,0 +1,182 @@
+/**
+ * Single Video Styles
+ * IPV Production System Pro v6.3.0
+ */
+
+/* Video Meta Info */
+.ipv-video-meta-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin: 20px 0;
+}
+
+.ipv-video-meta-info span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ipv-meta-youtube a {
+    color: #e74c3c;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.ipv-meta-youtube a:hover {
+    color: #c0392b;
+    text-decoration: underline;
+}
+
+/* Taxonomies */
+.ipv-video-taxonomies {
+    margin: 25px 0;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+}
+
+.ipv-tax-section {
+    margin-bottom: 12px;
+}
+
+.ipv-tax-section:last-child {
+    margin-bottom: 0;
+}
+
+.ipv-tax-section strong {
+    display: inline-block;
+    margin-right: 8px;
+    color: #2c3e50;
+}
+
+.ipv-tax-link {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+    background: #ecf5ff;
+    color: #2980b9;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.ipv-tax-link:hover {
+    background: #2980b9;
+    color: #fff;
+}
+
+/* File Scaricabili */
+.ipv-video-files {
+    margin: 30px 0;
+    padding: 25px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+    border-radius: 8px;
+    border: 2px solid #3498db;
+}
+
+.ipv-files-title {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ipv-files-title i {
+    color: #3498db;
+}
+
+.ipv-files-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.ipv-file-download {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 18px;
+    background: #fff;
+    border: 2px solid #e3e3e3;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    color: #2c3e50;
+}
+
+.ipv-file-download:hover {
+    border-color: #3498db;
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+    transform: translateY(-2px);
+}
+
+.ipv-file-icon {
+    font-size: 36px;
+    color: #e74c3c;
+    min-width: 40px;
+    text-align: center;
+}
+
+.ipv-file-details {
+    flex: 1;
+}
+
+.ipv-file-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #2c3e50;
+    word-break: break-word;
+}
+
+.ipv-file-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+.ipv-file-type {
+    background: #3498db;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.ipv-file-size {
+    padding: 2px 8px;
+    background: #ecf0f1;
+    border-radius: 3px;
+}
+
+.ipv-file-action {
+    font-size: 24px;
+    color: #3498db;
+}
+
+.ipv-file-download:hover .ipv-file-action {
+    color: #2980b9;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ipv-files-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ipv-video-meta-info {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
