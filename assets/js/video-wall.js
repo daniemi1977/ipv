@@ -17,9 +17,8 @@
         },
 
         bindEvents: function() {
-            // Apply filters button
-            $(document).on('click', '#ipv-apply-filters', function(e) {
-                e.preventDefault();
+            // Auto-apply filters on select change
+            $(document).on('change', '.ipv-filter-select', function() {
                 VideoWall.loadVideos(1);
             });
 
@@ -29,6 +28,15 @@
                     e.preventDefault();
                     VideoWall.loadVideos(1);
                 }
+            });
+
+            // Auto-apply search filter after typing (with debounce)
+            let searchTimeout;
+            $(document).on('input', '#ipv-filter-search', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function() {
+                    VideoWall.loadVideos(1);
+                }, 500); // Wait 500ms after user stops typing
             });
 
             // Pagination buttons
@@ -52,12 +60,6 @@
                     VideoWall.loadVideos(newPage);
                     VideoWall.scrollToTop();
                 }
-            });
-
-            // Filter select changes (optional: auto-apply on change)
-            $(document).on('change', '.ipv-filter-select', function() {
-                // Uncomment to enable auto-filter on change
-                // VideoWall.loadVideos(1);
             });
         },
 

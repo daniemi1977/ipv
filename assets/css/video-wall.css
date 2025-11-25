@@ -56,34 +56,6 @@
     box-shadow: 0 0 0 2px rgba(34, 113, 177, 0.1);
 }
 
-.ipv-filter-button {
-    padding: 10px 25px;
-    background: #2271b1;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-}
-
-.ipv-filter-button:hover {
-    background: #135e96;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.ipv-filter-button .dashicons {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-}
-
 /* Video Grid - Layout 2+3 (2 video sopra, 3 video sotto) */
 .ipv-video-grid-wrapper {
     position: relative;
@@ -388,11 +360,6 @@
 
     .ipv-filter-group {
         width: 100%;
-    }
-
-    .ipv-filter-button {
-        width: 100%;
-        justify-content: center;
     }
 
     .ipv-video-grid {

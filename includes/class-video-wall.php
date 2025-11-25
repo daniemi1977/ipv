@@ -119,10 +119,6 @@ class IPV_Prod_Video_Wall {
                 <label for="ipv-filter-search">Cerca:</label>
                 <input type="text" id="ipv-filter-search" class="ipv-filter-input" placeholder="Cerca nei video...">
             </div>
-
-            <button type="button" class="ipv-filter-button" id="ipv-apply-filters">
-                <i class="dashicons dashicons-search"></i> Filtra
-            </button>
         </div>
         <?php
     }
