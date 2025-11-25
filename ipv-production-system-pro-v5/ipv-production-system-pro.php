@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro v5
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione avanzato per "Il Punto di Vista" con supporto Elementor, tassonomie intelligenti, video wall e compatibilità Influencers/WoodMart
- * Version: 6.2.1
+ * Version: 6.2.2
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 5.8
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'IPV_PROD_VERSION', '6.2.1' );
+define( 'IPV_PROD_VERSION', '6.2.2' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -113,7 +113,7 @@ class IPV_Production_System_Pro {
     }
 
     /**
-     * Parse markdown semplice con supporto line breaks
+     * Parse markdown semplice con supporto line breaks e liste automatiche
      */
     private function parse_markdown( $text ) {
         // Headers
@@ -140,8 +140,83 @@ class IPV_Production_System_Pro {
             $text
         );
 
-        // Lists
+        // Liste con bullet point esplicite
         $text = preg_replace( '/^• (.+)$/m', '<li>$1</li>', $text );
+
+        // Sponsor Box: Evidenzia sezioni che iniziano con 🌿 (stile Notion callout)
+        // Cattura tutto il contenuto multi-linea fino a riga vuota o nuovo emoji header
+        $text = preg_replace_callback(
+            '/^🌿\s*(.+?)(?:\n(.+?))*?(?=\n\n|\n[📌🎬🔍💡🎯⚡🚀✅❌⭐🔗📥📺🔔➜]|$)/ms',
+            function( $matches ) {
+                $full_content = trim( $matches[0] );
+                // Rimuovi il primo 🌿 per il processing
+                $content = preg_replace( '/^🌿\s*/', '', $full_content );
+                return '<div class="ipv-sponsor-callout">🌿 ' . $content . '</div>';
+            },
+            $text
+        );
+
+        // Aggiungi separatore automatico prima di emoji headers (📌, 🎬, etc.)
+        // ma solo se la riga precedente non è vuota e non è già un separatore
+        $text = preg_replace( '/([^\n])\n([📌🎬🔍💡🎯⚡🚀✅❌⭐])/u', '$1' . "\n\n---\n\n" . '$2', $text );
+
+        // Converti liste implicite (righe consecutive che iniziano con lettere maiuscole)
+        // dopo una riga che finisce con ":" (tipicamente un titolo di lista)
+        $lines = explode( "\n", $text );
+        $in_list = false;
+        $in_sponsor = false;
+        $result = [];
+
+        foreach ( $lines as $i => $line ) {
+            $trimmed = trim( $line );
+
+            // Controlla se la riga precedente finisce con ":" (inizio lista)
+            $prev_line = $i > 0 ? trim( $lines[ $i - 1 ] ) : '';
+            $starts_list = ! empty( $prev_line ) && substr( $prev_line, -1 ) === ':';
+
+            // Una riga è parte di lista se:
+            // - Non è vuota
+            // - Non inizia con tag HTML
+            // - Non inizia con emoji/numeri/timestamp (00:00)
+            // - Inizia con lettera maiuscola o "Il ", "La ", "Le ", etc.
+            $is_list_item = ! empty( $trimmed )
+                && strpos( $trimmed, '<' ) !== 0
+                && ! preg_match( '/^[\d]{1,2}:[\d]{2}/', $trimmed )
+                && ! preg_match( '/^[📌🎬🔍💡🌿🎯⚡🚀✅❌⭐🔗📥📺🔔➜]/', $trimmed )
+                && preg_match( '/^[A-Z]|^(Il |La |Le |Lo |I |Gli |Come |Perché |Chi |Cosa |Quando |Dove |Analogie |Implicazioni )/', $trimmed );
+
+            if ( $starts_list && $is_list_item ) {
+                // Inizia una nuova lista
+                $in_list = true;
+                $result[] = $prev_line;
+                $result[] = '<ul>';
+                $result[] = '<li>' . $trimmed . '</li>';
+            } elseif ( $in_list && $is_list_item ) {
+                // Continua la lista
+                $result[] = '<li>' . $trimmed . '</li>';
+            } elseif ( $in_list && ! $is_list_item ) {
+                // Fine della lista
+                $result[] = '</ul>';
+                $result[] = $line;
+                $in_list = false;
+            } elseif ( ! $starts_list || ! $is_list_item ) {
+                // Riga normale
+                if ( $i > 0 && trim( $lines[ $i - 1 ] ) !== '' && substr( trim( $lines[ $i - 1 ] ), -1 ) === ':' ) {
+                    // Skip - già aggiunta sopra
+                } else {
+                    $result[] = $line;
+                }
+            }
+        }
+
+        // Chiudi lista se ancora aperta
+        if ( $in_list ) {
+            $result[] = '</ul>';
+        }
+
+        $text = implode( "\n", $result );
+
+        // Wrappa liste standard con <ul>
         $text = preg_replace( '/(<li>.*<\/li>)/s', '<ul>$1</ul>', $text );
 
         // Line breaks: converti singoli \n in <br>, ma proteggi i doppi \n\n
@@ -152,8 +227,9 @@ class IPV_Production_System_Pro {
         // Infine ripristina i paragrafi
         $text = '<p>' . str_replace( '{{PARAGRAPH}}', '</p><p>', $text ) . '</p>';
 
-        // Pulisci eventuali <p> vuoti
+        // Pulisci eventuali <p> vuoti e <br> dentro <li>
         $text = preg_replace( '/<p>\s*<\/p>/', '', $text );
+        $text = preg_replace( '/<li>([^<]+)<br>/', '<li>$1', $text );
 
         return $text;
     }
