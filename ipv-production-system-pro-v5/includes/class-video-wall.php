@@ -122,13 +122,6 @@ class IPV_Prod_Video_Wall {
                         </select>
                     </div>
                     <?php endif; ?>
-
-                    <!-- Bottone Reset -->
-                    <div class="ipv-filter-item ipv-filter-reset">
-                        <button type="button" id="ipv-reset-filters" class="ipv-btn ipv-btn-reset">
-                            🔄 Reset Filtri
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Info risultati -->
@@ -181,6 +174,15 @@ class IPV_Prod_Video_Wall {
             'paged'          => $page,
             'orderby'        => 'date',
             'order'          => 'DESC',
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'     => '_ipv_yt_duration_seconds',
+                    'value'   => 300,
+                    'compare' => '>=',
+                    'type'    => 'NUMERIC',
+                ],
+            ],
         ];
 
         // Ricerca testuale
@@ -219,6 +221,8 @@ class IPV_Prod_Video_Wall {
             $tax_query['relation'] = 'AND';
             $args['tax_query'] = $tax_query;
         }
+
+        // NOTA: meta_query per durata minima è già impostato sopra in $args
 
         // Query
         $query = new WP_Query( $args );

@@ -46,11 +46,6 @@
                 }, 500);
             });
 
-            // Reset filtri
-            this.$el.on('click', '#ipv-reset-filters', function () {
-                self.resetFilters();
-            });
-
             // Paginazione
             this.$el.on('click', '.ipv-page-btn', function () {
                 const page = parseInt($(this).data('page'));
@@ -94,13 +89,6 @@
                 self.hideLoading();
                 self.$grid.html('<div class="ipv-no-results"><p>Errore di connessione.</p></div>');
             });
-        }
-
-        resetFilters() {
-            this.$el.find('#ipv-search').val('');
-            this.$el.find('.ipv-filter-select').val('');
-            this.currentPage = 1;
-            this.loadVideos();
         }
 
         showLoading() {

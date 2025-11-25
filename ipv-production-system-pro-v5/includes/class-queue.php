@@ -159,6 +159,20 @@ class IPV_Prod_Queue {
                 $title = 'Video YouTube ' . $video_id;
                 $video_data = null;
             } else {
+                // FILTRO: Scarta video più corti di 5 minuti (300 secondi)
+                $duration_seconds = isset( $video_data['duration_seconds'] ) ? intval( $video_data['duration_seconds'] ) : 0;
+                if ( $duration_seconds > 0 && $duration_seconds < 300 ) {
+                    IPV_Prod_Logger::log( 'Video scartato: troppo corto', [
+                        'video_id' => $video_id,
+                        'duration_seconds' => $duration_seconds,
+                        'duration_formatted' => $video_data['duration_formatted'] ?? '',
+                    ] );
+                    throw new Exception( sprintf(
+                        'Video troppo corto: %s (minimo richiesto: 5 minuti)',
+                        $video_data['duration_formatted'] ?? $duration_seconds . 's'
+                    ) );
+                }
+
                 $title = ! empty( $video_data['title'] ) ? $video_data['title'] : 'Video YouTube ' . $video_id;
             }
 

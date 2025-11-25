@@ -13,24 +13,23 @@
 /* Filtri - Stile contenuto, non full-wide */
 .ipv-wall-filters {
     background: #ffffff;
-    padding: 20px 25px;
-    border-radius: 8px;
-    margin: 0 auto 40px;
+    padding: 24px 28px;
+    border-radius: 6px;
+    margin: 0 auto 36px;
     max-width: 1000px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e8e8e8;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e3e3e3;
 }
 
 .ipv-filters-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
     margin-bottom: 15px;
 }
 
 .ipv-filter-item {
-    flex: 1 1 200px;
-    min-width: 180px;
+    /* Nessun flex necessario con CSS Grid */
 }
 
 .ipv-filter-item label {
@@ -61,12 +60,6 @@
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-.ipv-filter-reset {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: flex-end;
-}
-
 .ipv-btn {
     padding: 8px 18px;
     border: none;
@@ -77,16 +70,6 @@
     transition: all 0.2s ease;
     text-decoration: none;
     display: inline-block;
-}
-
-.ipv-btn-reset {
-    background: #95a5a6;
-    color: white;
-}
-
-.ipv-btn-reset:hover {
-    background: #7f8c8d;
-    transform: translateY(-1px);
 }
 
 .ipv-filters-info {
