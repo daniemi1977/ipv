@@ -286,8 +286,8 @@ class IPV_Prod_RSS_Importer {
      * Attiva il cron RSS
      */
     public static function activate_rss_cron() {
-        $schedule = get_option( 'ipv_rss_schedule', 'hourly' );
-        
+        $schedule = get_option( 'ipv_rss_schedule', 'every_6_hours' );
+
         if ( ! wp_next_scheduled( 'ipv_prod_rss_import' ) ) {
             wp_schedule_event( time() + 300, $schedule, 'ipv_prod_rss_import' );
             IPV_Prod_Logger::log( 'RSS Cron: Attivato con schedule ' . $schedule );
@@ -368,7 +368,7 @@ class IPV_Prod_RSS_Importer {
 
         $feed_url      = get_option( 'ipv_rss_feed_url', '' );
         $rss_enabled   = get_option( 'ipv_rss_enabled', false );
-        $rss_schedule  = get_option( 'ipv_rss_schedule', 'hourly' );
+        $rss_schedule  = get_option( 'ipv_rss_schedule', 'every_6_hours' );
         $import_limit  = get_option( 'ipv_rss_import_limit', 10 );
         $stats         = self::get_rss_stats();
         $next_run      = wp_next_scheduled( 'ipv_prod_rss_import' );
@@ -395,7 +395,7 @@ class IPV_Prod_RSS_Importer {
             $schedule = sanitize_text_field( wp_unslash( $_POST['ipv_rss_schedule'] ) );
             update_option( 'ipv_rss_schedule', $schedule );
         } else {
-            $schedule = get_option( 'ipv_rss_schedule', 'hourly' );
+            $schedule = get_option( 'ipv_rss_schedule', 'every_6_hours' );
         }
 
         // Import limit

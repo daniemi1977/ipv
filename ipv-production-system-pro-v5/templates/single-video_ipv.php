@@ -44,31 +44,36 @@ if ( function_exists( 'get_template_part' ) ) {
 
 									<!-- Video Meta Info -->
 									<div class="ipv-video-meta-info">
-										<?php if ( $published_at ) : ?>
-											<span class="ipv-meta-date">
-												<i class="fa fa-calendar"></i> <?php echo esc_html( date_i18n( get_option('date_format'), strtotime( $published_at ) ) ); ?>
-											</span>
-										<?php endif; ?>
-
-										<?php if ( $views ) : ?>
-											<span class="ipv-meta-views">
-												<i class="fa fa-eye"></i> <?php echo esc_html( number_format_i18n( $views ) ); ?> visualizzazioni
-											</span>
-										<?php endif; ?>
-
-										<?php if ( $duration ) : ?>
-											<span class="ipv-meta-duration">
-												<i class="fa fa-clock-o"></i> <?php echo esc_html( $duration ); ?>
-											</span>
-										<?php endif; ?>
-
+										<!-- Link YouTube URL -->
 										<?php if ( $youtube_url ) : ?>
-											<span class="ipv-meta-youtube">
-												<a href="<?php echo esc_url( $youtube_url ); ?>" target="_blank" rel="noopener">
-													<i class="fa fa-youtube-play"></i> Guarda su YouTube
+											<div class="ipv-video-youtube-link">
+												<strong>🔗 Link YouTube:</strong>
+												<a href="<?php echo esc_url( $youtube_url ); ?>" target="_blank" rel="noopener" class="ipv-youtube-url">
+													<?php echo esc_html( $youtube_url ); ?>
 												</a>
-											</span>
+											</div>
 										<?php endif; ?>
+
+										<!-- Dati strutturali -->
+										<div class="ipv-video-meta-data">
+											<?php if ( $published_at ) : ?>
+												<span class="ipv-meta-date">
+													<i class="fa fa-calendar"></i> <?php echo esc_html( date_i18n( get_option('date_format'), strtotime( $published_at ) ) ); ?>
+												</span>
+											<?php endif; ?>
+
+											<?php if ( $views ) : ?>
+												<span class="ipv-meta-views">
+													<i class="fa fa-eye"></i> <?php echo esc_html( number_format_i18n( $views ) ); ?> visualizzazioni
+												</span>
+											<?php endif; ?>
+
+											<?php if ( $duration ) : ?>
+												<span class="ipv-meta-duration">
+													<i class="fa fa-clock-o"></i> <?php echo esc_html( $duration ); ?>
+												</span>
+											<?php endif; ?>
+										</div>
 									</div>
 
 									<!-- Content -->

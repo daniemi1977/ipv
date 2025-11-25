@@ -77,10 +77,10 @@ class IPV_Prod_Cron_Manager {
      * Attiva tutti i cron job
      */
     public static function activate() {
-        // 1. Process Queue (ogni minuto)
+        // 1. Process Queue (ogni 6 ore - riduce carico processore)
         if ( ! wp_next_scheduled( 'ipv_prod_process_queue' ) ) {
-            wp_schedule_event( time() + 60, 'minute', 'ipv_prod_process_queue' );
-            IPV_Prod_Logger::log( 'Cron Manager: Attivato process_queue (ogni minuto)' );
+            wp_schedule_event( time() + 300, 'every_6_hours', 'ipv_prod_process_queue' );
+            IPV_Prod_Logger::log( 'Cron Manager: Attivato process_queue (ogni 6 ore)' );
         }
 
         // 2. RSS Auto-Import (se abilitato)
@@ -89,16 +89,16 @@ class IPV_Prod_Cron_Manager {
             self::activate_rss_cron();
         }
 
-        // 3. Auto-trascrizione (processamento video senza trascrizione)
+        // 3. Auto-trascrizione (processamento video senza trascrizione - ogni 6 ore)
         if ( ! wp_next_scheduled( 'ipv_prod_auto_transcribe' ) ) {
-            wp_schedule_event( time() + 300, 'every_15_minutes', 'ipv_prod_auto_transcribe' );
-            IPV_Prod_Logger::log( 'Cron Manager: Attivato auto_transcribe (ogni 15 min)' );
+            wp_schedule_event( time() + 600, 'every_6_hours', 'ipv_prod_auto_transcribe' );
+            IPV_Prod_Logger::log( 'Cron Manager: Attivato auto_transcribe (ogni 6 ore)' );
         }
 
-        // 4. Auto-generazione descrizione (video con trascrizione ma senza descrizione AI)
+        // 4. Auto-generazione descrizione (video con trascrizione ma senza descrizione AI - ogni 6 ore)
         if ( ! wp_next_scheduled( 'ipv_prod_auto_generate_desc' ) ) {
-            wp_schedule_event( time() + 600, 'every_15_minutes', 'ipv_prod_auto_generate_desc' );
-            IPV_Prod_Logger::log( 'Cron Manager: Attivato auto_generate_desc (ogni 15 min)' );
+            wp_schedule_event( time() + 900, 'every_6_hours', 'ipv_prod_auto_generate_desc' );
+            IPV_Prod_Logger::log( 'Cron Manager: Attivato auto_generate_desc (ogni 6 ore)' );
         }
 
         // Registra hook actions
@@ -139,7 +139,7 @@ class IPV_Prod_Cron_Manager {
      * Attiva RSS cron
      */
     public static function activate_rss_cron() {
-        $schedule = get_option( 'ipv_rss_schedule', 'hourly' );
+        $schedule = get_option( 'ipv_rss_schedule', 'every_6_hours' );
 
         if ( ! wp_next_scheduled( 'ipv_prod_rss_import' ) ) {
             wp_schedule_event( time() + 300, $schedule, 'ipv_prod_rss_import' );
@@ -294,25 +294,25 @@ class IPV_Prod_Cron_Manager {
                 'name'      => 'Process Queue',
                 'active'    => (bool) wp_next_scheduled( 'ipv_prod_process_queue' ),
                 'next_run'  => wp_next_scheduled( 'ipv_prod_process_queue' ),
-                'schedule'  => 'minute',
+                'schedule'  => 'every_6_hours',
             ],
             'rss_import' => [
                 'name'      => 'RSS Auto-Import',
                 'active'    => (bool) wp_next_scheduled( 'ipv_prod_rss_import' ),
                 'next_run'  => wp_next_scheduled( 'ipv_prod_rss_import' ),
-                'schedule'  => get_option( 'ipv_rss_schedule', 'hourly' ),
+                'schedule'  => get_option( 'ipv_rss_schedule', 'every_6_hours' ),
             ],
             'auto_transcribe' => [
                 'name'      => 'Auto-Transcribe',
                 'active'    => (bool) wp_next_scheduled( 'ipv_prod_auto_transcribe' ),
                 'next_run'  => wp_next_scheduled( 'ipv_prod_auto_transcribe' ),
-                'schedule'  => 'every_15_minutes',
+                'schedule'  => 'every_6_hours',
             ],
             'auto_generate_desc' => [
                 'name'      => 'Auto-Generate Descriptions',
                 'active'    => (bool) wp_next_scheduled( 'ipv_prod_auto_generate_desc' ),
                 'next_run'  => wp_next_scheduled( 'ipv_prod_auto_generate_desc' ),
-                'schedule'  => 'every_15_minutes',
+                'schedule'  => 'every_6_hours',
             ],
         ];
     }

@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro v5
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione avanzato per "Il Punto di Vista" con supporto Elementor, tassonomie intelligenti, video wall e compatibilità Influencers/WoodMart
- * Version: 6.1.1
+ * Version: 6.2.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 5.8
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'IPV_PROD_VERSION', '6.1.1' );
+define( 'IPV_PROD_VERSION', '6.2.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -127,8 +127,18 @@ class IPV_Production_System_Pro {
         // Italic
         $text = preg_replace( '/_(.+?)_/', '<em>$1</em>', $text );
 
-        // Links
-        $text = preg_replace( '/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2">$1</a>', $text );
+        // Separatori --- (convertili in line break)
+        $text = preg_replace( '/^---$/m', '<br><br>', $text );
+
+        // Links markdown [text](url)
+        $text = preg_replace( '/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2" target="_blank" rel="noopener">$1</a>', $text );
+
+        // Auto-link URLs semplici (http://, https://)
+        $text = preg_replace(
+            '/(^|[^"\'>])(https?:\/\/[^\s<]+[^\s<.,;:\'\"\)])/i',
+            '$1<a href="$2" target="_blank" rel="noopener">$2</a>',
+            $text
+        );
 
         // Lists
         $text = preg_replace( '/^• (.+)$/m', '<li>$1</li>', $text );
