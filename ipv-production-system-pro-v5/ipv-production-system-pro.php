@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro v5
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione avanzato per "Il Punto di Vista" con supporto Elementor, tassonomie intelligenti, video wall e compatibilità Influencers/WoodMart
- * Version: 6.1.0
+ * Version: 6.1.1
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 5.8
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'IPV_PROD_VERSION', '6.1.0' );
+define( 'IPV_PROD_VERSION', '6.1.1' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -113,7 +113,7 @@ class IPV_Production_System_Pro {
     }
 
     /**
-     * Parse markdown semplice
+     * Parse markdown semplice con supporto line breaks
      */
     private function parse_markdown( $text ) {
         // Headers
@@ -134,8 +134,16 @@ class IPV_Production_System_Pro {
         $text = preg_replace( '/^• (.+)$/m', '<li>$1</li>', $text );
         $text = preg_replace( '/(<li>.*<\/li>)/s', '<ul>$1</ul>', $text );
 
-        // Paragraphs
-        $text = '<p>' . preg_replace( '/\n\n/', '</p><p>', $text ) . '</p>';
+        // Line breaks: converti singoli \n in <br>, ma proteggi i doppi \n\n
+        // Prima sostituisci \n\n con un placeholder temporaneo
+        $text = str_replace( "\n\n", '{{PARAGRAPH}}', $text );
+        // Poi converti i singoli \n rimasti in <br>
+        $text = str_replace( "\n", '<br>', $text );
+        // Infine ripristina i paragrafi
+        $text = '<p>' . str_replace( '{{PARAGRAPH}}', '</p><p>', $text ) . '</p>';
+
+        // Pulisci eventuali <p> vuoti
+        $text = preg_replace( '/<p>\s*<\/p>/', '', $text );
 
         return $text;
     }
