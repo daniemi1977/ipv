@@ -21,6 +21,32 @@ if ( ! empty( $users ) ) {
     $user_id = $users[0]->ID;
 }
 
+// Ottieni la bio del relatore dagli articoli del blog (author meta o post content)
+$relatore_bio = '';
+if ( $user_id ) {
+    // Cerca la bio nella biografia utente
+    $relatore_bio = get_user_meta( $user_id, 'description', true );
+
+    // Se non c'è, cerca negli articoli (cerca una sezione "Chi è [nome]" o simile)
+    if ( empty( $relatore_bio ) ) {
+        $author_posts = get_posts([
+            'author'         => $user_id,
+            'post_type'      => 'post',
+            'posts_per_page' => 1,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+        ]);
+
+        if ( ! empty( $author_posts ) ) {
+            $post_content = $author_posts[0]->post_content;
+            // Cerca pattern bio in fondo all'articolo
+            if ( preg_match( '/(?:Chi è|Biografia|About).*?<\/p>/si', $post_content, $matches ) ) {
+                $relatore_bio = wp_strip_all_tags( $matches[0] );
+            }
+        }
+    }
+}
+
 // Verifica se esiste il titlebar del tema
 if ( function_exists( 'get_template_part' ) ) {
     get_template_part( 'framework/templates/site', 'titlebar' );
@@ -35,44 +61,22 @@ if ( function_exists( 'get_template_part' ) ) {
 
 					<!-- Intestazione Relatore -->
 					<div class="ipv-relatore-header">
-						<?php if ( $user_id ) :
-							$user = get_userdata( $user_id );
-							$avatar = get_avatar( $user_id, 120 );
-							$bio = get_user_meta( $user_id, 'description', true );
-							?>
-							<div class="ipv-relatore-info">
+						<div class="ipv-relatore-info">
+							<?php if ( $user_id ) :
+								$user = get_userdata( $user_id );
+								$avatar = get_avatar( $user_id, 120 );
+								?>
 								<div class="ipv-relatore-avatar">
 									<?php echo $avatar; ?>
 								</div>
-								<div class="ipv-relatore-details">
-									<h1 class="ipv-relatore-name"><?php echo esc_html( $term->name ); ?></h1>
-									<?php if ( $bio ) : ?>
-										<div class="ipv-relatore-bio">
-											<?php echo wp_kses_post( wpautop( $bio ) ); ?>
-										</div>
-									<?php endif; ?>
-									<div class="ipv-relatore-stats">
-										<span class="ipv-stat-item">
-											<i class="fa fa-video-camera"></i>
-											<strong><?php echo intval( $term->count ); ?></strong> Video
-										</span>
-										<?php
-										// Conta i post del blog
-										$posts_count = count_user_posts( $user_id, 'post' );
-										if ( $posts_count > 0 ) :
-											?>
-											<span class="ipv-stat-item">
-												<i class="fa fa-pencil"></i>
-												<strong><?php echo intval( $posts_count ); ?></strong> Articoli
-											</span>
-										<?php endif; ?>
-									</div>
-								</div>
-							</div>
-						<?php else : ?>
-							<div class="ipv-relatore-info">
+							<?php endif; ?>
+							<div class="ipv-relatore-details">
 								<h1 class="ipv-relatore-name"><?php echo esc_html( $term->name ); ?></h1>
-								<?php if ( $term->description ) : ?>
+								<?php if ( ! empty( $relatore_bio ) ) : ?>
+									<div class="ipv-relatore-bio">
+										<?php echo wp_kses_post( wpautop( $relatore_bio ) ); ?>
+									</div>
+								<?php elseif ( $term->description ) : ?>
 									<div class="ipv-relatore-bio">
 										<?php echo wp_kses_post( wpautop( $term->description ) ); ?>
 									</div>
@@ -82,9 +86,22 @@ if ( function_exists( 'get_template_part' ) ) {
 										<i class="fa fa-video-camera"></i>
 										<strong><?php echo intval( $term->count ); ?></strong> Video
 									</span>
+									<?php
+									// Conta i post del blog
+									if ( $user_id ) {
+										$posts_count = count_user_posts( $user_id, 'post' );
+										if ( $posts_count > 0 ) :
+											?>
+											<span class="ipv-stat-item">
+												<i class="fa fa-pencil"></i>
+												<strong><?php echo intval( $posts_count ); ?></strong> Articoli
+											</span>
+										<?php endif;
+									}
+									?>
 								</div>
 							</div>
-						<?php endif; ?>
+						</div>
 					</div>
 
 					<!-- Tab Navigation -->
@@ -103,72 +120,26 @@ if ( function_exists( 'get_template_part' ) ) {
 					<div class="ipv-tab-content active" id="tab-videos">
 						<h2 class="ipv-section-title">Video di <?php echo esc_html( $term->name ); ?></h2>
 
-						<?php
-						// Query video
-						$videos_query = new WP_Query([
-							'post_type'      => 'video_ipv',
-							'posts_per_page' => 12,
-							'tax_query'      => [
-								[
-									'taxonomy' => 'ipv_relatore',
-									'field'    => 'term_id',
-									'terms'    => $term->term_id,
-								],
-							],
-						]);
-
-						if ( $videos_query->have_posts() ) :
-							?>
-							<div class="ipv-videos-grid">
-								<?php while ( $videos_query->have_posts() ) : $videos_query->the_post();
-									$video_id = get_post_meta( get_the_ID(), '_ipv_video_id', true );
-									$thumbnail = get_post_meta( get_the_ID(), '_ipv_yt_thumbnail_url', true );
-									$duration = get_post_meta( get_the_ID(), '_ipv_yt_duration_formatted', true );
-									$views = get_post_meta( get_the_ID(), '_ipv_yt_view_count', true );
-									$youtube_url = get_post_meta( get_the_ID(), '_ipv_youtube_url', true );
-
-									if ( empty( $thumbnail ) && has_post_thumbnail() ) {
-										$thumbnail = get_the_post_thumbnail_url( get_the_ID(), 'large' );
-									}
-									?>
-									<div class="ipv-video-item">
-										<a href="<?php echo esc_url( get_permalink() ); ?>" class="ipv-video-link">
-											<div class="ipv-video-thumbnail">
-												<img src="<?php echo esc_url( $thumbnail ); ?>" alt="<?php the_title_attribute(); ?>">
-												<?php if ( $duration ) : ?>
-													<span class="ipv-video-duration"><?php echo esc_html( $duration ); ?></span>
-												<?php endif; ?>
-												<div class="ipv-video-overlay">
-													<span class="ipv-play-icon">▶</span>
-												</div>
-											</div>
-											<h3 class="ipv-video-title"><?php the_title(); ?></h3>
-											<?php if ( $views ) : ?>
-												<div class="ipv-video-views">
-													<i class="fa fa-eye"></i> <?php echo esc_html( number_format_i18n( $views ) ); ?> visualizzazioni
-												</div>
-											<?php endif; ?>
-										</a>
-									</div>
-								<?php endwhile; wp_reset_postdata(); ?>
-							</div>
-
+						<!-- Video Wall filtrato per relatore -->
+						<div class="ipv-relatore-video-wall">
 							<?php
-							// Paginazione
-							if ( $videos_query->max_num_pages > 1 ) :
-								?>
-								<div class="ipv-pagination">
-									<?php
-									echo paginate_links([
-										'total'   => $videos_query->max_num_pages,
-										'current' => max( 1, get_query_var( 'paged' ) ),
-									]);
-									?>
-								</div>
-							<?php endif; ?>
-						<?php else : ?>
-							<p>Nessun video disponibile per questo relatore.</p>
-						<?php endif; ?>
+							// Aggiungi filtro temporaneo per il video wall
+							add_filter( 'pre_get_posts', function( $query ) use ( $term ) {
+								if ( $query->get( 'post_type' ) === 'video_ipv' && ! is_admin() ) {
+									$tax_query = $query->get( 'tax_query' ) ?: [];
+									$tax_query[] = [
+										'taxonomy' => 'ipv_relatore',
+										'field'    => 'term_id',
+										'terms'    => $term->term_id,
+									];
+									$query->set( 'tax_query', $tax_query );
+								}
+							}, 10, 1 );
+
+							// Render video wall shortcode
+							echo do_shortcode( '[ipv_video_wall show_filters="no"]' );
+							?>
+						</div>
 					</div>
 
 					<!-- Tab Contenuto: Articoli -->
@@ -177,47 +148,63 @@ if ( function_exists( 'get_template_part' ) ) {
 							<h2 class="ipv-section-title">Articoli di <?php echo esc_html( $term->name ); ?></h2>
 
 							<?php
-							// Query articoli
+							// Query articoli del relatore
 							$articles_query = new WP_Query([
 								'post_type'      => 'post',
 								'author'         => $user_id,
 								'posts_per_page' => 10,
+								'paged'          => max( 1, get_query_var( 'paged' ) ),
 							]);
 
 							if ( $articles_query->have_posts() ) :
 								?>
-								<div class="ipv-articles-list">
+								<!-- Usa il template del tema Influencers per gli articoli -->
+								<div class="bt-blog-post-content">
 									<?php while ( $articles_query->have_posts() ) : $articles_query->the_post(); ?>
-										<article class="ipv-article-item">
-											<?php if ( has_post_thumbnail() ) : ?>
-												<div class="ipv-article-thumb">
-													<a href="<?php the_permalink(); ?>">
-														<?php the_post_thumbnail( 'medium' ); ?>
-													</a>
-												</div>
-											<?php endif; ?>
-											<div class="ipv-article-content">
-												<h3 class="ipv-article-title">
-													<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-												</h3>
-												<div class="ipv-article-meta">
-													<span class="ipv-article-date">
-														<i class="fa fa-calendar"></i> <?php echo get_the_date(); ?>
-													</span>
-													<?php if ( comments_open() || get_comments_number() ) : ?>
-														<span class="ipv-article-comments">
-															<i class="fa fa-comments"></i> <?php comments_number( '0', '1', '%' ); ?>
-														</span>
-													<?php endif; ?>
-												</div>
-												<div class="ipv-article-excerpt">
-													<?php the_excerpt(); ?>
-												</div>
-												<a href="<?php the_permalink(); ?>" class="ipv-read-more">
-													Leggi di più <i class="fa fa-arrow-right"></i>
-												</a>
-											</div>
-										</article>
+										<div class="bt-main-post">
+											<?php
+											// Usa il template part del tema se esiste
+											if ( locate_template( 'content.php' ) ) {
+												get_template_part( 'content' );
+											} elseif ( locate_template( 'content-post.php' ) ) {
+												get_template_part( 'content', 'post' );
+											} else {
+												// Fallback: struttura base come single post
+												?>
+												<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+													<?php
+													// Featured image
+													if ( has_post_thumbnail() ) {
+														echo '<div class="bt-post-featured-image">';
+														the_post_thumbnail( 'large' );
+														echo '</div>';
+													}
+
+													// Title
+													echo '<h2 class="bt-post-title"><a href="' . esc_url( get_permalink() ) . '">' . get_the_title() . '</a></h2>';
+
+													// Meta info
+													if ( function_exists( 'influencers_meta_render' ) ) {
+														echo influencers_meta_render();
+													} else {
+														echo '<div class="bt-post-meta">';
+														echo '<span class="bt-post-date">' . get_the_date() . '</span>';
+														echo '</div>';
+													}
+
+													// Excerpt/Content
+													echo '<div class="bt-post-excerpt">';
+													the_excerpt();
+													echo '</div>';
+
+													// Read more
+													echo '<a href="' . esc_url( get_permalink() ) . '" class="bt-read-more">Leggi di più</a>';
+													?>
+												</article>
+												<?php
+											}
+											?>
+										</div>
 									<?php endwhile; wp_reset_postdata(); ?>
 								</div>
 
@@ -377,187 +364,18 @@ jQuery(document).ready(function($) {
 	color: #2c3e50;
 }
 
-/* Videos Grid */
-.ipv-videos-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-	gap: 25px;
-	margin-bottom: 30px;
+/* Video Wall nella pagina relatore */
+.ipv-relatore-video-wall {
+	margin-top: 20px;
 }
 
-.ipv-video-item {
-	background: #fff;
-	border-radius: 8px;
-	overflow: hidden;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
+/* Blog posts spacing */
+.bt-blog-post-content {
+	margin-top: 20px;
 }
 
-.ipv-video-item:hover {
-	transform: translateY(-5px);
-	box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-}
-
-.ipv-video-link {
-	text-decoration: none;
-	color: inherit;
-}
-
-.ipv-video-thumbnail {
-	position: relative;
-	padding-top: 56.25%;
-	background: #000;
-	overflow: hidden;
-}
-
-.ipv-video-thumbnail img {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-}
-
-.ipv-video-duration {
-	position: absolute;
-	bottom: 10px;
-	right: 10px;
-	background: rgba(0,0,0,0.8);
-	color: #fff;
-	padding: 4px 8px;
-	border-radius: 4px;
-	font-size: 12px;
-	font-weight: 600;
-}
-
-.ipv-video-overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	background: rgba(0,0,0,0.4);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	opacity: 0;
-	transition: opacity 0.3s ease;
-}
-
-.ipv-video-item:hover .ipv-video-overlay {
-	opacity: 1;
-}
-
-.ipv-play-icon {
-	font-size: 48px;
-	color: #fff;
-}
-
-.ipv-video-title {
-	padding: 15px;
-	font-size: 16px;
-	line-height: 1.4;
-	margin: 0;
-	color: #2c3e50;
-}
-
-.ipv-video-views {
-	padding: 0 15px 15px 15px;
-	font-size: 13px;
-	color: #7f8c8d;
-}
-
-/* Articles List */
-.ipv-articles-list {
-	display: flex;
-	flex-direction: column;
-	gap: 25px;
-	margin-bottom: 30px;
-}
-
-.ipv-article-item {
-	display: flex;
-	gap: 20px;
-	background: #fff;
-	padding: 20px;
-	border-radius: 8px;
-	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.ipv-article-thumb {
-	flex: 0 0 200px;
-}
-
-.ipv-article-thumb img {
-	width: 100%;
-	border-radius: 6px;
-}
-
-.ipv-article-content {
-	flex: 1;
-}
-
-.ipv-article-title {
-	margin: 0 0 10px 0;
-	font-size: 20px;
-}
-
-.ipv-article-title a {
-	color: #2c3e50;
-	text-decoration: none;
-}
-
-.ipv-article-title a:hover {
-	color: #3498db;
-}
-
-.ipv-article-meta {
-	display: flex;
-	gap: 15px;
-	margin-bottom: 12px;
-	font-size: 13px;
-	color: #7f8c8d;
-}
-
-.ipv-article-excerpt {
-	margin-bottom: 12px;
-	color: #555;
-	line-height: 1.6;
-}
-
-.ipv-read-more {
-	color: #3498db;
-	text-decoration: none;
-	font-weight: 600;
-}
-
-.ipv-read-more:hover {
-	text-decoration: underline;
-}
-
-/* Pagination */
-.ipv-pagination {
-	display: flex;
-	justify-content: center;
-	margin: 30px 0;
-}
-
-.ipv-pagination .page-numbers {
-	padding: 8px 14px;
-	margin: 0 4px;
-	background: #fff;
-	border: 1px solid #e3e3e3;
-	border-radius: 4px;
-	color: #2c3e50;
-	text-decoration: none;
-}
-
-.ipv-pagination .page-numbers:hover,
-.ipv-pagination .page-numbers.current {
-	background: #3498db;
-	color: #fff;
-	border-color: #3498db;
+.bt-blog-post-content .bt-main-post {
+	margin-bottom: 40px;
 }
 
 /* Responsive */
@@ -569,18 +387,6 @@ jQuery(document).ready(function($) {
 
 	.ipv-relatore-stats {
 		justify-content: center;
-	}
-
-	.ipv-videos-grid {
-		grid-template-columns: 1fr;
-	}
-
-	.ipv-article-item {
-		flex-direction: column;
-	}
-
-	.ipv-article-thumb {
-		flex: 0 0 auto;
 	}
 }
 </style>

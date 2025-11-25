@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro v5
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione avanzato per "Il Punto di Vista" con supporto Elementor, tassonomie intelligenti, video wall e compatibilità Influencers/WoodMart
- * Version: 6.3.0
+ * Version: 6.3.1
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 5.8
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'IPV_PROD_VERSION', '6.3.0' );
+define( 'IPV_PROD_VERSION', '6.3.1' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
