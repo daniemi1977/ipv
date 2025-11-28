@@ -43,12 +43,18 @@ class IPV_Prod_Video_Frontend {
         // CSS inline con altissima specificità per evitare conflitti con il tema
         $embed_html = '
         <style>
-        /* Container principale - width 100% senza margini laterali */
+        /* Container principale - FULL WIDTH viewport breakout */
         body.single-ipv_video .ipv-video-embed-container,
         body .ipv-video-embed-container {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 0 30px 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            position: relative !important;
+            left: 50% !important;
+            right: 50% !important;
+            margin-left: -50vw !important;
+            margin-right: -50vw !important;
+            margin-top: 0 !important;
+            margin-bottom: 40px !important;
             padding: 0 !important;
             display: block !important;
             clear: both !important;
@@ -66,9 +72,9 @@ class IPV_Prod_Video_Frontend {
             padding-right: 0 !important;
             height: 0 !important;
             overflow: hidden !important;
-            border-radius: 12px !important;
+            border-radius: 0 !important;
             background: #000 !important;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2) !important;
+            box-shadow: none !important;
             margin: 0 !important;
         }
 
@@ -85,25 +91,17 @@ class IPV_Prod_Video_Frontend {
             max-width: 100% !important;
             max-height: 100% !important;
             border: 0 !important;
-            border-radius: 12px !important;
+            border-radius: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
             display: block !important;
         }
 
-        /* Mobile responsive */
+        /* Mobile responsive - mantieni full width anche su mobile */
         @media (max-width: 768px) {
             body.single-ipv_video .ipv-video-embed-container,
             body .ipv-video-embed-container {
-                margin-bottom: 20px !important;
-            }
-            body.single-ipv_video .ipv-video-embed-container .ipv-embed-wrapper,
-            body .ipv-video-embed-container .ipv-embed-wrapper {
-                border-radius: 8px !important;
-            }
-            body.single-ipv_video .ipv-video-embed-container .ipv-embed-wrapper iframe,
-            body .ipv-video-embed-container .ipv-embed-wrapper iframe {
-                border-radius: 8px !important;
+                margin-bottom: 30px !important;
             }
         }
         </style>

@@ -1,6 +1,35 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.6 - 2025-11-28
+### 📺 Video Embed Full Width Desktop
+
+### 🎯 Modifica Richiesta
+- **RICHIESTA**: Video embed full width anche su desktop (attualmente limitato dalla larghezza del tema)
+- **OBIETTIVO**: Video che occupa tutta la larghezza dello schermo su desktop e mobile
+
+### 💡 Soluzione Implementata
+- **NEW**: Viewport breakout technique con `width: 100vw` e margini negativi
+- **NEW**: `left: 50%` e `margin-left: -50vw` per far uscire dal container del tema
+- **REMOVED**: Border-radius su desktop (ora 0 per look cinema)
+- **REMOVED**: Box-shadow su desktop
+- **MANTAINED**: Full width anche su mobile
+
+### 📝 File Modificati
+- `includes/class-video-frontend.php`:
+  - Container con viewport breakout CSS
+  - `width: 100vw !important`
+  - `margin-left: -50vw !important`
+  - `border-radius: 0 !important`
+
+### ✅ Risultato
+- ✅ Video full width viewport su desktop
+- ✅ Video full width viewport su mobile
+- ✅ Nessun bordo arrotondato (cinema look)
+- ✅ Aspect ratio 16:9 perfetto
+
+---
+
 ## v7.9.5 - 2025-11-28
 ### 🎨 Frontend CPT: Rimozione Featured Image e Tag Cliccabili
 
