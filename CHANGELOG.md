@@ -1,6 +1,37 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.14 - 2025-11-28
+### ✅ Riattivazione Featured Image
+
+### 🎯 Modifica Richiesta
+- **RICHIESTA**: Riattivare featured image nei CPT ipv_video
+- **DECISIONE**: Mantenere featured image visibile (sia nel post principale che nei related)
+
+### 💡 Modifiche Implementate
+- **RIMOSSO**: Filtro `post_thumbnail_html` per `remove_featured_image`
+- **RIMOSSO**: Funzione `remove_featured_image()` completamente
+- **RIMOSSO**: CSS che nascondeva `.post-thumbnail`, `.entry-thumbnail`, `.featured-image` (desktop e mobile)
+- **MANTENUTO**: Video embed YouTube all'inizio del contenuto
+- **MANTENUTO**: Sidebar nascosta su mobile
+- **MANTENUTO**: Tags e categorie nascoste
+- **MANTENUTO**: YouTube views al posto di WordPress views
+
+### 📝 File Modificati
+- `ipv-production-system-pro.php`: Versione 7.9.13 → 7.9.14
+- `includes/class-video-frontend.php`:
+  - Rimosso hook `add_filter( 'post_thumbnail_html' )`
+  - Rimossa funzione `remove_featured_image()`
+  - Rimosso CSS featured image (linee desktop e mobile)
+
+### ✅ Risultato
+- ✅ Featured image visualizzata in tutti i post ipv_video
+- ✅ Featured image visualizzata nei related posts
+- ✅ Video embed YouTube sempre presente
+- ✅ Layout: Featured Image + Video Embed + Contenuto
+
+---
+
 ## v7.9.13 - 2025-11-28
 ### 🔧 CRITICAL FIX: Featured Image e Video Embed
 

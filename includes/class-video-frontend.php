@@ -21,9 +21,6 @@ class IPV_Prod_Video_Frontend {
         add_action( 'wp_head', [ __CLASS__, 'inject_embed_styles' ] );
         add_action( 'loop_start', [ __CLASS__, 'maybe_output_embed' ] );
 
-        // Rimuovi featured image per ipv_video
-        add_filter( 'post_thumbnail_html', [ __CLASS__, 'remove_featured_image' ], 10, 2 );
-
         // Rimuovi tag e categorie cliccabili
         add_action( 'wp_head', [ __CLASS__, 'hide_tags_and_meta' ] );
 
@@ -344,22 +341,6 @@ class IPV_Prod_Video_Frontend {
     }
 
     /**
-     * Rimuove featured image per ipv_video SOLO nel post principale
-     */
-    public static function remove_featured_image( $html, $post_id ) {
-        // Rimuovi solo se siamo nella pagina single del post ipv_video
-        // E solo se il post_id corrisponde al post corrente (non nei related posts)
-        if ( get_post_type( $post_id ) === 'ipv_video' && is_singular( 'ipv_video' ) ) {
-            // Controlla se questo è il post principale della pagina
-            $current_post_id = get_queried_object_id();
-            if ( $post_id === $current_post_id ) {
-                return '';
-            }
-        }
-        return $html;
-    }
-
-    /**
      * Sostituisce views WordPress con views YouTube per ipv_video
      */
     public static function replace_views_with_youtube( $value, $object_id, $meta_key, $single ) {
@@ -445,19 +426,6 @@ class IPV_Prod_Video_Frontend {
         }
         ?>
         <style>
-        /* Nasconde featured image e immagini in evidenza DEL POST PRINCIPALE */
-        body.single-ipv_video article.ipv_video .post-thumbnail,
-        body.single-ipv_video article.ipv_video .entry-thumbnail,
-        body.single-ipv_video article.ipv_video .featured-image,
-        body.single-ipv_video article.ipv_video .wp-post-image,
-        body.single-ipv_video article.ipv_video .attachment-post-thumbnail,
-        body.single-ipv_video .hentry .post-thumbnail,
-        body.single-ipv_video .hentry .entry-thumbnail,
-        body.single-ipv_video .entry-header .post-thumbnail,
-        body.single-ipv_video .entry-header .featured-image {
-            display: none !important;
-        }
-
         /* Nasconde tag e categorie cliccabili (tema Influencer + standard) */
         body.single-ipv_video .entry-meta,
         body.single-ipv_video .post-meta,
@@ -487,9 +455,6 @@ class IPV_Prod_Video_Frontend {
 
         /* Mobile: stesse regole + sidebar nascosta */
         @media (max-width: 768px) {
-            body.single-ipv_video article.ipv_video .post-thumbnail,
-            body.single-ipv_video article.ipv_video .entry-thumbnail,
-            body.single-ipv_video article.ipv_video .featured-image,
             body.single-ipv_video .entry-meta,
             body.single-ipv_video .post-meta,
             body.single-ipv_video .entry-footer,
