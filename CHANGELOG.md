@@ -1,6 +1,53 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.12 - 2025-11-28
+### 📱 Mobile Sidebar Removal + Enhanced YouTube Views System
+
+### 🎯 Modifiche Richieste
+- **RICHIESTA 1**: Rimuovere sidebar nella versione mobile del CPT ipv_video
+- **RICHIESTA 2**: Views YouTube ancora non visualizzate correttamente (v7.9.11 non sufficiente)
+
+### 💡 Soluzioni Implementate
+
+#### 1. Sidebar Mobile Nascosta
+- **NEW**: CSS per nascondere sidebar su mobile (< 768px)
+- **NEW**: Contenuto a full width quando sidebar è nascosta
+- **SELETTORI**: `.sidebar`, `#sidebar`, `.widget-area`, `aside`, `.secondary`, `.sidebar-primary`, `.site-sidebar`
+- **RISULTATO**: Più spazio per contenuto video su mobile
+
+#### 2. Enhanced YouTube Views System
+- **NEW**: Filtro aggiuntivo `post_views` con priorità 999
+- **NEW**: Filtro aggiuntivo `the_views` con priorità 999
+- **NEW**: Funzione `force_youtube_views_on_post()` che aggiorna FORZATAMENTE tutte le chiavi meta
+- **NEW**: Hook `wp` che esegue update di TUTTE le chiavi views all'apertura del post
+- **METODO**: Usa `update_post_meta()` per sovrascrivere WordPress views con YouTube views
+- **CHIAVI AGGIORNATE**:
+  - `post_views_count`
+  - `views`
+  - `_post_views_count`
+  - `wpb_post_views_count`
+  - `post_view_count`
+  - `wpb_views`
+
+### 📝 File Modificati
+- `ipv-production-system-pro.php`: Versione 7.9.11 → 7.9.12
+- `includes/class-video-frontend.php`:
+  - CSS mobile per nascondere sidebar (linee 332-354)
+  - Filtro `post_views` aggiunto
+  - Filtro `the_views` aggiunto
+  - Azione `wp` per force update views
+  - Funzione `filter_post_views()` (linee 226-239)
+  - Funzione `force_youtube_views_on_post()` (linee 244-267)
+
+### ✅ Risultato Atteso
+- ✅ Sidebar completamente nascosta su mobile per ipv_video
+- ✅ Contenuto a full width su mobile
+- ✅ YouTube views forzatamente aggiornate ad ogni caricamento post
+- ✅ Views corrette anche con temi che usano caching aggressivo
+
+---
+
 ## v7.9.11 - 2025-11-28
 ### 📊 Views YouTube invece di Views WordPress
 

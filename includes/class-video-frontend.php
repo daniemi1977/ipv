@@ -25,6 +25,13 @@ class IPV_Prod_Video_Frontend {
 
         // Sostituisci views WordPress con views YouTube
         add_filter( 'get_post_metadata', [ __CLASS__, 'replace_views_with_youtube' ], 10, 4 );
+
+        // Hook aggiuntivi per temi che usano filtri custom
+        add_filter( 'post_views', [ __CLASS__, 'filter_post_views' ], 999, 2 );
+        add_filter( 'the_views', [ __CLASS__, 'filter_post_views' ], 999, 2 );
+
+        // Forza update views su load del post
+        add_action( 'wp', [ __CLASS__, 'force_youtube_views_on_post' ] );
     }
 
     /**
@@ -214,6 +221,52 @@ class IPV_Prod_Video_Frontend {
     }
 
     /**
+     * Filtro per views custom dei temi
+     */
+    public static function filter_post_views( $views, $post_id = null ) {
+        if ( ! $post_id ) {
+            $post_id = get_the_ID();
+        }
+
+        if ( get_post_type( $post_id ) === 'ipv_video' ) {
+            $youtube_views = get_post_meta( $post_id, '_ipv_yt_views', true );
+            if ( ! empty( $youtube_views ) ) {
+                return $youtube_views;
+            }
+        }
+
+        return $views;
+    }
+
+    /**
+     * Forza sovrascrittura views WordPress con YouTube all'apertura del post
+     */
+    public static function force_youtube_views_on_post() {
+        if ( ! is_singular( 'ipv_video' ) ) {
+            return;
+        }
+
+        $post_id = get_the_ID();
+        $youtube_views = get_post_meta( $post_id, '_ipv_yt_views', true );
+
+        if ( ! empty( $youtube_views ) ) {
+            // Sovrascrive tutte le chiavi views possibili con il valore YouTube
+            $view_keys = [
+                'post_views_count',
+                'views',
+                '_post_views_count',
+                'wpb_post_views_count',
+                'post_view_count',
+                'wpb_views',
+            ];
+
+            foreach ( $view_keys as $key ) {
+                update_post_meta( $post_id, $key, $youtube_views );
+            }
+        }
+    }
+
+    /**
      * Nasconde tag, categorie e metadati per ipv_video
      */
     public static function hide_tags_and_meta() {
@@ -262,7 +315,7 @@ class IPV_Prod_Video_Frontend {
             display: none !important;
         }
 
-        /* Mobile: stesse regole */
+        /* Mobile: stesse regole + sidebar nascosta */
         @media (max-width: 768px) {
             body.single-ipv_video article.ipv_video .post-thumbnail,
             body.single-ipv_video article.ipv_video .entry-thumbnail,
@@ -274,6 +327,29 @@ class IPV_Prod_Video_Frontend {
             body.single-ipv_video .post-tags,
             body.single-ipv_video .bt-post-tags {
                 display: none !important;
+            }
+
+            /* Nascondi sidebar su mobile */
+            body.single-ipv_video .sidebar,
+            body.single-ipv_video #sidebar,
+            body.single-ipv_video .widget-area,
+            body.single-ipv_video aside,
+            body.single-ipv_video .secondary,
+            body.single-ipv_video #secondary,
+            body.single-ipv_video .sidebar-primary,
+            body.single-ipv_video .site-sidebar {
+                display: none !important;
+            }
+
+            /* Contenuto a full width quando sidebar è nascosta */
+            body.single-ipv_video .content,
+            body.single-ipv_video .site-content,
+            body.single-ipv_video .main-content,
+            body.single-ipv_video #primary,
+            body.single-ipv_video article {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto !important;
             }
         }
         </style>
