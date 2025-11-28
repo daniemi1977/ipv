@@ -27,30 +27,39 @@ class IPV_Prod_AI_Generator {
 
     /**
      * Genera descrizione completa per un video
-     * 
+     *
      * @param string $video_title Titolo del video
      * @param string $transcript Trascrizione
      * @param string $duration_formatted Durata formattata (es: "1:47:45")
      * @param int $duration_seconds Durata in secondi
+     * @param string $native_chapters Capitoli nativi YouTube (opzionale)
      */
-    public static function generate_description( $video_title, $transcript, $duration_formatted = '', $duration_seconds = 0 ) {
+    public static function generate_description( $video_title, $transcript, $duration_formatted = '', $duration_seconds = 0, $native_chapters = '' ) {
         $api_key = get_option( 'ipv_openai_api_key', '' );
         if ( empty( $api_key ) ) {
             return new WP_Error( 'ipv_openai_no_key', 'OpenAI API Key non configurata.' );
         }
 
         $custom_prompt = get_option( 'ipv_ai_prompt', '' );
-        $system_prompt = ! empty( $custom_prompt ) ? $custom_prompt : self::get_default_prompt( $duration_formatted, $duration_seconds );
+        $system_prompt = ! empty( $custom_prompt ) ? $custom_prompt : self::get_default_prompt( $duration_formatted, $duration_seconds, ! empty( $native_chapters ) );
 
         $user_content  = "TITOLO VIDEO: " . $video_title . "\n\n";
-        
+
         // Aggiungi info durata
         if ( ! empty( $duration_formatted ) ) {
             $user_content .= "DURATA VIDEO: " . $duration_formatted . " (" . $duration_seconds . " secondi)\n\n";
         }
-        
+
+        // Se ci sono capitoli nativi, includili
+        if ( ! empty( $native_chapters ) ) {
+            $user_content .= "⚠️ CAPITOLI NATIVI YOUTUBE (USA QUESTI):\n";
+            $user_content .= $native_chapters . "\n\n";
+            $user_content .= "➡️ IMPORTANTE: Usa ESATTAMENTE questi timestamp nella sezione ⏱️ MINUTAGGIO.\n\n";
+        }
+
         $user_content .= "TRASCRIZIONE:\n";
-        $user_content .= mb_substr( $transcript, 0, 14000 );
+        // Aumentato limite trascrizione per video lunghi: 14k → 30k caratteri
+        $user_content .= mb_substr( $transcript, 0, 30000 );
 
         $body = [
             'model'    => 'gpt-4o',
@@ -120,17 +129,17 @@ class IPV_Prod_AI_Generator {
         // Ottieni durata video - prova vari meta
         $duration_formatted = get_post_meta( $post_id, '_ipv_yt_duration_formatted', true );
         $duration_seconds   = (int) get_post_meta( $post_id, '_ipv_yt_duration_seconds', true );
-        
+
         // Fallback: prova _ipv_yt_duration (formato ISO8601 o formattato)
         if ( empty( $duration_formatted ) ) {
             $duration_formatted = get_post_meta( $post_id, '_ipv_yt_duration', true );
         }
-        
+
         // Fallback: calcola secondi da durata formattata
         if ( ! $duration_seconds && ! empty( $duration_formatted ) ) {
             $duration_seconds = self::parse_duration_to_seconds( $duration_formatted );
         }
-        
+
         // Log per debug
         IPV_Prod_Logger::log( 'AI: Durata video', [
             'post_id'   => $post_id,
@@ -138,10 +147,59 @@ class IPV_Prod_AI_Generator {
             'seconds'   => $duration_seconds
         ] );
 
-        $description = self::generate_description( $video_title, $transcript, $duration_formatted, $duration_seconds );
-        
+        // === TENTATIVO 1: Recupera capitoli nativi YouTube ===
+        $video_id = get_post_meta( $post_id, '_ipv_video_id', true );
+        $native_chapters = null;
+        $native_chapters_text = '';
+
+        if ( ! empty( $video_id ) ) {
+            $chapters_result = IPV_Prod_YouTube_Chapters::get_chapters( $video_id );
+
+            if ( ! is_wp_error( $chapters_result ) ) {
+                $native_chapters = $chapters_result;
+                $native_chapters_text = IPV_Prod_YouTube_Chapters::format_chapters_text( $chapters_result );
+
+                IPV_Prod_Logger::log( 'AI: Capitoli nativi YouTube trovati', [
+                    'post_id' => $post_id,
+                    'count'   => count( $chapters_result ),
+                ] );
+            } else {
+                IPV_Prod_Logger::log( 'AI: Nessun capitolo nativo, AI genererà i timestamp', [
+                    'post_id' => $post_id,
+                    'reason'  => $chapters_result->get_error_message(),
+                ] );
+            }
+        }
+
+        // === GENERAZIONE AI ===
+        $description = self::generate_description(
+            $video_title,
+            $transcript,
+            $duration_formatted,
+            $duration_seconds,
+            $native_chapters_text
+        );
+
         if ( is_wp_error( $description ) ) {
             return $description;
+        }
+
+        // === VERIFICA TIMESTAMP COVERAGE (solo se NON ha usato capitoli nativi) ===
+        if ( empty( $native_chapters ) && $duration_seconds > 600 ) { // Solo per video > 10 min
+            $coverage_ok = IPV_Prod_YouTube_Chapters::verify_timestamp_coverage(
+                $description,
+                $duration_seconds,
+                75 // Richiedi almeno 75% di copertura
+            );
+
+            if ( ! $coverage_ok ) {
+                IPV_Prod_Logger::log( 'AI: Copertura timestamp insufficiente, richiedo continuazione', [
+                    'post_id' => $post_id,
+                ] );
+
+                // RETRY: Richiesta di continuazione timestamp
+                $description = self::continue_timestamps( $video_title, $transcript, $description, $duration_formatted, $duration_seconds );
+            }
         }
 
         // Salva descrizione
@@ -429,6 +487,115 @@ class IPV_Prod_AI_Generator {
     }
 
     /**
+     * Richiede continuazione timestamp se copertura insufficiente
+     *
+     * @param string $video_title Titolo video
+     * @param string $transcript Trascrizione completa
+     * @param string $current_description Descrizione attuale con timestamp incompleti
+     * @param string $duration_formatted Durata formattata
+     * @param int $duration_seconds Durata in secondi
+     * @return string Descrizione aggiornata con timestamp completi
+     */
+    protected static function continue_timestamps( $video_title, $transcript, $current_description, $duration_formatted, $duration_seconds ) {
+        $api_key = get_option( 'ipv_openai_api_key', '' );
+        if ( empty( $api_key ) ) {
+            // Fallback: restituisci descrizione originale
+            return $current_description;
+        }
+
+        // Estrai sezione timestamp attuale
+        preg_match( '/⏱️ MINUTAGGIO.*?(?=🗂️|$)/s', $current_description, $matches );
+        $current_timestamps = isset( $matches[0] ) ? trim( $matches[0] ) : '';
+
+        // Trova ultimo timestamp
+        preg_match_all( '/(\d+:\d+(?::\d+)?)\s*—/', $current_timestamps, $time_matches );
+        $last_timestamp = ! empty( $time_matches[1] ) ? end( $time_matches[1] ) : '0:00';
+
+        // Prompt di continuazione
+        $continuation_prompt = <<<PROMPT
+# CONTINUAZIONE TIMESTAMP - "Il Punto di Vista"
+
+## SITUAZIONE
+Hai generato una descrizione video ma i timestamp si sono fermati a {$last_timestamp} su un video di {$duration_formatted}.
+
+## TUO COMPITO
+Genera SOLO la continuazione dei timestamp dalla posizione {$last_timestamp} fino alla FINE del video ({$duration_formatted}).
+
+⚠️ IMPORTANTE:
+- NON riscrivere i timestamp già esistenti
+- Parti da DOPO {$last_timestamp}
+- Continua fino a {$duration_formatted}
+- Genera almeno 8-12 timestamp aggiuntivi
+- Segui i cambi di argomento nella trascrizione
+
+## FORMATO OUTPUT
+Genera SOLO i timestamp aggiuntivi, uno per riga:
+{$last_timestamp} — [ultimo esistente, non ripetere]
+[nuovo1] — Titolo argomento
+[nuovo2] — Titolo argomento
+...
+[ultimo vicino a {$duration_formatted}] — Conclusioni
+
+TRASCRIZIONE (dalla parte non ancora coperta):
+PROMPT;
+
+        $user_content = $continuation_prompt . "\n\n" . mb_substr( $transcript, 15000, 25000 );
+
+        $body = [
+            'model'    => 'gpt-4o',
+            'messages' => [
+                [
+                    'role'    => 'user',
+                    'content' => $user_content,
+                ],
+            ],
+            'temperature' => 0.5,
+            'max_tokens'  => 1500,
+        ];
+
+        $args = [
+            'headers' => [
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer ' . $api_key,
+            ],
+            'body'    => wp_json_encode( $body ),
+            'timeout' => 60,
+        ];
+
+        IPV_Prod_Logger::log( 'AI: Richiesta continuazione timestamp', [
+            'last_timestamp'   => $last_timestamp,
+            'target_duration'  => $duration_formatted,
+        ] );
+
+        $response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', $args );
+
+        if ( is_wp_error( $response ) ) {
+            IPV_Prod_Logger::log( 'AI: Errore continuazione', [ 'error' => $response->get_error_message() ] );
+            return $current_description; // Fallback
+        }
+
+        $code = wp_remote_retrieve_response_code( $response );
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+
+        if ( $code < 200 || $code >= 300 ) {
+            return $current_description; // Fallback
+        }
+
+        $additional_timestamps = trim( $data['choices'][0]['message']['content'] );
+
+        // Merge timestamp nella descrizione
+        $updated_description = preg_replace(
+            '/(⏱️ MINUTAGGIO.*?)(?=🗂️)/s',
+            '$1' . "\n" . $additional_timestamps . "\n\n",
+            $current_description
+        );
+
+        IPV_Prod_Logger::log( 'AI: Timestamp aggiornati con successo' );
+
+        return $updated_description;
+    }
+
+    /**
      * Converte durata formattata in secondi
      * Gestisce: "1:47:45", "15:30", "PT1H47M45S" (ISO8601)
      */
@@ -525,11 +692,13 @@ class IPV_Prod_AI_Generator {
      * Golden Prompt v4.0 - Sistema Editoriale Completo
      * Ottimizzato per: timestamp completi, SEO lungo, categorie da logica titolo+descrizione
      */
-    protected static function get_default_prompt( $duration_formatted = '', $duration_seconds = 0 ) {
-        $timestamp_instructions = self::get_timestamp_instructions( $duration_formatted, $duration_seconds );
+    protected static function get_default_prompt( $duration_formatted = '', $duration_seconds = 0, $has_native_chapters = false ) {
+        $timestamp_instructions = $has_native_chapters
+            ? "⚠️ USA I CAPITOLI NATIVI YOUTUBE FORNITI NEL MESSAGGIO UTENTE.\nCopiali ESATTAMENTE nella sezione ⏱️ MINUTAGGIO."
+            : self::get_timestamp_instructions( $duration_formatted, $duration_seconds );
 
         return <<<PROMPT
-# GOLDEN PROMPT v4.2 - "Il Punto di Vista" - Sistema Editoriale YouTube-Friendly
+# GOLDEN PROMPT v4.3 - "Il Punto di Vista" - Sistema Editoriale YouTube-Friendly
 
 ## IDENTITÀ
 Sei un copywriter esperto per il canale YouTube italiano **"Il Punto di Vista"** (@ilpuntodivista_official).

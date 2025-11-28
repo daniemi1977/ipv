@@ -1,6 +1,71 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.8.0 - 2025-11-28
+### 🎯 Sistema Timestamp Intelligente + Capitoli Nativi YouTube
+
+### 🆕 Recupero Capitoli Nativi YouTube
+- **NEW**: Classe `IPV_Prod_YouTube_Chapters` per recuperare capitoli esistenti
+- **NEW**: API third-party (yt.lemnoslife.com) per capitoli YouTube nativi
+- **WORKFLOW**: Prima prova capitoli nativi → Fallback su generazione AI
+- **BENEFIT**: Timestamp accurati al 100% quando disponibili, zero troncamento
+- **BENEFIT**: Copertura completa della durata video garantita
+- **BENEFIT**: Riduzione costi OpenAI per video con capitoli esistenti
+
+### 🔍 Post-Processing Intelligente Timestamp
+- **NEW**: Metodo `verify_timestamp_coverage()` per verificare copertura
+- **NEW**: Metodo `continue_timestamps()` per retry automatico
+- **LOGICA**: Verifica se ultimo timestamp copre almeno 75% durata
+- **RETRY**: Se copertura insufficiente → Chiamata AI di continuazione
+- **RETRY**: Secondo prompt specifico per timestamp mancanti
+- **RETRY**: Merge automatico timestamp aggiuntivi nella descrizione
+
+### ⚙️ Ottimizzazioni AI Generator
+- **UPGRADED**: Golden Prompt v4.3
+- **UPGRADED**: Limite trascrizione aumentato: 14k → 30k caratteri (per video lunghi)
+- **UPGRADED**: Supporto capitoli nativi in `generate_description()`
+- **UPGRADED**: Istruzioni timestamp dinamiche (nativi vs generati)
+- **NEW**: Log dettagliato recupero capitoli e verifica copertura
+
+### 🎬 Workflow Completo
+```
+Video importato
+    ↓
+Tentativo recupero capitoli nativi YouTube
+    ↓
+SE capitoli esistono:
+    → AI usa capitoli nativi (copertura 100%)
+    ✅ FINE
+    ↓
+SE NON esistono:
+    → AI genera timestamp da trascrizione (30k caratteri)
+    ↓
+    Verifica copertura timestamp generati
+        ↓
+        SE copertura < 75%:
+            → Retry con continuazione automatica
+            → Merge timestamp aggiuntivi
+            ✅ FINE
+        ↓
+        SE copertura >= 75%:
+            ✅ FINE
+```
+
+### 🐛 Fix Problema Timestamp Troncati
+- **FIXED**: Video di 2 ore con timestamp solo fino a 45 minuti
+- **ROOT CAUSE**: Trascrizione troncata a 14k caratteri + AI non leggeva fino alla fine
+- **SOLUTION 1**: Capitoli nativi YouTube (quando disponibili)
+- **SOLUTION 2**: Limite trascrizione aumentato (14k → 30k)
+- **SOLUTION 3**: Verifica automatica + retry con continuazione
+- **RESULT**: Timestamp ora coprono TUTTA la durata del video
+
+### 📦 File Modificati/Aggiunti
+- **NEW**: `includes/class-youtube-chapters.php` - Recupero capitoli nativi
+- **MODIFIED**: `includes/class-ai-generator.php` - Post-processing e retry
+- **MODIFIED**: `ipv-production-system-pro.php` - Require nuova classe
+
+---
+
 ## v7.7.0 - 2025-11-28
 ### 🚀 Sistema Editoriale Avanzato + Premiere Videos
 

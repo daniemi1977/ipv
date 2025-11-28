@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione video per "Il Punto di Vista": importazione YouTube, trascrizioni SupaData, AI con Golden Prompt, Video Wall con filtri AJAX.
- * Version: 7.7.2
+ * Version: 7.8.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 6.0
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '7.7.2' );
+define( 'IPV_PROD_VERSION', '7.8.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -55,6 +55,7 @@ require_once IPV_PROD_PLUGIN_DIR . 'includes/class-queue.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-importer.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-rss-importer.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-api.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-chapters.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-bulk-import.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-list-columns.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-simple-import.php';
