@@ -1,6 +1,35 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.8 - 2025-11-28
+### 🔧 Fix: Featured Image nei Related Posts + CSS .bt-post-tags
+
+### 🎯 Problemi Risolti
+- **BUG**: Featured image non visibili nei related posts (thumbs grigi)
+- **BUG**: Tag `.bt-post-tags` del tema Influencer visibili nei post ipv_video
+- **CAUSA**: Filtro `remove_featured_image` troppo aggressivo (rimuoveva TUTTE le featured image)
+- **CAUSA**: CSS non includeva `.bt-post-tags` del tema
+
+### 💡 Soluzione Implementata
+- **FIX**: Filtro `remove_featured_image` ora verifica `is_main_query()` - rimuove solo nel post principale
+- **FIX**: CSS selettori più specifici per targettare solo featured image del post principale
+- **NEW**: Aggiunto `.bt-post-tags` al CSS per nascondere tag del tema Influencer
+- **IMPROVED**: Selettori CSS più mirati (`article.ipv_video`, `.hentry`, `.entry-header`)
+
+### 📝 File Modificati
+- `includes/class-video-frontend.php`:
+  - `remove_featured_image()`: aggiunta verifica `is_main_query()`
+  - CSS: selettori più specifici per featured image
+  - CSS: aggiunto `.bt-post-tags` nella lista nascosta
+
+### ✅ Risultato
+- ✅ Featured image visibili nei related posts
+- ✅ Featured image nascosta solo nel post principale ipv_video
+- ✅ `.bt-post-tags` nascosto nei post ipv_video
+- ✅ Related posts con thumbs corretti (non più grigi)
+
+---
+
 ## v7.9.7 - 2025-11-28
 ### 📺 Video Embed Centrato - Larghezza Area Contenuto
 

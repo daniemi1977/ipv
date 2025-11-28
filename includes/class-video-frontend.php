@@ -116,10 +116,11 @@ class IPV_Prod_Video_Frontend {
     }
 
     /**
-     * Rimuove featured image per ipv_video
+     * Rimuove featured image per ipv_video SOLO nel post principale
      */
     public static function remove_featured_image( $html, $post_id ) {
-        if ( get_post_type( $post_id ) === 'ipv_video' ) {
+        // Rimuovi solo se siamo nel main query del post singolo
+        if ( get_post_type( $post_id ) === 'ipv_video' && is_singular( 'ipv_video' ) && is_main_query() ) {
             return '';
         }
         return $html;
@@ -134,16 +135,20 @@ class IPV_Prod_Video_Frontend {
         }
         ?>
         <style>
-        /* Nasconde featured image e immagini in evidenza */
-        body.single-ipv_video .post-thumbnail,
-        body.single-ipv_video .entry-thumbnail,
-        body.single-ipv_video .featured-image,
-        body.single-ipv_video .wp-post-image,
-        body.single-ipv_video .attachment-post-thumbnail {
+        /* Nasconde featured image e immagini in evidenza DEL POST PRINCIPALE */
+        body.single-ipv_video article.ipv_video .post-thumbnail,
+        body.single-ipv_video article.ipv_video .entry-thumbnail,
+        body.single-ipv_video article.ipv_video .featured-image,
+        body.single-ipv_video article.ipv_video .wp-post-image,
+        body.single-ipv_video article.ipv_video .attachment-post-thumbnail,
+        body.single-ipv_video .hentry .post-thumbnail,
+        body.single-ipv_video .hentry .entry-thumbnail,
+        body.single-ipv_video .entry-header .post-thumbnail,
+        body.single-ipv_video .entry-header .featured-image {
             display: none !important;
         }
 
-        /* Nasconde tag e categorie cliccabili */
+        /* Nasconde tag e categorie cliccabili (tema Influencer + standard) */
         body.single-ipv_video .entry-meta,
         body.single-ipv_video .post-meta,
         body.single-ipv_video .entry-footer,
@@ -154,7 +159,8 @@ class IPV_Prod_Video_Frontend {
         body.single-ipv_video .tag-links,
         body.single-ipv_video .entry-categories,
         body.single-ipv_video .entry-tags,
-        body.single-ipv_video .taxonomy-links {
+        body.single-ipv_video .taxonomy-links,
+        body.single-ipv_video .bt-post-tags {
             display: none !important;
         }
 
@@ -167,14 +173,15 @@ class IPV_Prod_Video_Frontend {
 
         /* Mobile: stesse regole */
         @media (max-width: 768px) {
-            body.single-ipv_video .post-thumbnail,
-            body.single-ipv_video .entry-thumbnail,
-            body.single-ipv_video .featured-image,
+            body.single-ipv_video article.ipv_video .post-thumbnail,
+            body.single-ipv_video article.ipv_video .entry-thumbnail,
+            body.single-ipv_video article.ipv_video .featured-image,
             body.single-ipv_video .entry-meta,
             body.single-ipv_video .post-meta,
             body.single-ipv_video .entry-footer,
             body.single-ipv_video .post-categories,
-            body.single-ipv_video .post-tags {
+            body.single-ipv_video .post-tags,
+            body.single-ipv_video .bt-post-tags {
                 display: none !important;
             }
         }
