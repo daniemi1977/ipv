@@ -16,6 +16,12 @@ class IPV_Prod_Video_Frontend {
     public static function init() {
         // Inserisci embed YouTube all'inizio del contenuto
         add_filter( 'the_content', [ __CLASS__, 'prepend_youtube_embed' ], 5 );
+
+        // Rimuovi featured image per ipv_video
+        add_filter( 'post_thumbnail_html', [ __CLASS__, 'remove_featured_image' ], 10, 2 );
+
+        // Rimuovi tag e categorie cliccabili
+        add_action( 'wp_head', [ __CLASS__, 'hide_tags_and_meta' ] );
     }
 
     /**
@@ -114,6 +120,73 @@ class IPV_Prod_Video_Frontend {
         ';
 
         return $embed_html . $content;
+    }
+
+    /**
+     * Rimuove featured image per ipv_video
+     */
+    public static function remove_featured_image( $html, $post_id ) {
+        if ( get_post_type( $post_id ) === 'ipv_video' ) {
+            return '';
+        }
+        return $html;
+    }
+
+    /**
+     * Nasconde tag, categorie e metadati per ipv_video
+     */
+    public static function hide_tags_and_meta() {
+        if ( ! is_singular( 'ipv_video' ) ) {
+            return;
+        }
+        ?>
+        <style>
+        /* Nasconde featured image e immagini in evidenza */
+        body.single-ipv_video .post-thumbnail,
+        body.single-ipv_video .entry-thumbnail,
+        body.single-ipv_video .featured-image,
+        body.single-ipv_video .wp-post-image,
+        body.single-ipv_video .attachment-post-thumbnail {
+            display: none !important;
+        }
+
+        /* Nasconde tag e categorie cliccabili */
+        body.single-ipv_video .entry-meta,
+        body.single-ipv_video .post-meta,
+        body.single-ipv_video .entry-footer,
+        body.single-ipv_video .post-categories,
+        body.single-ipv_video .post-tags,
+        body.single-ipv_video .cat-links,
+        body.single-ipv_video .tags-links,
+        body.single-ipv_video .tag-links,
+        body.single-ipv_video .entry-categories,
+        body.single-ipv_video .entry-tags,
+        body.single-ipv_video .taxonomy-links {
+            display: none !important;
+        }
+
+        /* Nasconde anche i link alle tassonomie custom */
+        body.single-ipv_video .ipv_categoria-links,
+        body.single-ipv_video .ipv_relatore-links,
+        body.single-ipv_video .term-links {
+            display: none !important;
+        }
+
+        /* Mobile: stesse regole */
+        @media (max-width: 768px) {
+            body.single-ipv_video .post-thumbnail,
+            body.single-ipv_video .entry-thumbnail,
+            body.single-ipv_video .featured-image,
+            body.single-ipv_video .entry-meta,
+            body.single-ipv_video .post-meta,
+            body.single-ipv_video .entry-footer,
+            body.single-ipv_video .post-categories,
+            body.single-ipv_video .post-tags {
+                display: none !important;
+            }
+        }
+        </style>
+        <?php
     }
 }
 

@@ -1,6 +1,36 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.5 - 2025-11-28
+### 🎨 Frontend CPT: Rimozione Featured Image e Tag Cliccabili
+
+### 🎯 Modifiche Richieste
+- **RICHIESTA**: Rimuovere featured image dal single post ipv_video
+- **RICHIESTA**: Rimuovere tag e categorie cliccabili (desktop e mobile)
+- **RICHIESTA**: Mostrare solo video embed YouTube + contenuto
+
+### 💡 Soluzione Implementata
+- **NEW**: Filtro `post_thumbnail_html` per rimuovere featured image su ipv_video
+- **NEW**: CSS in `wp_head` per nascondere:
+  - Featured images (post-thumbnail, entry-thumbnail, ecc.)
+  - Tag e categorie (entry-meta, post-categories, post-tags)
+  - Tassonomie custom (ipv_categoria, ipv_relatore)
+- **NEW**: Media query mobile per stesse regole
+
+### 📝 File Modificati
+- `includes/class-video-frontend.php`:
+  - `remove_featured_image()` - Rimuove immagine in evidenza
+  - `hide_tags_and_meta()` - CSS per nascondere metadati
+  - Hook `post_thumbnail_html` e `wp_head`
+
+### ✅ Risultato
+- ✅ Nessuna featured image visibile su single ipv_video
+- ✅ Nessun tag o categoria cliccabile (desktop)
+- ✅ Nessun tag o categoria cliccabile (mobile)
+- ✅ Solo video embed YouTube + contenuto AI
+
+---
+
 ## v7.9.4 - 2025-11-28
 ### 🚨 CRITICAL FIX: Filtri AJAX e Paginazione Video Wall
 
