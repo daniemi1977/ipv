@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione video per "Il Punto di Vista": importazione YouTube, trascrizioni SupaData, AI con Golden Prompt, Video Wall con filtri AJAX.
- * Version: 7.6.0
+ * Version: 7.7.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 6.0
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '7.6.0' );
+define( 'IPV_PROD_VERSION', '7.7.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -149,7 +149,8 @@ class IPV_Production_System_Pro {
         // Cron
         add_filter( 'cron_schedules', [ $this, 'add_cron_schedules' ] );
         add_action( 'ipv_prod_process_queue', [ 'IPV_Prod_Queue', 'process_queue' ] );
-        
+        add_action( 'ipv_prod_update_youtube_data', [ 'IPV_Prod_Queue', 'update_all_youtube_data' ] );
+
         // Auto-schedule CRON se non esiste (fix per aggiornamenti plugin)
         add_action( 'admin_init', [ $this, 'ensure_cron_scheduled' ] );
 
@@ -570,9 +571,16 @@ class IPV_Production_System_Pro {
      * Assicura che il CRON sia schedulato (fix per aggiornamenti)
      */
     public function ensure_cron_scheduled() {
+        // CRON processamento coda (ogni 5 minuti)
         if ( ! wp_next_scheduled( 'ipv_prod_process_queue' ) ) {
             wp_schedule_event( time(), 'ipv_every_5_minutes', 'ipv_prod_process_queue' );
-            IPV_Prod_Logger::log( 'CRON auto-schedulato su admin_init' );
+            IPV_Prod_Logger::log( 'CRON auto-schedulato su admin_init: process_queue' );
+        }
+
+        // CRON aggiornamento dati YouTube (ogni ora)
+        if ( ! wp_next_scheduled( 'ipv_prod_update_youtube_data' ) ) {
+            wp_schedule_event( time(), 'hourly', 'ipv_prod_update_youtube_data' );
+            IPV_Prod_Logger::log( 'CRON auto-schedulato su admin_init: update_youtube_data' );
         }
     }
 
@@ -613,9 +621,14 @@ class IPV_Production_System_Pro {
      * Activation
      */
     public function activate() {
-        // Schedule cron
+        // Schedule CRON: processamento coda (ogni 5 minuti)
         if ( ! wp_next_scheduled( 'ipv_prod_process_queue' ) ) {
             wp_schedule_event( time(), 'ipv_every_5_minutes', 'ipv_prod_process_queue' );
+        }
+
+        // Schedule CRON: aggiornamento YouTube (ogni ora)
+        if ( ! wp_next_scheduled( 'ipv_prod_update_youtube_data' ) ) {
+            wp_schedule_event( time(), 'hourly', 'ipv_prod_update_youtube_data' );
         }
 
         // Flush rewrite rules
@@ -626,9 +639,16 @@ class IPV_Production_System_Pro {
      * Deactivation
      */
     public function deactivate() {
+        // Rimuovi CRON processamento coda
         $timestamp = wp_next_scheduled( 'ipv_prod_process_queue' );
         if ( $timestamp ) {
             wp_unschedule_event( $timestamp, 'ipv_prod_process_queue' );
+        }
+
+        // Rimuovi CRON aggiornamento YouTube
+        $timestamp = wp_next_scheduled( 'ipv_prod_update_youtube_data' );
+        if ( $timestamp ) {
+            wp_unschedule_event( $timestamp, 'ipv_prod_update_youtube_data' );
         }
     }
 }

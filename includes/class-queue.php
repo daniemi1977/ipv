@@ -216,11 +216,35 @@ class IPV_Prod_Queue {
 
                 // Scarica e imposta la thumbnail come featured image
                 self::set_featured_image_from_youtube( $post_id, $video_data['thumbnail_url'] );
-                
+
                 // NOTA: I tag vengono popolati SOLO dagli hashtag estratti dalla descrizione AI
                 // (vedi extract_and_save_hashtags in class-ai-generator.php)
+
+                // ⚠️ IMPORTANTE: Controlla se il video è in premiere/programmazione (durata = 0)
+                $duration_seconds = isset( $video_data['duration_seconds'] ) ? (int) $video_data['duration_seconds'] : 0;
+
+                if ( $duration_seconds === 0 ) {
+                    // Video in premiere/programmazione - NON avviare il processo editoriale
+                    update_post_meta( $post_id, '_ipv_premiere_pending', 'yes' );
+                    update_post_meta( $post_id, '_ipv_queue_status', 'waiting_premiere' );
+
+                    IPV_Prod_Logger::log( 'Video in premiere - processo editoriale sospeso', [
+                        'post_id'  => $post_id,
+                        'video_id' => $video_id,
+                        'title'    => $video_data['title']
+                    ] );
+
+                    // Marca il job come "skipped" temporaneamente
+                    self::mark_as_skipped(
+                        $job->id,
+                        'Video in premiere/programmazione (durata 00:00:00). Verrà processato quando disponibile.'
+                    );
+                    return;
+                }
             }
         }
+
+        // === PROCESSO EDITORIALE (solo se durata > 0) ===
 
         // Genera trascrizione
         $mode       = get_option( 'ipv_transcript_mode', 'auto' );
@@ -614,6 +638,121 @@ class IPV_Prod_Queue {
             </div>
         </div>
         <?php
+    }
+
+    /**
+     * Aggiorna i dati YouTube di TUTTI i video (CRON hourly)
+     * Aggiorna: durata, views, data pubblicazione, thumbnail
+     */
+    public static function update_all_youtube_data() {
+        $args = [
+            'post_type'      => 'ipv_video',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'meta_query'     => [
+                [
+                    'key'     => '_ipv_video_id',
+                    'compare' => 'EXISTS',
+                ],
+            ],
+        ];
+
+        $videos = get_posts( $args );
+
+        if ( empty( $videos ) ) {
+            IPV_Prod_Logger::log( 'YouTube Update: Nessun video da aggiornare' );
+            return;
+        }
+
+        $updated_count = 0;
+        $error_count   = 0;
+
+        foreach ( $videos as $video ) {
+            $video_id = get_post_meta( $video->ID, '_ipv_video_id', true );
+
+            if ( empty( $video_id ) ) {
+                continue;
+            }
+
+            // Ottieni dati aggiornati da YouTube API
+            $video_data = IPV_Prod_YouTube_API::get_video_data( $video_id );
+
+            if ( is_wp_error( $video_data ) ) {
+                $error_count++;
+                continue;
+            }
+
+            // Aggiorna metadata
+            IPV_Prod_YouTube_API::save_video_meta( $video->ID, $video_data );
+
+            $updated_count++;
+
+            // ⚠️ IMPORTANTE: Controlla se era in premiere e ora ha durata > 0
+            $was_premiere = get_post_meta( $video->ID, '_ipv_premiere_pending', true );
+            $duration_seconds = isset( $video_data['duration_seconds'] ) ? (int) $video_data['duration_seconds'] : 0;
+
+            if ( $was_premiere === 'yes' && $duration_seconds > 0 ) {
+                // Video ora disponibile! Riavvia il processo editoriale
+                delete_post_meta( $video->ID, '_ipv_premiere_pending' );
+                delete_post_meta( $video->ID, '_ipv_queue_status' );
+
+                // Aggiungi alla coda per trascrizione + AI
+                self::enqueue( $video_id, get_post_meta( $video->ID, '_ipv_youtube_url', true ), 'premiere_ready' );
+
+                IPV_Prod_Logger::log( 'Video premiere ora disponibile - aggiunto in coda', [
+                    'post_id'  => $video->ID,
+                    'video_id' => $video_id,
+                    'duration' => $duration_seconds,
+                ] );
+            }
+        }
+
+        IPV_Prod_Logger::log( 'YouTube Update completato', [
+            'total'   => count( $videos ),
+            'updated' => $updated_count,
+            'errors'  => $error_count,
+        ] );
+    }
+
+    /**
+     * Controlla e ri-processa video in premiere che ora sono disponibili
+     * Chiamato dal CRON hourly insieme a update_all_youtube_data()
+     */
+    public static function check_premiere_videos() {
+        $args = [
+            'post_type'      => 'ipv_video',
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'meta_query'     => [
+                [
+                    'key'     => '_ipv_premiere_pending',
+                    'value'   => 'yes',
+                    'compare' => '=',
+                ],
+            ],
+        ];
+
+        $premiere_videos = get_posts( $args );
+
+        if ( empty( $premiere_videos ) ) {
+            return;
+        }
+
+        IPV_Prod_Logger::log( 'Check premiere videos', [
+            'count' => count( $premiere_videos ),
+        ] );
+
+        foreach ( $premiere_videos as $video ) {
+            $video_id = get_post_meta( $video->ID, '_ipv_video_id', true );
+            $duration = get_post_meta( $video->ID, '_ipv_yt_duration_seconds', true );
+
+            // Se la durata è stata aggiornata da update_all_youtube_data(),
+            // il video è già stato rimesso in coda
+            if ( (int) $duration > 0 ) {
+                delete_post_meta( $video->ID, '_ipv_premiere_pending' );
+                delete_post_meta( $video->ID, '_ipv_queue_status' );
+            }
+        }
     }
 }
 

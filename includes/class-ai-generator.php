@@ -1,12 +1,13 @@
 <?php
 /**
  * IPV Production System Pro - AI Generator
- * 
+ *
  * Generazione descrizioni video con OpenAI GPT-4o
- * Automazione completa: hashtag, relatori, categorie
- * 
+ * Automazione completa: hashtag, relatori, categorie, anno
+ * Golden Prompt v4.0: timestamp completi, SEO lungo, categorie da logica
+ *
  * @package IPV_Production_System_Pro
- * @version 7.3.0
+ * @version 7.7.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -491,31 +492,44 @@ class IPV_Prod_AI_Generator {
 
         $duration_minutes = floor( $duration_seconds / 60 );
         $hours = floor( $duration_minutes / 60 );
-        
-        $instructions = "⚠️ DURATA TOTALE VIDEO: {$duration_formatted} ({$duration_minutes} minuti)\n";
-        $instructions .= "I timestamp DEVONO coprire TUTTA la durata del video fino alla fine!\n";
-        $instructions .= "- Timestamp iniziale: 00:00\n";
-        $instructions .= "- Timestamp finale: DEVE essere vicino a {$duration_formatted}\n";
-        $instructions .= "- Posiziona i timestamp in base ai CAMBI DI ARGOMENTO nella trascrizione\n";
+
+        // Calcola timestamp finale suggerito (2-3 minuti prima della fine)
+        $end_buffer = min( 180, floor( $duration_seconds * 0.05 ) ); // 5% o max 3 min
+        $suggested_end_seconds = $duration_seconds - $end_buffer;
+        $suggested_end = self::format_duration( $suggested_end_seconds );
+
+        $instructions = "⚠️⚠️⚠️ DURATA TOTALE VIDEO: {$duration_formatted} ({$duration_minutes} minuti) ⚠️⚠️⚠️\n";
+        $instructions .= "🚨 ATTENZIONE CRITICA: I timestamp DEVONO ASSOLUTAMENTE coprire TUTTA la durata fino alla FINE del video!\n";
+        $instructions .= "🚨 NON FERMARTI A METÀ! Continua fino alla fine della trascrizione!\n\n";
+        $instructions .= "ISTRUZIONI TIMESTAMP:\n";
+        $instructions .= "- Timestamp iniziale OBBLIGATORIO: 00:00 — Introduzione\n";
+        $instructions .= "- Timestamp finale DEVE essere tra {$suggested_end} e {$duration_formatted}\n";
+        $instructions .= "- Genera timestamp ad OGNI CAMBIO DI ARGOMENTO nella trascrizione\n";
+        $instructions .= "- Distribuisci i timestamp UNIFORMEMENTE lungo TUTTA la trascrizione\n";
+        $instructions .= "- Leggi la trascrizione FINO ALLA FINE prima di generare i timestamp\n";
+        $instructions .= "- Conta MINIMO 15-20 timestamp per video > 60 minuti\n";
         $instructions .= "- NON usare intervalli fissi - segui il flusso naturale della discussione\n";
-        
+
         if ( $hours >= 1 ) {
             $instructions .= "- FORMATO OBBLIGATORIO: H:MM:SS (es: 1:23:45) perché il video supera 1 ora\n";
         } else {
             $instructions .= "- FORMATO: MM:SS (es: 25:30)\n";
         }
-        
+
+        $instructions .= "\n✅ VERIFICA FINALE: L'ultimo timestamp è vicino a {$duration_formatted}? Se no, CONTINUA!\n";
+
         return $instructions;
     }
 
     /**
-     * Golden Prompt v3.2 - Con durata video e timestamp precisi
+     * Golden Prompt v4.0 - Sistema Editoriale Completo
+     * Ottimizzato per: timestamp completi, SEO lungo, categorie da logica titolo+descrizione
      */
     protected static function get_default_prompt( $duration_formatted = '', $duration_seconds = 0 ) {
         $timestamp_instructions = self::get_timestamp_instructions( $duration_formatted, $duration_seconds );
-        
+
         return <<<PROMPT
-# GOLDEN PROMPT v3.2 - "Il Punto di Vista"
+# GOLDEN PROMPT v4.0 - "Il Punto di Vista" - Sistema Editoriale
 
 ## IDENTITÀ
 Sei un copywriter esperto per il canale YouTube italiano **"Il Punto di Vista"** (@ilpuntodivista_official).
@@ -537,7 +551,11 @@ Genera la descrizione ESATTAMENTE in questo formato:
 # [TITOLO VIDEO ESATTO]
 
 ✨ **Introduzione (SEO)**
-[80-120 parole. Riassunto coinvolgente ottimizzato SEO. Menziona "Il Punto di Vista", il tema principale, e gli ospiti se presenti. Termina con: "Le parole chiave come 'X', 'Y', 'Z' guidano la ricerca verso una comprensione più profonda."]
+[150-200 parole. Descrizione coinvolgente ottimizzata SEO. Struttura in 3 paragrafi:
+1° paragrafo (50-60 parole): Presenta "Il Punto di Vista" e il tema principale del video. Menziona gli ospiti se presenti.
+2° paragrafo (50-70 parole): Approfondisci i contenuti chiave, i misteri trattati, le teorie discusse. Usa parole chiave specifiche.
+3° paragrafo (40-50 parole): Invito all'azione e keywords. Termina con: "Le parole chiave come 'X', 'Y', 'Z' guidano la ricerca verso una comprensione più profonda."
+IMPORTANTE: Usa termini specifici e keywords rilevanti per la SEO YouTube]
 
 ⏱️ **Minutaggio**
 {$timestamp_instructions}
@@ -545,10 +563,10 @@ Genera la descrizione ESATTAMENTE in questo formato:
 [...genera timestamp ad ogni CAMBIO DI ARGOMENTO fino alla FINE del video...]
 
 🗂️ **Argomenti trattati**
-- [Argomento principale 1]: [breve spiegazione]
-- [Argomento principale 2]: [breve spiegazione]
-- [Argomento principale 3]: [breve spiegazione]
-[6-8 argomenti. IMPORTANTE: questi diventeranno le CATEGORIE del video]
+- [Argomento 1]: [spiegazione 1-2 frasi]
+- [Argomento 2]: [spiegazione 1-2 frasi]
+- [Argomento 3]: [spiegazione 1-2 frasi]
+[8-12 argomenti. IMPORTANTE: questi diventeranno le CATEGORIE del video. Usa nomi CHIARI e SPECIFICI come "Energia libera", "Disclosure UFO", "Misteri antichi", "Geopolitica occulta", etc]
 
 👤 **Ospiti**
 [Nome e Cognome dell'ospite/i che PARLANO nel video]
@@ -582,38 +600,59 @@ Sostieni il progetto 👉 https://biovital-italia.com/?bio=17
 
 ## REGOLE CRITICHE
 
-### TIMESTAMP (⚠️ MOLTO IMPORTANTE)
-- I timestamp DEVONO coprire TUTTA la durata del video
-- L'ULTIMO timestamp deve essere vicino alla fine del video
-- Se il video dura 1:47:45, l'ultimo timestamp deve essere intorno a 1:40:00-1:45:00
-- NON fermarti a metà video!
+### 🚨 TIMESTAMP (PRIORITÀ ASSOLUTA)
+- 🔴 I timestamp DEVONO coprire TUTTA la durata del video FINO ALLA FINE
+- 🔴 L'ULTIMO timestamp deve essere vicino alla fine (entro gli ultimi 2-3 minuti)
+- 🔴 Se il video dura 1:47:45, l'ultimo timestamp deve essere tra 1:43:00 e 1:47:00
+- 🔴 NON FERMARTI A METÀ VIDEO! Questa è la priorità #1!
 - Posiziona i timestamp in base ai CAMBI DI ARGOMENTO nella trascrizione
+- Leggi TUTTA la trascrizione prima di generare i timestamp
+- Distribuisci i timestamp UNIFORMEMENTE lungo tutta la durata
+- Video > 60 minuti: MINIMO 15-20 timestamp
+- Video 30-60 minuti: MINIMO 10-15 timestamp
 - NON usare intervalli fissi - segui il flusso naturale della discussione
-- Usa il formato corretto: MM:SS per video < 1 ora, H:MM:SS per video > 1 ora
+- Formato: MM:SS per video < 1 ora, H:MM:SS per video ≥ 1 ora
 
-### LINK UTILI
-- USA SEMPRE i link ESATTI forniti sopra
-- NON lasciare parentesi vuote ()
-- NON inventare link
+### 📊 ARGOMENTI TRATTATI (per CATEGORIE)
+- Scrivi 8-12 argomenti CHIARI e SPECIFICI
+- Saranno usati come CATEGORIE del video nella piattaforma WordPress
+- Usa nomi concisi ma descrittivi (max 3-4 parole)
+- Esempi BUONI:
+  * "Energia libera"
+  * "Disclosure UFO"
+  * "Tartaria e architettura antica"
+  * "Geopolitica occulta"
+  * "Simbolismo esoterico"
+  * "Misteri storici"
+  * "Tecnologia nascosta"
+- Esempi CATTIVI:
+  * "Discussione generale" (troppo vago)
+  * "Parlano di cose interessanti" (non specifico)
+  * "Tema principale del video" (generico)
+- Le categorie devono essere estraibili dal TITOLO + CONTENUTO del video
+- Crea un mix tra argomenti generali (es: "UFO") e specifici (es: "Incidente di Roswell")
 
-### ARGOMENTI TRATTATI
-- Scrivi argomenti CHIARI e SPECIFICI
-- Saranno usati come CATEGORIE del video
-- Esempio buono: "Energia eterica: Discussione su edifici che avrebbero utilizzato energia libera"
-- Esempio cattivo: "Discussione generale sul tema"
-
-### OSPITI E PERSONE
+### 👤 OSPITI E RELATORI
 - OSPITI = chi PARLA nel video (oltre al conduttore)
 - PERSONE MENZIONATE = chi viene CITATO ma non parla
 - Includi SEMPRE Nome e Cognome completi
 - Se estrai un nome dal TITOLO, mettilo negli Ospiti
+- Se NON ci sono ospiti, scrivi: "Nessun ospite presente"
+- Il sistema assegnerà "Il Punto di Vista" come relatore di default se non trovi ospiti
 
-### HASHTAG
+### 🔗 LINK UTILI
+- USA SEMPRE i link ESATTI forniti sopra
+- NON lasciare parentesi vuote ()
+- NON inventare link
+- Verifica che TUTTI i link siano presenti nella sezione Link Utili
+
+### 🏷️ HASHTAG
 - 20-25 hashtag
-- TUTTI su una riga
-- Includi hashtag per ogni persona menzionata (#NomeCognome)
-- Includi hashtag per ogni argomento principale
-- Sempre: #IlPuntoDiVista #PuntiDiVista
+- TUTTI su UNA SOLA RIGA
+- Includi hashtag per ogni persona menzionata (#NomeCognome senza spazi)
+- Includi hashtag per ogni argomento principale (#EnergiLibera #UFO etc)
+- Sempre OBBLIGATORI: #IlPuntoDiVista #PuntiDiVista
+- Esempi: #Disclosure #UFO #Tartaria #EnergiaLibera #GeopoliticaOcculta
 
 ## OUTPUT
 Genera SOLO la descrizione formattata.
