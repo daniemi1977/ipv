@@ -1,6 +1,30 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.4 - 2025-11-28
+### 🚨 CRITICAL FIX: Filtri AJAX e Paginazione Video Wall
+
+### 🎯 Problema Risolto
+- **BUG CRITICO**: Filtri non caricavano nessun video
+- **BUG CRITICO**: Paginazione "Carica altri video" mostrava "Nessun video trovato"
+- **CAUSA**: Post type errato `'video_ipv'` nella funzione AJAX (linea 346)
+
+### 💡 Soluzione
+- **FIX**: Corretto `'video_ipv'` → `'ipv_video'` in `ajax_load_videos()`
+- **NOTA**: Stesso bug già risolto in v7.9.0 per lo shortcode, ma dimenticato nella funzione AJAX
+
+### 📝 File Modificati
+- `includes/class-video-wall.php` (linea 346) - Post type AJAX corretto
+
+### ✅ Risultato
+- ✅ Filtri per categoria funzionanti
+- ✅ Filtri per relatore funzionanti
+- ✅ Ricerca testuale funzionante
+- ✅ Paginazione "Carica altri X video" funzionante
+- ✅ Tutti i video vengono correttamente recuperati
+
+---
+
 ## v7.9.3 - 2025-11-28
 ### 🔧 Fix Layout 2+3 Video Wall
 

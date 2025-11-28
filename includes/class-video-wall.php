@@ -343,7 +343,7 @@ class IPV_Prod_Video_Wall {
         $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
 
         $args = [
-            'post_type'      => 'video_ipv',
+            'post_type'      => 'ipv_video',
             'posts_per_page' => $per_page,
             'paged'          => $paged,
             'post_status'    => 'publish',
