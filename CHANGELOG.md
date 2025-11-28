@@ -1,6 +1,67 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.0 - 2025-11-28
+### 🎨 Video Wall Redesign - Influencer Theme Style
+
+### 🐛 BUG FIX CRITICO
+- **FIXED**: Bug `post_type` nel Video Wall
+  - Era: `'post_type' => 'video_ipv'` (SBAGLIATO)
+  - Ora: `'post_type' => 'ipv_video'` (CORRETTO)
+  - Fix applicato in 2 punti: `render_videos()` e `render_pagination()`
+  - Questo bug impediva al wall di mostrare qualsiasi video
+
+### 🎨 Design Overhaul - Influencer Theme Integration
+- **NEW**: Applicato stile "Style 1" del tema Influencer
+- **NEW**: Background card #F5F5F5 con border-radius 15px
+- **NEW**: Badge data floating sopra l'immagine (position absolute)
+  - Background accent color #FB0F5A
+  - Shadow effect con hover
+  - Centrato con transform translateX(-50%)
+- **NEW**: Text alignment centrato
+- **NEW**: Meta bar con background #EAEAEA in basso
+- **NEW**: Hover effects eleganti con lift animation
+
+### 🎨 Struttura HTML Aggiornata
+- **UPGRADED**: `render_video_card()` completamente riscritta
+- **NEW**: Struttura `.ipv-post--inner` → `.ipv-post--featured` → `.ipv-post--infor`
+- **NEW**: `.ipv-cover-image` con background-image invece di `<img>`
+- **NEW**: `.ipv-post--publish` badge floating con SVG calendar icon
+- **NEW**: `.ipv-post--title` con line-clamp per 2 righe max
+- **NEW**: `.ipv-post--meta` con categorie, speaker, views
+
+### 🎨 CSS Variables
+```css
+--ipv-accent-color: #FB0F5A
+--ipv-text-color: #555
+--ipv-card-bg: #F5F5F5
+--ipv-meta-bg: #EAEAEA
+```
+
+### 📱 Responsive Design Migliorato
+- **Desktop**: Layout 2+3 mantenuto (2 video 50%, 3 video 33%)
+- **Tablet** (< 1024px): 2 colonne
+- **Mobile** (< 768px): 1 colonna
+- **Small Mobile** (< 519px): Badge data più piccolo, font ridotti
+
+### 🆕 Nuove Informazioni Card
+- **NEW**: Categoria principale mostrata
+- **NEW**: Speaker/Relatore principale mostrato
+- **NEW**: Numero visualizzazioni mostrato
+- **NEW**: Data formattata (es: "28 Nov 2025")
+- Tutti con separatore "-" automatico
+
+### 🎯 Shortcode Usage
+```
+[ipv_video_wall per_page="5" layout="grid" columns="3" show_filters="yes"]
+```
+
+### 📦 File Modificati
+- **MODIFIED**: `includes/class-video-wall.php` - Fix bug + HTML structure
+- **MODIFIED**: `assets/css/video-wall.css` - Complete redesign Influencer style
+
+---
+
 ## v7.8.0 - 2025-11-28
 ### 🎯 Sistema Timestamp Intelligente + Capitoli Nativi YouTube
 

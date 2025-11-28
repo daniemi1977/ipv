@@ -125,7 +125,7 @@ class IPV_Prod_Video_Wall {
 
     private static function render_videos( $atts, $paged = 1 ) {
         $args = [
-            'post_type'      => 'video_ipv',
+            'post_type'      => 'ipv_video',
             'posts_per_page' => $atts['per_page'],
             'paged'          => $paged,
             'post_status'    => 'publish',
@@ -187,15 +187,23 @@ class IPV_Prod_Video_Wall {
     }
 
     private static function render_video_card( $post_id ) {
-        $yt_id = get_post_meta( $post_id, '_ipv_yt_id', true );
+        $video_id = get_post_meta( $post_id, '_ipv_video_id', true );
         $thumbnail = get_post_meta( $post_id, '_ipv_yt_thumbnail', true );
-        $duration = get_post_meta( $post_id, '_ipv_yt_duration', true );
+        $duration = get_post_meta( $post_id, '_ipv_yt_duration_formatted', true );
         $views = get_post_meta( $post_id, '_ipv_yt_views', true );
         $publish_date = get_post_meta( $post_id, '_ipv_yt_published', true );
 
+        // Get categories
+        $categories = get_the_terms( $post_id, 'ipv_categoria' );
+        $cat_name = ( $categories && ! is_wp_error( $categories ) ) ? $categories[0]->name : '';
+
+        // Get speakers
+        $speakers = get_the_terms( $post_id, 'ipv_relatore' );
+        $speaker_name = ( $speakers && ! is_wp_error( $speakers ) ) ? $speakers[0]->name : '';
+
         // Try multiple sources for thumbnail
-        if ( empty( $thumbnail ) && ! empty( $yt_id ) ) {
-            $thumbnail = "https://img.youtube.com/vi/{$yt_id}/maxresdefault.jpg";
+        if ( empty( $thumbnail ) && ! empty( $video_id ) ) {
+            $thumbnail = "https://img.youtube.com/vi/{$video_id}/maxresdefault.jpg";
         }
 
         // Fallback to WordPress featured image
@@ -204,63 +212,69 @@ class IPV_Prod_Video_Wall {
         }
 
         // Last fallback to standard quality YouTube thumbnail
-        if ( empty( $thumbnail ) && ! empty( $yt_id ) ) {
-            $thumbnail = "https://img.youtube.com/vi/{$yt_id}/hqdefault.jpg";
+        if ( empty( $thumbnail ) && ! empty( $video_id ) ) {
+            $thumbnail = "https://img.youtube.com/vi/{$video_id}/hqdefault.jpg";
         }
 
+        // Format publish date
+        $date_formatted = $publish_date ? date_i18n( 'd M Y', strtotime( $publish_date ) ) : get_the_date( 'd M Y', $post_id );
+
         ?>
-        <div class="ipv-video-card" data-video-id="<?php echo esc_attr( $post_id ); ?>">
-            <a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>" class="ipv-video-link">
-                <div class="ipv-video-thumbnail">
-                    <?php if ( $thumbnail ) : ?>
-                        <img src="<?php echo esc_url( $thumbnail ); ?>" alt="<?php echo esc_attr( get_the_title( $post_id ) ); ?>" loading="lazy">
-                        <div class="ipv-play-overlay">
-                            <div class="ipv-play-button">
-                                <svg viewBox="0 0 68 48" width="68" height="48">
-                                    <path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#f00"></path>
-                                    <path d="M 45,24 27,14 27,34" fill="#fff"></path>
-                                </svg>
-                            </div>
-                        </div>
-                    <?php else : ?>
-                        <!-- Placeholder quando non c'è immagine -->
-                        <div class="ipv-thumbnail-placeholder">
-                            <svg viewBox="0 0 68 48" width="68" height="48">
-                                <path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#ccc"></path>
-                                <path d="M 45,24 27,14 27,34" fill="#fff"></path>
-                            </svg>
-                        </div>
-                    <?php endif; ?>
+        <article class="ipv-video-card" data-video-id="<?php echo esc_attr( $post_id ); ?>">
+            <div class="ipv-post--inner">
+                <!-- Featured Image -->
+                <div class="ipv-post--featured">
+                    <a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>">
+                        <?php if ( $thumbnail ) : ?>
+                            <div class="ipv-cover-image" style="background-image: url('<?php echo esc_url( $thumbnail ); ?>');"></div>
+                        <?php else : ?>
+                            <div class="ipv-cover-image ipv-placeholder"></div>
+                        <?php endif; ?>
+                    </a>
                     <?php if ( $duration ) : ?>
                         <span class="ipv-video-duration"><?php echo esc_html( $duration ); ?></span>
                     <?php endif; ?>
                 </div>
-                <div class="ipv-video-info">
-                    <h3 class="ipv-video-title"><?php echo esc_html( get_the_title( $post_id ) ); ?></h3>
-                    <div class="ipv-video-meta">
-                        <?php if ( $views ) : ?>
-                            <span class="ipv-video-views">
-                                <i class="dashicons dashicons-visibility"></i>
-                                <?php echo number_format_i18n( $views ); ?> visualizzazioni
-                            </span>
+
+                <!-- Info -->
+                <div class="ipv-post--infor">
+                    <!-- Publish Date Badge (floating over image) -->
+                    <div class="ipv-post--publish">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M8 2v3m8-3v3M3 9h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span><?php echo esc_html( $date_formatted ); ?></span>
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="ipv-post--title">
+                        <a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>">
+                            <?php echo esc_html( get_the_title( $post_id ) ); ?>
+                        </a>
+                    </h3>
+
+                    <!-- Meta -->
+                    <div class="ipv-post--meta">
+                        <?php if ( $cat_name ) : ?>
+                            <span class="ipv-post-cat"><?php echo esc_html( $cat_name ); ?></span>
                         <?php endif; ?>
-                        <?php if ( $publish_date ) : ?>
-                            <span class="ipv-video-date">
-                                <i class="dashicons dashicons-calendar"></i>
-                                <?php echo human_time_diff( strtotime( $publish_date ), current_time( 'timestamp' ) ); ?> fa
-                            </span>
+                        <?php if ( $speaker_name ) : ?>
+                            <span class="ipv-post-author"><?php echo esc_html( $speaker_name ); ?></span>
+                        <?php endif; ?>
+                        <?php if ( $views ) : ?>
+                            <span class="ipv-post-views"><?php echo number_format_i18n( $views ); ?> views</span>
                         <?php endif; ?>
                     </div>
                 </div>
-            </a>
-        </div>
+            </div>
+        </article>
         <?php
     }
 
     private static function render_pagination( $atts, $query = null ) {
         if ( ! $query ) {
             $args = [
-                'post_type'      => 'video_ipv',
+                'post_type'      => 'ipv_video',
                 'posts_per_page' => $atts['per_page'],
                 'post_status'    => 'publish',
             ];
