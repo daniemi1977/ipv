@@ -1,6 +1,65 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.10 - 2025-11-28
+### 📱 CRITICAL FIX: Video Embed Invisibile su Mobile
+
+### 🎯 Problema Risolto
+- **BUG CRITICO**: Video embed scompare completamente su mobile (< 768px)
+- **DESKTOP**: Video visibile correttamente
+- **MOBILE**: Video completamente invisibile
+- **CAUSA**: Tema nasconde il container su mobile con display/visibility/opacity
+
+### 💡 Soluzione Implementata
+- **NEW**: Media query mobile con regole CSS aggressive per forzare visibilità
+- **NEW**: `display: block !important` su container, wrapper e iframe
+- **NEW**: `visibility: visible !important` su tutti gli elementi video
+- **NEW**: `opacity: 1 !important` per prevenire trasparenza
+- **NEW**: `max-height: none !important` sui contenitori padre
+- **IMPROVED**: Aspect ratio 16:9 mantenuto anche su mobile
+
+### 📝 CSS Mobile Aggiunto
+```css
+@media (max-width: 768px) {
+    /* Container video - visibilità forzata */
+    .ipv-video-embed-container {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    /* Wrapper - aspect ratio 16:9 */
+    .ipv-embed-wrapper {
+        display: block !important;
+        visibility: visible !important;
+        padding-bottom: 56.25% !important;
+    }
+
+    /* iframe - visibilità forzata */
+    iframe {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+```
+
+### 📝 File Modificati
+- `includes/class-video-frontend.php`:
+  - Media query mobile espansa con 40+ regole CSS
+  - Visibilità forzata su container, wrapper, iframe
+  - Overflow visible sui contenitori padre
+
+### ✅ Risultato
+- ✅ Video visibile su mobile
+- ✅ Video visibile su desktop
+- ✅ Aspect ratio 16:9 perfetto su entrambi
+- ✅ Nessuna scomparsa del video
+
+---
+
 ## v7.9.9 - 2025-11-28
 ### 🔍 Tool Controllo Duplicati + Fix Video Embed Tagliato
 

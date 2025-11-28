@@ -106,7 +106,50 @@ class IPV_Prod_Video_Frontend {
         @media (max-width: 768px) {
             body.single-ipv_video .ipv-video-embed-container,
             body .ipv-video-embed-container {
-                margin-bottom: 30px !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto 30px auto !important;
+                padding: 0 !important;
+                position: relative !important;
+                overflow: visible !important;
+                min-height: 0 !important;
+                height: auto !important;
+                max-height: none !important;
+            }
+
+            body.single-ipv_video .ipv-video-embed-container .ipv-embed-wrapper,
+            body .ipv-video-embed-container .ipv-embed-wrapper {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                width: 100% !important;
+                padding-bottom: 56.25% !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+
+            body.single-ipv_video .ipv-video-embed-container iframe,
+            body .ipv-video-embed-container iframe {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Forza visibilità anche sui contenitori padre */
+            body.single-ipv_video .entry-content,
+            body.single-ipv_video .post-content,
+            body.single-ipv_video article {
+                overflow: visible !important;
+                max-height: none !important;
             }
         }
         </style>
