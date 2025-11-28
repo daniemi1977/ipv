@@ -22,7 +22,7 @@ class IPV_Prod_CPT {
     /**
      * Slug del post type
      */
-    const POST_TYPE = 'video_ipv';
+    const POST_TYPE = 'ipv_video';
 
     /**
      * Inizializza il CPT
@@ -101,8 +101,8 @@ class IPV_Prod_CPT {
      * Registra le tassonomie
      */
     public static function register_taxonomies() {
-        // Categoria Video
-        register_taxonomy( 'video_category', self::POST_TYPE, [
+        // Categoria Video (ipv_categoria) - PRINCIPALE
+        register_taxonomy( 'ipv_categoria', self::POST_TYPE, [
             'labels' => [
                 'name'              => 'Categorie Video',
                 'singular_name'     => 'Categoria Video',
@@ -124,9 +124,42 @@ class IPV_Prod_CPT {
             'show_in_rest'      => true,
         ] );
 
-        // I tag standard di WordPress sono già disponibili per il CPT
-        // Tramite 'post_tag' aggiunto in 'taxonomies' => [ 'video_category', 'post_tag' ]
-        // Questo permette di usare i tuoi tag esistenti: adrian fiorelli, biovital, bitcoin, etc.
+        // Relatore / Ospite (ipv_relatore) - NUOVO
+        register_taxonomy( 'ipv_relatore', self::POST_TYPE, [
+            'labels' => [
+                'name'              => 'Relatori',
+                'singular_name'     => 'Relatore',
+                'search_items'      => 'Cerca Relatori',
+                'all_items'         => 'Tutti i Relatori',
+                'edit_item'         => 'Modifica Relatore',
+                'update_item'       => 'Aggiorna Relatore',
+                'add_new_item'      => 'Aggiungi Relatore',
+                'new_item_name'     => 'Nuovo Relatore',
+                'menu_name'         => 'Relatori',
+            ],
+            'hierarchical'      => false,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'query_var'         => true,
+            'rewrite'           => [ 'slug' => 'relatore' ],
+            'show_in_rest'      => true,
+        ] );
+
+        // Mantieni video_category per retrocompatibilità (nascosto)
+        register_taxonomy( 'video_category', self::POST_TYPE, [
+            'labels' => [
+                'name'              => 'Categorie Legacy',
+                'singular_name'     => 'Categoria Legacy',
+                'menu_name'         => 'Legacy',
+            ],
+            'hierarchical'      => true,
+            'show_ui'           => false,
+            'show_admin_column' => false,
+            'query_var'         => false,
+            'show_in_rest'      => true,
+        ] );
+
+        // I tag standard di WordPress (post_tag) sono già disponibili
     }
 
     /**

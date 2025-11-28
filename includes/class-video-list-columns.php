@@ -22,7 +22,7 @@ class IPV_Prod_Video_List_Columns {
     /**
      * Post type slug
      */
-    const POST_TYPE = 'video_ipv';
+    const POST_TYPE = 'ipv_video';
 
     /**
      * Inizializza la classe
@@ -65,13 +65,9 @@ class IPV_Prod_Video_List_Columns {
         $new_columns['ipv_status']    = 'Stato';
         $new_columns['ipv_source']    = 'Fonte';
 
-        // Categorie e tag standard
-        if ( isset( $columns['taxonomy-video_category'] ) ) {
-            $new_columns['taxonomy-video_category'] = $columns['taxonomy-video_category'];
-        }
-        if ( isset( $columns['taxonomy-post_tag'] ) ) {
-            $new_columns['taxonomy-post_tag'] = $columns['taxonomy-post_tag'];
-        }
+        // Categorie Video e Relatori (nuove tassonomie)
+        $new_columns['taxonomy-ipv_categoria'] = 'Categorie';
+        $new_columns['taxonomy-ipv_relatore']  = 'Relatori';
 
         // Data
         if ( isset( $columns['date'] ) ) {

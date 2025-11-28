@@ -63,7 +63,7 @@ class IPV_Prod_Queue {
         global $wpdb;
         $table = self::table_name();
 
-        $statuses = [ 'pending', 'processing', 'done', 'error' ];
+        $statuses = [ 'pending', 'processing', 'done', 'error', 'skipped' ];
         $out      = [];
 
         foreach ( $statuses as $status ) {
@@ -113,6 +113,19 @@ class IPV_Prod_Queue {
 
             try {
                 self::process_single_job( $job );
+
+                // Se il job è stato marcato come "skipped" non sovrascrivere lo stato
+                $status = $wpdb->get_var(
+                    $wpdb->prepare(
+                        "SELECT status FROM {$table} WHERE id = %d",
+                        $job->id
+                    )
+                );
+
+                if ( 'skipped' === $status ) {
+                    continue;
+                }
+
                 $wpdb->update(
                     $table,
                     [
@@ -141,6 +154,7 @@ class IPV_Prod_Queue {
         }
     }
 
+
     protected static function process_single_job( $job ) {
         $video_id  = $job->video_id;
         $video_url = $job->video_url;
@@ -154,6 +168,24 @@ class IPV_Prod_Queue {
             // Usa la nuova YouTube API per ottenere TUTTI i dati
             $video_data = IPV_Prod_YouTube_API::get_video_data( $video_id );
 
+            // Filtro: escludi TUTTI i video sotto 5 minuti (include shorts)
+            if ( ! is_wp_error( $video_data ) && is_array( $video_data ) ) {
+                $min_seconds = 300; // 5 minuti fisso
+                $duration    = isset( $video_data['duration_seconds'] ) ? (int) $video_data['duration_seconds'] : 0;
+
+                if ( $duration > 0 && $duration < $min_seconds ) {
+                    self::mark_as_skipped(
+                        $job->id,
+                        sprintf(
+                            'Video troppo corto (%d sec / %s). Minimo richiesto: 5 minuti.',
+                            $duration,
+                            gmdate( 'i:s', $duration )
+                        )
+                    );
+                    return;
+                }
+            }
+
             if ( is_wp_error( $video_data ) ) {
                 // Fallback: crea comunque il post con dati minimi
                 $title = 'Video YouTube ' . $video_id;
@@ -163,7 +195,7 @@ class IPV_Prod_Queue {
             }
 
             $post_arr = [
-                'post_type'   => 'video_ipv',
+                'post_type'   => 'ipv_video',
                 'post_title'  => $title,
                 'post_status' => 'publish',
             ];
@@ -184,11 +216,9 @@ class IPV_Prod_Queue {
 
                 // Scarica e imposta la thumbnail come featured image
                 self::set_featured_image_from_youtube( $post_id, $video_data['thumbnail_url'] );
-
-                // Importa i tag YouTube come tag del post (standard WordPress)
-                if ( ! empty( $video_data['tags'] ) ) {
-                    wp_set_object_terms( $post_id, $video_data['tags'], 'post_tag', true );
-                }
+                
+                // NOTA: I tag vengono popolati SOLO dagli hashtag estratti dalla descrizione AI
+                // (vedi extract_and_save_hashtags in class-ai-generator.php)
             }
         }
 
@@ -200,21 +230,17 @@ class IPV_Prod_Queue {
         }
         update_post_meta( $post_id, '_ipv_transcript', $transcript );
 
-        // Genera descrizione AI
-        $desc = IPV_Prod_AI_Generator::generate_description( get_the_title( $post_id ), $transcript );
+        // Genera descrizione AI con estrazione automatica di hashtag e relatori
+        $desc = IPV_Prod_AI_Generator::generate_and_save( $post_id );
         if ( is_wp_error( $desc ) ) {
             throw new Exception( 'Errore OpenAI: ' . $desc->get_error_message() );
         }
-
-        // Salva la descrizione come contenuto del post
-        wp_update_post(
-            [
-                'ID'           => $post_id,
-                'post_content' => $desc,
-            ]
-        );
-
-        update_post_meta( $post_id, '_ipv_ai_description', $desc );
+        
+        // Nota: generate_and_save() ora:
+        // - Salva descrizione come post_content
+        // - Salva in _ipv_ai_description
+        // - Estrae e salva hashtag come tag WordPress
+        // - Estrae e salva relatori/ospiti nella tassonomia ipv_relatore
 
         IPV_Prod_Logger::log( 'Job completato con successo', [
             'post_id'  => $post_id,
@@ -258,10 +284,37 @@ class IPV_Prod_Queue {
         return true;
     }
 
+    
+    protected static function mark_as_skipped( $job_id, $reason = '' ) {
+        global $wpdb;
+
+        $table = self::table_name();
+
+        $wpdb->update(
+            $table,
+            [
+                'status'     => 'skipped',
+                'last_error' => $reason,
+                'updated_at' => current_time( 'mysql' ),
+            ],
+            [ 'id' => $job_id ],
+            [ '%s', '%s', '%s' ],
+            [ '%d' ]
+        );
+
+        IPV_Prod_Logger::log(
+            'Job ignorato per filtro durata/shorts',
+            [
+                'id'     => $job_id,
+                'reason' => $reason,
+            ]
+        );
+    }
+
     protected static function get_post_id_by_video_id( $video_id ) {
         $posts = get_posts(
             [
-                'post_type'   => 'video_ipv',
+                'post_type'   => 'ipv_video',
                 'meta_key'    => '_ipv_video_id',
                 'meta_value'  => $video_id,
                 'fields'      => 'ids',
@@ -350,7 +403,7 @@ class IPV_Prod_Queue {
 
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-dashboard' ) ); ?>">
+                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production' ) ); ?>">
                         <i class="bi bi-speedometer2 me-1"></i>Dashboard
                     </a>
                 </li>
@@ -574,6 +627,6 @@ add_action( 'admin_post_ipv_prod_manual_process_queue', function () {
 
     IPV_Prod_Queue::process_queue();
 
-    wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=ipv-production-dashboard' ) );
+    wp_safe_redirect( wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=ipv-production' ) );
     exit;
 } );

@@ -154,6 +154,13 @@ class IPV_Prod_RSS_Importer {
 
         // Fallback: estrai da link
         $link = (string) $entry->link['href'];
+
+        // Escludi YouTube Shorts se richiesto
+        $exclude_shorts = (bool) get_option( 'ipv_exclude_shorts', 1 );
+        if ( $exclude_shorts && strpos( $link, '/shorts/' ) !== false ) {
+            return '';
+        }
+
         if ( preg_match( '/watch\?v=([^&]+)/', $link, $matches ) ) {
             return $matches[1];
         }
@@ -169,7 +176,7 @@ class IPV_Prod_RSS_Importer {
         
         // Cerca nel CPT
         $post_exists = get_posts( [
-            'post_type'   => 'video_ipv',
+            'post_type'   => 'ipv_video',
             'meta_key'    => '_ipv_video_id',
             'meta_value'  => $video_id,
             'fields'      => 'ids',

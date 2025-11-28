@@ -1,57 +1,55 @@
 <?php
+/**
+ * IPV Production System Pro - AI Generator
+ * 
+ * Generazione descrizioni video con OpenAI GPT-4o
+ * Automazione completa: hashtag, relatori, categorie
+ * 
+ * @package IPV_Production_System_Pro
+ * @version 7.3.0
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
 class IPV_Prod_AI_Generator {
 
-    public static function generate_description( $video_title, $transcript ) {
+    // Link fissi del canale (hardcoded per evitare problemi)
+    const TELEGRAM_LINK  = 'https://t.me/il_punto_divista';
+    const FACEBOOK_LINK  = 'https://facebook.com/groups/4102938329737588';
+    const INSTAGRAM_LINK = 'https://instagram.com/_ilpuntodivista._';
+    const WEBSITE_LINK   = 'https://ilpuntodivistachannel.com';
+    const PAYPAL_LINK    = 'https://paypal.me/adrianfiorelli';
+    const SPONSOR_LINK   = 'https://biovital-italia.com/?bio=17';
+    const SPONSOR_NAME   = 'Biovital – Progetto Italia';
+
+    /**
+     * Genera descrizione completa per un video
+     * 
+     * @param string $video_title Titolo del video
+     * @param string $transcript Trascrizione
+     * @param string $duration_formatted Durata formattata (es: "1:47:45")
+     * @param int $duration_seconds Durata in secondi
+     */
+    public static function generate_description( $video_title, $transcript, $duration_formatted = '', $duration_seconds = 0 ) {
         $api_key = get_option( 'ipv_openai_api_key', '' );
         if ( empty( $api_key ) ) {
             return new WP_Error( 'ipv_openai_no_key', 'OpenAI API Key non configurata.' );
         }
 
         $custom_prompt = get_option( 'ipv_ai_prompt', '' );
+        $system_prompt = ! empty( $custom_prompt ) ? $custom_prompt : self::get_default_prompt( $duration_formatted, $duration_seconds );
 
-        if ( ! empty( $custom_prompt ) ) {
-            $system_prompt = $custom_prompt;
-        } else {
-            $system_prompt = self::get_default_prompt();
+        $user_content  = "TITOLO VIDEO: " . $video_title . "\n\n";
+        
+        // Aggiungi info durata
+        if ( ! empty( $duration_formatted ) ) {
+            $user_content .= "DURATA VIDEO: " . $duration_formatted . " (" . $duration_seconds . " secondi)\n\n";
         }
-
-        $sponsor_name     = get_option( 'ipv_default_sponsor', 'Biovital – Progetto Italia' );
-        $sponsor_link     = get_option( 'ipv_sponsor_link', '' );
-        $telegram_link    = get_option( 'ipv_social_telegram', '' );
-        $facebook_link    = get_option( 'ipv_social_facebook', '' );
-        $instagram_handle = get_option( 'ipv_social_instagram', '' );
-        $website_link     = get_option( 'ipv_social_website', '' );
-        $contact_email    = get_option( 'ipv_contact_email', '' );
-
-        $channel_context  = "DATI CANALE:\n";
-        $channel_context .= "Sponsor principale: " . $sponsor_name . "\n";
-        if ( ! empty( $sponsor_link ) ) {
-            $channel_context .= "Link sponsor: " . $sponsor_link . "\n";
-        }
-        if ( ! empty( $telegram_link ) ) {
-            $channel_context .= "Telegram: " . $telegram_link . "\n";
-        }
-        if ( ! empty( $facebook_link ) ) {
-            $channel_context .= "Facebook: " . $facebook_link . "\n";
-        }
-        if ( ! empty( $instagram_handle ) ) {
-            $channel_context .= "Instagram: " . $instagram_handle . "\n";
-        }
-        if ( ! empty( $website_link ) ) {
-            $channel_context .= "Website: " . $website_link . "\n";
-        }
-        if ( ! empty( $contact_email ) ) {
-            $channel_context .= "Email contatto: " . $contact_email . "\n";
-        }
-
-        $user_content  = "Titolo video: " . $video_title . "\n\n";
-        $user_content .= $channel_context . "\n";
-        $user_content .= "Trascrizione (estratto, potrebbe essere lunga):\n";
-        $user_content .= mb_substr( $transcript, 0, 8000 );
+        
+        $user_content .= "TRASCRIZIONE:\n";
+        $user_content .= mb_substr( $transcript, 0, 14000 );
 
         $body = [
             'model'    => 'gpt-4o',
@@ -66,7 +64,7 @@ class IPV_Prod_AI_Generator {
                 ],
             ],
             'temperature' => 0.7,
-            'max_tokens'  => 1200,
+            'max_tokens'  => 3000,
         ];
 
         $args = [
@@ -74,12 +72,16 @@ class IPV_Prod_AI_Generator {
                 'Content-Type'  => 'application/json',
                 'Authorization' => 'Bearer ' . $api_key,
             ],
-            'body'      => wp_json_encode( $body ),
-            'timeout'   => 60,
+            'body'    => wp_json_encode( $body ),
+            'timeout' => 120,
         ];
 
+        IPV_Prod_Logger::log( 'OpenAI: Richiesta generazione', [ 'title' => $video_title ] );
+
         $response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', $args );
+        
         if ( is_wp_error( $response ) ) {
+            IPV_Prod_Logger::log( 'OpenAI: Errore', [ 'error' => $response->get_error_message() ] );
             return $response;
         }
 
@@ -87,706 +89,536 @@ class IPV_Prod_AI_Generator {
         $data = json_decode( wp_remote_retrieve_body( $response ), true );
 
         if ( $code < 200 || $code >= 300 ) {
-            return new WP_Error( 'ipv_openai_http_error', 'Errore OpenAI HTTP ' . $code );
+            $error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : 'HTTP ' . $code;
+            return new WP_Error( 'ipv_openai_http_error', 'Errore OpenAI: ' . $error_msg );
         }
 
         if ( empty( $data['choices'][0]['message']['content'] ) ) {
             return new WP_Error( 'ipv_openai_no_content', 'Risposta OpenAI senza contenuto.' );
         }
 
-        return trim( $data['choices'][0]['message']['content'] );
+        $description = trim( $data['choices'][0]['message']['content'] );
+        
+        IPV_Prod_Logger::log( 'OpenAI: Descrizione generata', [ 'length' => strlen( $description ) ] );
+
+        return $description;
     }
 
-    protected static function get_default_prompt() {
-        return <<<'PROMPT'
-# GOLDEN PROMPT - Generazione Descrizioni Video "Il Punto di Vista"
+    /**
+     * Genera descrizione e salva nel post con estrazione COMPLETA metadata
+     * Questo è il metodo principale che automatizza tutto il processo editoriale
+     */
+    public static function generate_and_save( $post_id ) {
+        $video_title = get_the_title( $post_id );
+        $transcript  = get_post_meta( $post_id, '_ipv_transcript', true );
 
-## 📋 PROMPT COMPLETO PER AI (GPT-4)
+        if ( empty( $transcript ) ) {
+            return new WP_Error( 'no_transcript', 'Trascrizione mancante' );
+        }
 
----
+        // Ottieni durata video - prova vari meta
+        $duration_formatted = get_post_meta( $post_id, '_ipv_yt_duration_formatted', true );
+        $duration_seconds   = (int) get_post_meta( $post_id, '_ipv_yt_duration_seconds', true );
+        
+        // Fallback: prova _ipv_yt_duration (formato ISO8601 o formattato)
+        if ( empty( $duration_formatted ) ) {
+            $duration_formatted = get_post_meta( $post_id, '_ipv_yt_duration', true );
+        }
+        
+        // Fallback: calcola secondi da durata formattata
+        if ( ! $duration_seconds && ! empty( $duration_formatted ) ) {
+            $duration_seconds = self::parse_duration_to_seconds( $duration_formatted );
+        }
+        
+        // Log per debug
+        IPV_Prod_Logger::log( 'AI: Durata video', [
+            'post_id'   => $post_id,
+            'formatted' => $duration_formatted,
+            'seconds'   => $duration_seconds
+        ] );
 
-## CONTESTO E IDENTITÀ
+        $description = self::generate_description( $video_title, $transcript, $duration_formatted, $duration_seconds );
+        
+        if ( is_wp_error( $description ) ) {
+            return $description;
+        }
 
-Sei uno specialista nella creazione di descrizioni YouTube per il canale italiano **"Il Punto di Vista"** (@ilpuntodivista_official).
+        // Salva descrizione
+        update_post_meta( $post_id, '_ipv_ai_description', $description );
 
-### INFORMAZIONI SUL CANALE
+        // Aggiorna contenuto post
+        wp_update_post( [
+            'ID'           => $post_id,
+            'post_content' => $description,
+        ] );
 
-**Nome:** Il Punto di Vista  
-**Tipo:** Divulgazione su esoterismo, spiritualità, misteri, geopolitica alternativa e disclosure  
-**Lingua:** Italiano  
-**Target:** Pubblico 25-55 anni, mente aperta, interessato a verità alternative  
-**Sponsor Principale:** Biovital – Progetto Italia (sempre menzionare se non specificato diversamente)
+        // === AUTOMAZIONE EDITORIALE COMPLETA ===
+        
+        // 1. Estrai e salva HASHTAG come Tag WordPress
+        self::extract_and_save_hashtags( $post_id, $description );
 
-### TONO E STILE DEL CANALE
+        // 2. Estrai e salva RELATORI nella tassonomia ipv_relatore
+        //    (dal titolo + sezione Ospiti + sezione Persone menzionate)
+        self::extract_and_save_speakers( $post_id, $video_title, $description );
 
-Il canale si distingue per un approccio:
-- **Informativo** ma accessibile a tutti
-- **Misterioso** ma credibile
-- **Critico** ma equilibrato  
-- **Coinvolgente** e appassionato
-- **Rispettoso** di diverse opinioni
-- **Professionale** senza essere accademico
+        // 3. Estrai e salva CATEGORIE nella tassonomia ipv_categoria
+        //    (dalla sezione Argomenti trattati)
+        self::extract_and_save_categories( $post_id, $description );
 
-NON siamo:
-- ❌ Complottisti estremi o sensazionalisti
-- ❌ Dogmatici o fanatici
-- ❌ Superficiali o clickbait
-- ❌ Mainstream acritici
+        IPV_Prod_Logger::log( 'AI: Processo editoriale completato', [ 
+            'post_id' => $post_id,
+            'title'   => $video_title 
+        ] );
 
-Siamo:
-- ✅ Ricercatori della verità
-- ✅ Pensatori critici
-- ✅ Divulgatori responsabili
-- ✅ Costruttori di comunità
+        return $description;
+    }
 
----
+    /**
+     * Estrae hashtag dalla descrizione e li salva come tag WordPress
+     */
+    public static function extract_and_save_hashtags( $post_id, $description ) {
+        $hashtag_line = '';
+        
+        // Pattern 1: 🏷️ **Hashtag** seguito da hashtag (stessa riga o riga successiva)
+        if ( preg_match( '/(?:#️⃣|🏷️)\s*\*?\*?Hashtag\*?\*?\s*[:\n]?\s*(#.+?)(?=\n\n|\n[A-Z🔧📣]|$)/is', $description, $match ) ) {
+            $hashtag_line = $match[1];
+        }
+        // Pattern 2: Cerca riga che inizia con molti hashtag consecutivi
+        elseif ( preg_match( '/((?:#[A-Za-zÀ-ÿ0-9_]+\s*){5,})/u', $description, $match ) ) {
+            $hashtag_line = $match[1];
+        }
+        // Fallback: cerca tutti gli hashtag nell'ultima parte della descrizione
+        else {
+            // Prendi solo l'ultimo 20% della descrizione
+            $hashtag_line = mb_substr( $description, -( mb_strlen( $description ) * 0.2 ) );
+        }
 
-## 🎯 IL TUO COMPITO
+        // Estrai tutti gli hashtag
+        preg_match_all( '/#([A-Za-zÀ-ÿ0-9_]+)/u', $hashtag_line, $matches );
 
-Dati:
-1. **TRASCRIZIONE** del video (completa o parziale)
-2. **TITOLO** del video
-3. **VIDEO ID** YouTube
+        if ( ! empty( $matches[1] ) ) {
+            $tags = array_map( 'trim', $matches[1] );
+            $tags = array_unique( $tags );
+            $tags = array_slice( $tags, 0, 25 );
 
-Devi generare una **descrizione YouTube professionale, completa e ottimizzata** seguendo ESATTAMENTE la struttura e le linee guida sotto.
+            // Filtra tag troppo corti
+            $tags = array_filter( $tags, function( $tag ) {
+                return strlen( $tag ) >= 3;
+            } );
 
----
+            if ( ! empty( $tags ) ) {
+                // Usa wp_set_object_terms per maggiore affidabilità con CPT
+                wp_set_object_terms( $post_id, $tags, 'post_tag', false );
+                IPV_Prod_Logger::log( 'Hashtag salvati come tag', [ 
+                    'post_id' => $post_id, 
+                    'count'   => count( $tags ),
+                    'tags'    => array_slice( $tags, 0, 5 ) // Log primi 5
+                ] );
+            }
+        }
+    }
 
-## 📐 STRUTTURA OBBLIGATORIA DELLA DESCRIZIONE
+    /**
+     * Estrae relatori/ospiti dal TITOLO e dalla DESCRIZIONE
+     * Li salva nella tassonomia ipv_relatore
+     */
+    public static function extract_and_save_speakers( $post_id, $video_title, $description ) {
+        $speakers = [];
 
-La descrizione DEVE seguire questo ordine preciso:
+        // === PRIORITÀ 0: REGOLE MANUALI (hanno precedenza su tutto) ===
+        if ( class_exists( 'IPV_Prod_Speaker_Rules' ) ) {
+            $rule_speaker = IPV_Prod_Speaker_Rules::find_speaker_by_title( $video_title );
+            if ( $rule_speaker ) {
+                $speakers[] = $rule_speaker;
+                IPV_Prod_Logger::log( 'Relatore da regola manuale', [ 
+                    'post_id' => $post_id, 
+                    'speaker' => $rule_speaker,
+                    'title'   => $video_title
+                ] );
+            }
+        }
+
+        // === PRIORITÀ 1: ESTRAI DAL TITOLO (solo se nessuna regola trovata) ===
+        if ( empty( $speakers ) ) {
+            // Pattern per "con Nome Cognome" (anche multipli con "e")
+            if ( preg_match( '/\bcon\s+(.+?)(?:\s*#|\s*$)/iu', $video_title, $match ) ) {
+                $names_part = $match[1];
+                
+                // Splitta per "e" o ","
+                $parts = preg_split( '/\s+e\s+|\s*,\s*/iu', $names_part );
+                
+                foreach ( $parts as $name ) {
+                    $name = self::normalize_speaker_name( $name );
+                    if ( $name && self::is_valid_speaker_name( $name ) ) {
+                        $speakers[] = $name;
+                    }
+                }
+            }
+            
+            // Pattern alternativi se non trovato con "con"
+            if ( empty( $speakers ) ) {
+                // "TITOLO - Nome Cognome" alla fine
+                if ( preg_match( '/[–—-]\s*([A-Z][a-zà-ÿ]+(?:\s+[A-Z][a-zà-ÿ]+)+)\s*$/u', $video_title, $match ) ) {
+                    $name = self::normalize_speaker_name( $match[1] );
+                    if ( $name && self::is_valid_speaker_name( $name ) ) {
+                        $speakers[] = $name;
+                    }
+                }
+            }
+        }
+
+        // === PRIORITÀ 2: SOLO SEZIONE "Ospiti" (non "Persone menzionate"!) ===
+        if ( empty( $speakers ) ) {
+            if ( preg_match( '/👤\s*\*?\*?Ospiti?\*?\*?\s*\n(.+?)(?=\n(?:📌|🗂️|🏛️|🏢|📢|🔗|#️⃣|🏷️)|\n\n)/is', $description, $match ) ) {
+                $ospiti_section = trim( $match[1] );
+                
+                // Verifica che non sia "Nessun ospite"
+                if ( stripos( $ospiti_section, 'nessun ospite' ) === false && 
+                     stripos( $ospiti_section, 'nessuno' ) === false &&
+                     ! empty( $ospiti_section ) ) {
+                    
+                    // Estrai solo il PRIMO nome trovato per riga (Nome Cognome)
+                    $lines = explode( "\n", $ospiti_section );
+                    foreach ( $lines as $line ) {
+                        // Cerca "Nome Cognome" all'inizio della riga (prima di — o -)
+                        if ( preg_match( '/^[-•]?\s*([A-Z][a-zà-ÿ]+\s+[A-Z][a-zà-ÿ]+)/u', trim( $line ), $m ) ) {
+                            $name = self::normalize_speaker_name( $m[1] );
+                            if ( $name && self::is_valid_speaker_name( $name ) ) {
+                                $speakers[] = $name;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // === FALLBACK: "Il Punto di Vista" se non trovato nulla ===
+        if ( empty( $speakers ) ) {
+            $speakers[] = 'Il Punto di Vista';
+        }
+
+        // === LIMITA A MASSIMO 3 RELATORI ===
+        $speakers = array_unique( $speakers );
+        $speakers = array_slice( $speakers, 0, 3 );
+
+        // === SALVA ===
+        $term_ids = [];
+        foreach ( $speakers as $speaker ) {
+            $term = term_exists( $speaker, 'ipv_relatore' );
+            if ( ! $term ) {
+                $term = wp_insert_term( $speaker, 'ipv_relatore' );
+            }
+            if ( ! is_wp_error( $term ) ) {
+                $term_ids[] = is_array( $term ) ? (int) $term['term_id'] : (int) $term;
+            }
+        }
+
+        if ( ! empty( $term_ids ) ) {
+            wp_set_object_terms( $post_id, $term_ids, 'ipv_relatore', false );
+            IPV_Prod_Logger::log( 'Relatori salvati', [ 
+                'post_id'  => $post_id, 
+                'speakers' => $speakers 
+            ] );
+        }
+    }
+
+    /**
+     * Estrae categorie dalla sezione "Argomenti trattati"
+     * Li salva nella tassonomia ipv_categoria
+     */
+    public static function extract_and_save_categories( $post_id, $description ) {
+        $categories = [];
+
+        // Cerca sezione Argomenti trattati (varie emoji possibili: 📌, 🗂️)
+        if ( preg_match( '/(?:📌|🗂️)\s*\*?\*?Argomenti[^*\n]*\*?\*?\s*\n(.+?)(?=\n(?:👤|🏛️|🏢|📢|🔗|#️⃣|🏷️)|\n\n)/is', $description, $match ) ) {
+            $argomenti_section = trim( $match[1] );
+            
+            // Pattern: "- Argomento: spiegazione" oppure "- Argomento"
+            preg_match_all( '/[-•]\s*\*?\*?([^:\n*]+?)\*?\*?(?::|—|\n|$)/m', $argomenti_section, $matches );
+            
+            foreach ( $matches[1] as $cat ) {
+                $cat = trim( $cat );
+                // Pulisci e normalizza
+                $cat = preg_replace( '/\*+/', '', $cat ); // Rimuovi asterischi markdown
+                $cat = trim( $cat );
+                
+                if ( strlen( $cat ) >= 3 && strlen( $cat ) <= 100 ) {
+                    $categories[] = $cat;
+                }
+            }
+        }
+
+        // Limita a max 5 categorie principali
+        $categories = array_slice( array_unique( $categories ), 0, 5 );
+
+        if ( ! empty( $categories ) ) {
+            $term_ids = [];
+            foreach ( $categories as $category ) {
+                $term = term_exists( $category, 'ipv_categoria' );
+                if ( ! $term ) {
+                    $term = wp_insert_term( $category, 'ipv_categoria' );
+                }
+                if ( ! is_wp_error( $term ) ) {
+                    $term_ids[] = is_array( $term ) ? (int) $term['term_id'] : (int) $term;
+                }
+            }
+
+            if ( ! empty( $term_ids ) ) {
+                wp_set_object_terms( $post_id, $term_ids, 'ipv_categoria', false );
+                IPV_Prod_Logger::log( 'Categorie salvate', [ 
+                    'post_id'    => $post_id, 
+                    'categories' => $categories 
+                ] );
+            }
+        }
+    }
+
+    /**
+     * Normalizza nome relatore (capitalizzazione corretta)
+     */
+    private static function normalize_speaker_name( $name ) {
+        $name = trim( $name );
+        // Rimuovi caratteri speciali
+        $name = preg_replace( '/[#@\d]+/', '', $name );
+        $name = trim( $name );
+        
+        if ( empty( $name ) ) {
+            return '';
+        }
+
+        // Capitalizza correttamente ogni parola
+        $words = explode( ' ', mb_strtolower( $name ) );
+        $words = array_map( function( $word ) {
+            return mb_convert_case( $word, MB_CASE_TITLE, 'UTF-8' );
+        }, $words );
+
+        return implode( ' ', $words );
+    }
+
+    /**
+     * Verifica se è un nome valido di persona
+     */
+    private static function is_valid_speaker_name( $name ) {
+        // Deve avere almeno nome e cognome (2 parole)
+        $words = explode( ' ', $name );
+        if ( count( $words ) < 2 ) {
+            return false;
+        }
+
+        // Filtra termini generici
+        $blacklist = [
+            'nessun ospite', 'ospite presente', 'canale youtube', 
+            'punto vista', 'progetto italia', 'video youtube',
+            'argomento', 'introduzione', 'conclusione', 'discussione'
+        ];
+
+        $name_lower = mb_strtolower( $name );
+        foreach ( $blacklist as $term ) {
+            if ( strpos( $name_lower, $term ) !== false ) {
+                return false;
+            }
+        }
+
+        // Deve essere lungo tra 5 e 50 caratteri
+        if ( strlen( $name ) < 5 || strlen( $name ) > 50 ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Converte durata formattata in secondi
+     * Gestisce: "1:47:45", "15:30", "PT1H47M45S" (ISO8601)
+     */
+    protected static function parse_duration_to_seconds( $duration ) {
+        if ( empty( $duration ) ) {
+            return 0;
+        }
+
+        // Formato ISO8601: PT1H47M45S
+        if ( preg_match( '/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/', $duration, $matches ) ) {
+            $hours   = isset( $matches[1] ) ? (int) $matches[1] : 0;
+            $minutes = isset( $matches[2] ) ? (int) $matches[2] : 0;
+            $seconds = isset( $matches[3] ) ? (int) $matches[3] : 0;
+            return ( $hours * 3600 ) + ( $minutes * 60 ) + $seconds;
+        }
+
+        // Formato H:MM:SS o MM:SS
+        $parts = array_reverse( explode( ':', $duration ) );
+        $seconds = 0;
+
+        if ( isset( $parts[0] ) ) {
+            $seconds += (int) $parts[0]; // secondi
+        }
+        if ( isset( $parts[1] ) ) {
+            $seconds += (int) $parts[1] * 60; // minuti
+        }
+        if ( isset( $parts[2] ) ) {
+            $seconds += (int) $parts[2] * 3600; // ore
+        }
+
+        return $seconds;
+    }
+
+    /**
+     * Formatta secondi in H:MM:SS o MM:SS
+     */
+    protected static function format_duration( $seconds ) {
+        $hours   = floor( $seconds / 3600 );
+        $minutes = floor( ( $seconds % 3600 ) / 60 );
+        $secs    = $seconds % 60;
+        
+        if ( $hours > 0 ) {
+            return sprintf( '%d:%02d:%02d', $hours, $minutes, $secs );
+        } else {
+            return sprintf( '%d:%02d', $minutes, $secs );
+        }
+    }
+
+    /**
+     * Genera istruzioni timestamp basate sulla durata
+     */
+    protected static function get_timestamp_instructions( $duration_formatted, $duration_seconds ) {
+        if ( $duration_seconds <= 0 ) {
+            return "Genera timestamp in base ai cambi di argomento nella trascrizione.";
+        }
+
+        // Se manca duration_formatted, creala dai secondi
+        if ( empty( $duration_formatted ) ) {
+            $duration_formatted = self::format_duration( $duration_seconds );
+        }
+
+        $duration_minutes = floor( $duration_seconds / 60 );
+        $hours = floor( $duration_minutes / 60 );
+        
+        $instructions = "⚠️ DURATA TOTALE VIDEO: {$duration_formatted} ({$duration_minutes} minuti)\n";
+        $instructions .= "I timestamp DEVONO coprire TUTTA la durata del video fino alla fine!\n";
+        $instructions .= "- Timestamp iniziale: 00:00\n";
+        $instructions .= "- Timestamp finale: DEVE essere vicino a {$duration_formatted}\n";
+        $instructions .= "- Posiziona i timestamp in base ai CAMBI DI ARGOMENTO nella trascrizione\n";
+        $instructions .= "- NON usare intervalli fissi - segui il flusso naturale della discussione\n";
+        
+        if ( $hours >= 1 ) {
+            $instructions .= "- FORMATO OBBLIGATORIO: H:MM:SS (es: 1:23:45) perché il video supera 1 ora\n";
+        } else {
+            $instructions .= "- FORMATO: MM:SS (es: 25:30)\n";
+        }
+        
+        return $instructions;
+    }
+
+    /**
+     * Golden Prompt v3.2 - Con durata video e timestamp precisi
+     */
+    protected static function get_default_prompt( $duration_formatted = '', $duration_seconds = 0 ) {
+        $timestamp_instructions = self::get_timestamp_instructions( $duration_formatted, $duration_seconds );
+        
+        return <<<PROMPT
+# GOLDEN PROMPT v3.2 - "Il Punto di Vista"
+
+## IDENTITÀ
+Sei un copywriter esperto per il canale YouTube italiano **"Il Punto di Vista"** (@ilpuntodivista_official).
+Temi: esoterismo, spiritualità, misteri, geopolitica alternativa, disclosure.
+
+## LINK FISSI DEL CANALE (USA SEMPRE QUESTI)
+- Telegram: https://t.me/il_punto_divista
+- Facebook: https://facebook.com/groups/4102938329737588
+- Instagram: https://instagram.com/_ilpuntodivista._
+- Sito: https://ilpuntodivistachannel.com
+- Donazioni: https://paypal.me/adrianfiorelli
+- Sponsor Biovital: https://biovital-italia.com/?bio=17
+
+## FORMATO OUTPUT OBBLIGATORIO
+
+Genera la descrizione ESATTAMENTE in questo formato:
 
 ```
-1. SPONSOR (sempre in cima)
-2. HOOK INIZIALE (2-3 frasi accattivanti)
-3. TIMESTAMP (dettagliati)
-4. ARGOMENTI TRATTATI (5-8 bullet points)
-5. OSPITE (se presente nel video)
-6. PARAGRAFO DI APPROFONDIMENTO (4-6 frasi)
-7. CALL TO ACTION
-8. LINK SOCIAL E CANALI
-9. HASHTAG (8-12 pertinenti)
-10. DISCLAIMER (opzionale, se temi sensibili)
+# [TITOLO VIDEO ESATTO]
+
+✨ **Introduzione (SEO)**
+[80-120 parole. Riassunto coinvolgente ottimizzato SEO. Menziona "Il Punto di Vista", il tema principale, e gli ospiti se presenti. Termina con: "Le parole chiave come 'X', 'Y', 'Z' guidano la ricerca verso una comprensione più profonda."]
+
+⏱️ **Minutaggio**
+{$timestamp_instructions}
+00:00 — Introduzione
+[...genera timestamp ad ogni CAMBIO DI ARGOMENTO fino alla FINE del video...]
+
+🗂️ **Argomenti trattati**
+- [Argomento principale 1]: [breve spiegazione]
+- [Argomento principale 2]: [breve spiegazione]
+- [Argomento principale 3]: [breve spiegazione]
+[6-8 argomenti. IMPORTANTE: questi diventeranno le CATEGORIE del video]
+
+👤 **Ospiti**
+[Nome e Cognome dell'ospite/i che PARLANO nel video]
+[Se nessuno parla oltre al conduttore: "Nessun ospite presente"]
+
+🏛️ **Persone / Enti menzionati**
+- [Nome Cognome] — [Chi è: ruolo, canale, professione]
+- [Nome Ente] — [Descrizione]
+[TUTTE le persone CITATE nella trascrizione, anche se non ospiti]
+
+🤝 **Sponsor**
+Biovital – Progetto Italia
+Sostieni il progetto 👉 https://biovital-italia.com/?bio=17
+
+📣 **Call to Action**
+- Iscriviti al canale
+- Commenta
+- Condividi il video
+
+🔧 **Link Utili**
+- [Telegram](https://t.me/il_punto_divista)
+- [Facebook](https://facebook.com/groups/4102938329737588)
+- [Instagram](https://instagram.com/_ilpuntodivista._)
+- [Sito ufficiale](https://ilpuntodivistachannel.com)
+- [Donazioni](https://paypal.me/adrianfiorelli)
+
+🏷️ **Hashtag**
+#Hashtag1 #Hashtag2 #Hashtag3 ... #IlPuntoDiVista #PuntiDiVista
+[20-25 hashtag su UNA RIGA, includi sempre #IlPuntoDiVista #PuntiDiVista]
 ```
 
----
-
-## 📝 DETTAGLIO DI OGNI SEZIONE
-
-### 1. SPONSOR (OBBLIGATORIO - SEMPRE PRIMO)
-
-**Default (se nessun altro sponsor specificato):**
-```
-🌿 Questo video è offerto da Biovital – Progetto Italia
-Scopri i prodotti per il tuo benessere naturale: [link sponsor]
-
----
-```
-
-**Se sponsor diverso specificato nel VIDEO ID o titolo:**
-Usa quello fornito, mantenendo lo stesso formato.
-
-**Regole:**
-- Sempre emoji pertinente (🌿 per salute, 💊 per integratori, ecc.)
-- Una riga pulita di separazione (---)
-- Menzione breve e professionale
-- Link (anche se placeholder) sempre presente
-
----
-
-### 2. HOOK INIZIALE (2-3 FRASI MAGNETICHE)
-
-**Obiettivo:** Catturare immediatamente l'attenzione e spingere a guardare il video.
-
-**Tecniche da usare:**
-- Inizia con domanda provocatoria
-- Usa "Cosa succederebbe se..."
-- Crea suspense: "Scopriremo insieme..."
-- Riferimenti a segreti/verità nascoste
-- Connessione emotiva con lo spettatore
-
-**BUONI ESEMPI:**
-
-```
-"Cosa succederebbe se tutto ciò che ci hanno raccontato sulla storia antica fosse una menzogna costruita per tenerci all'oscuro? In questo video esploreremo documenti mai visti prima e testimonianze che potrebbero cambiare per sempre la nostra comprensione del passato."
-```
-
-```
-"Esistono verità talmente scomode che i poteri forti farebbero di tutto per nasconderle. Oggi solleviamo il velo su uno dei misteri più dibattuti degli ultimi decenni: siamo davvero soli nell'universo?"
-```
-
-```
-"Quando la scienza ufficiale incontra l'inspiegabile, cosa accade? Scopriremo insieme fenomeni che sfidano ogni logica razionale, supportati da testimonianze credibili e documenti declassificati."
-```
-
-**CATTIVI ESEMPI (da evitare):**
-
-❌ "In questo video parliamo di UFO." (troppo generico)
-❌ "Benvenuti a questo episodio!" (scontato)
-❌ "Oggi un argomento interessante." (vago)
-
-**Lunghezza:** 2-3 frasi (max 250 caratteri totali)
-**Stile:** Interrogativo, evocativo, promessa di rivelazione
-
----
-
-### 3. TIMESTAMP DETTAGLIATI
-
-**Regole fondamentali:**
-1. Estrai dalla trascrizione i momenti chiave effettivi
-2. Formato OBBLIGATORIO: `MM:SS` o `HH:MM:SS`
-3. Usa emoji appropriate per ogni sezione
-4. Descrizioni brevi ma specifiche
-5. Minimo 5 timestamp, ideale 8-12
-
-**Emoji da usare per categoria:**
-- 🎬 Intro/Introduzione
-- 🔍 Analisi/Investigazione
-- 🎙️ Intervista/Ospite
-- 💡 Concetti chiave
-- 🌌 Mistero/Esoterismo
-- ⚡ Rivelazioni/Breaking news
-- 📊 Dati/Statistiche
-- 🧩 Connessioni/Sintesi
-- 💬 Commenti/Opinioni
-- 🎯 Conclusioni
-
-**STRUTTURA TIMESTAMP:**
-
-```
-⏰ TIMESTAMP:
-
-00:00 🎬 Introduzione e tema del video
-05:23 🔍 [Primo argomento specifico]
-12:45 💡 [Concetto chiave o rivelazione]
-21:30 🎙️ [Intervista ospite o sezione speciale]
-35:12 🌌 [Approfondimento mistero]
-48:20 📊 [Analisi dati o documenti]
-56:40 🧩 [Connessioni e sintesi]
-01:08:15 💬 [Riflessioni finali]
-01:15:30 🎯 Conclusioni e call to action
-```
-
-**Come estrarre timestamp dalla trascrizione:**
-
-1. Cerca cambi di argomento nella trascrizione
-2. Identifica quando viene menzionato un nuovo tema
-3. Nota quando entra/parla un ospite
-4. Segna momenti di rivelazione o dati importanti
-5. Individua conclusioni o sintesi
-
-**Se la trascrizione non ha timestamp espliciti:**
-- Stima basandoti sulla struttura narrativa
-- Distribuisci uniformemente (es: video 60 min = timestamp ogni 6-8 min)
-- Mantieni coerenza logica con il flusso del discorso
-
----
-
-### 4. ARGOMENTI TRATTATI (5-8 BULLET POINTS)
-
-**Formato:**
-
-```
-📌 IN QUESTO VIDEO ESPLORIAMO:
-
-• [Argomento 1 - specifico e concreto]
-• [Argomento 2 - con dettaglio chiave]
-• [Argomento 3 - menziona fonte o elemento distintivo]
-• [Argomento 4 - include dati o nomi se disponibili]
-• [Argomento 5 - collega a tema più ampio]
-• [Argomento 6 - opzionale]
-• [Argomento 7 - opzionale]
-• [Argomento 8 - opzionale]
-```
-
-**Regole:**
-- Ogni bullet deve essere auto-contenuto (leggibile singolarmente)
-- Lunghezza: 8-15 parole per bullet
-- Usa verbi d'azione: "Analizziamo", "Scopriamo", "Esploriamo", "Sveliamo"
-- Includi nomi propri, date, luoghi specifici quando disponibili
-- NO frasi generiche tipo "Temi interessanti" o "Argomenti vari"
-
-**BUONI ESEMPI:**
-
-```
-• Le recenti rivelazioni del Pentagono sui fenomeni UAP e cosa significano per noi
-• Testimonianze di piloti militari: cosa hanno visto nei cieli nel 2023
-• Documenti declassificati della CIA: cosa ci hanno nascosto per 70 anni
-• Il collegamento tra antiche civiltà e tecnologie impossibili
-• Implicazioni spirituali del contatto extraterrestre: una nuova coscienza
-```
-
-**CATTIVI ESEMPI:**
-
-❌ "Parliamo di UFO"
-❌ "Vari temi interessanti"
-❌ "Tante informazioni utili"
-❌ "Argomenti di attualità"
-
----
-
-### 5. OSPITE (SE PRESENTE)
-
-**Identifica dalla trascrizione se c'è un ospite:**
-- Cerca nomi propri menzionati ripetutamente
-- Cerca frasi come "Il nostro ospite oggi è..."
-- Identifica intervistati o relatori
-
-**Formato:**
-
-```
-🎙️ OSPITE SPECIALE
-
-Nome: [Nome Cognome]
-Bio: [1-2 frasi su chi è: ruolo, expertise, background]
-Contatti: 
-• Website: [link se disponibile]
-• Social: [link se disponibile]
-
-Ringraziamo [Nome] per averci condiviso la sua esperienza e conoscenza.
-```
-
-**Se NON c'è ospite:**
-Ometti completamente questa sezione.
-
-**ESEMPIO:**
-
-```
-🎙️ OSPITE SPECIALE
-
-Nome: Dr. Roberto Pinotti
-Bio: Ufologo italiano di fama internazionale, presidente del Centro Ufologico Nazionale (CUN) per oltre 40 anni, autore di numerosi libri sul fenomeno UFO.
-Contatti: 
-• Website: www.centroufologiconazionale.net
-• Social: @robertopinotti
-
-Ringraziamo il Dr. Pinotti per averci condiviso la sua vasta esperienza nel campo dell'ufologia.
-```
-
----
-
-### 6. PARAGRAFO DI APPROFONDIMENTO (4-6 FRASI)
-
-**Obiettivo:** Espandere il contesto, collegare i punti, offrire riflessione più profonda.
-
-**Struttura:**
-1. Frase 1: Riassumi il tema centrale
-2. Frase 2-3: Collega a contesto più ampio (storico/sociale/spirituale)
-3. Frase 4-5: Poni domande o offri spunti di riflessione
-4. Frase 6: Invito alla consapevolezza/ricerca personale
-
-**Tono:** Riflessivo, inclusivo ("noi", "insieme"), stimolante
-
-**BUON ESEMPIO:**
-
-```
-Questo video rappresenta un viaggio nelle zone d'ombra della nostra comprensione della realtà. In un'epoca in cui l'informazione mainstream tende a omogeneizzare il pensiero, diventa fondamentale esplorare fonti alternative e porsi domande scomode. La verità, spesso, non è dove ci viene detto di cercarla, ma emerge dall'incrocio di testimonianze indipendenti, documenti ufficiali e il coraggio di mettere in discussione narrazioni consolidate. Quali sono le implicazioni di queste rivelazioni per il nostro futuro collettivo? Come possiamo, come individui consapevoli, contribuire a un nuovo paradigma di conoscenza? La risposta sta nel dialogo aperto, nella ricerca instancabile e nel rifiuto della paura come strumento di controllo.
-```
-
-**CATTIVO ESEMPIO:**
-
-❌ "Il video è interessante. Ci sono molte cose da scoprire. Guardatelo fino alla fine." (troppo generico, scontato, privo di valore)
-
-**Lunghezza:** 4-6 frasi (circa 400-600 caratteri)
-**Keywords:** Integra naturalmente parole chiave SEO del tema trattato
-
----
-
-### 7. CALL TO ACTION (STANDARD)
-
-**Usa SEMPRE questo formato (copy-paste esatto):**
-
-```
-━━━━━━━━━━━━━━━━━━━━━
-
-💫 SUPPORTA IL CANALE:
-
-📺 ISCRIVITI al canale ➜ @ilpuntodivista_official
-🔔 Attiva le NOTIFICHE per non perdere i nuovi video
-👍 Lascia un LIKE se il video ti è piaciuto
-💬 COMMENTA con la tua opinione - il dialogo è importante
-📤 CONDIVIDI con chi sta cercando risposte
-
-━━━━━━━━━━━━━━━━━━━━━
-```
-
-**NON modificare:** Usa esattamente questo formato per coerenza brand.
-
----
-
-### 8. LINK SOCIAL E CANALI (STANDARD)
-
-**Usa SEMPRE questo formato:**
-
-```
-🌐 SEGUICI SU:
-
-• YouTube: @ilpuntodivista_official
-• Telegram: https://t.me/ilpuntodivista [se disponibile]
-• Facebook: fb.com/ilpuntodivista [se disponibile]
-• Instagram: @ilpuntodivista [se disponibile]
-• Website: www.ilpuntodivista.it [se disponibile]
-
-📧 Contatti: info@ilpuntodivista.it [se disponibile]
-```
-
-**Note:**
-- Se un link non è disponibile, ometti quella riga
-- Mantieni almeno YouTube sempre presente
-- Se hai dubbi sui link, usa solo YouTube
-
----
-
-### 9. HASHTAG (8-12 PERTINENTI)
-
-**Regole fondamentali:**
-1. Sempre includere `#IlPuntoDiVista` come primo
-2. 3-4 hashtag generali del canale
-3. 4-6 hashtag specifici del video
-4. 1-2 hashtag trending (se pertinenti)
-
-**Hashtag SEMPRE presenti:**
-- #IlPuntoDiVista (primo, sempre)
-- #Disclosure
-- #Spiritualità
-- #Consapevolezza
-
-**Hashtag per categoria tematica:**
-
-**UFO/Disclosure:**
-#UFO #Alieni #Extraterrestri #UAP #Disclosure #FenomeniUAP #ContattoCOSMICO #DeclassificatiUSA
-
-**Esoterismo:**
-#Esoterismo #Mistero #Alchimia #Simbolismo #AnticaSaggezza #TradizioneSacra
-
-**Spiritualità:**
-#CrescitaPersonale #Meditazione #CoscienzaSuperiore #Risveglio #Illuminazione #EnergieUniversali
-
-**Geopolitica:**
-#GeopoliticaAlternativa #VeritàNascoste #PoterOcculto #NuovoOrdine #ControlloMentale
-
-**Mistero/Storia:**
-#MisteriAntichi #CiviltàPerdute #ArcheologiaMisteriosa #StoriaAlternativa
-
-**Formato finale:**
-
-```
-━━━━━━━━━━━━━━━━━━━━━
-
-#IlPuntoDiVista #Disclosure #Spiritualità #Consapevolezza #[Tema1] #[Tema2] #[Tema3] #[Tema4] #[Tema5] #[Tema6] #[Tema7] #[Tema8]
-```
-
-**ESEMPIO per video su UFO:**
-
-```
-#IlPuntoDiVista #Disclosure #Spiritualità #Consapevolezza #UFO #Alieni #UAP #FenomeniUAP #DeclassificatiUSA #ContattoCOSMICO #Mistero #VeritàNascoste
-```
-
-**Numero totale:** 8-12 hashtag (mai meno di 8, mai più di 15)
-
----
-
-### 10. DISCLAIMER (OPZIONALE)
-
-**Quando includere:**
-- Video con teorie controverse
-- Contenuti su salute/medicina alternativa
-- Opinioni polarizzanti
-- Temi politici sensibili
-
-**Formato standard:**
-
-```
-━━━━━━━━━━━━━━━━━━━━━
-
-⚠️ DISCLAIMER:
-Le opinioni espresse in questo video sono degli ospiti e dell'autore e hanno scopo puramente divulgativo e di intrattenimento. Invitiamo sempre al pensiero critico e alla verifica indipendente delle informazioni. Non sostituiscono consulenze professionali nei rispettivi ambiti.
-
-━━━━━━━━━━━━━━━━━━━━━
-```
-
-**Se NON necessario:** Ometti completamente questa sezione.
-
----
-
-## 🎨 REGOLE DI STILE E TONO
-
-### Linguaggio
-✅ **USA:**
-- Italiano fluente e naturale
-- Terminologia tecnica SPIEGATA in modo semplice
-- Metafore e analogie accessibili
-- Domande retoriche coinvolgenti
-- "Noi", "insieme", "scopriamo" (inclusivo)
-- Verbi d'azione: svelare, esplorare, analizzare, rivelare
-
-❌ **EVITA:**
-- Inglesismi non necessari
-- Gergo troppo tecnico non spiegato
-- Frasi passive o contorte
-- Clickbait sensazionalistico
-- Tono arrogante o dogmatico
-- Generalizzazioni vaghe
-
-### Lunghezza Totale
-- **Minimo:** 800 caratteri
-- **Ideale:** 1200-1800 caratteri
-- **Massimo:** 2500 caratteri
-
-YouTube mostra i primi ~200 caratteri prima del "Mostra altro", quindi l'hook iniziale è CRITICO.
-
----
-
-## 🔍 OTTIMIZZAZIONE SEO
-
-### Keywords Primarie
-Identifica dalla trascrizione 3-5 keyword primarie e:
-1. Inseriscile naturalmente nell'hook iniziale
-2. Usale nei bullet points
-3. Integrale nel paragrafo di approfondimento
-4. Includile negli hashtag
-
-### Densità Keyword
-- 2-3% del testo totale
-- Distribuzione naturale
-- NO keyword stuffing
-
-### Long-tail Keywords
-Frasi specifiche di 3-4 parole che il pubblico cerca:
-- "documenti declassificati CIA UFO"
-- "antiche civiltà tecnologia avanzata"
-- "risveglio spirituale 2024"
-
----
-
-## 📊 ESEMPI COMPLETI
-
-### ESEMPIO 1: Video su UFO/Disclosure
-
-```
-🌿 Questo video è offerto da Biovital – Progetto Italia
-Scopri i prodotti per il tuo benessere naturale: www.biovital.it
-
----
-
-Cosa succederebbe se i governi mondiali sapessero da decenni la verità sugli UFO ma l'avessero deliberatamente nascosta? In questo video esclusivo, analizziamo documenti declassificati, testimonianze di piloti militari e rivelazioni recenti del Pentagono che cambiano completamente il paradigma sul fenomeno UAP.
-
-⏰ TIMESTAMP:
-
-00:00 🎬 Introduzione: La nuova era del Disclosure
-04:30 📊 Documenti CIA declassificati: cosa rivelano
-12:45 🎙️ Testimonianza Comandante David Fravor (caso USS Nimitz)
-23:10 🌌 Analisi video: le prove visive del Pentagono
-35:20 💡 Tecnologia aliena: implicazioni per la fisica moderna
-48:15 🧩 Connessioni tra casi storici e rivelazioni attuali
-58:30 ⚡ Il rapporto UAP del 2023: cosa ci dice il governo
-01:10:45 💬 Riflessioni: verso una nuova consapevolezza
-01:18:20 🎯 Conclusioni e prospettive future
-
-📌 IN QUESTO VIDEO ESPLORIAMO:
-
-• I documenti declassificati della CIA dal 1947 al 2021: 70 anni di segreti
-• La testimonianza shock del Comandante David Fravor sul caso USS Nimitz
-• Analisi tecnica dei video FLIR rilasciati dal Pentagono nel 2020
-• Le capacità impossibili degli UAP: fisica oltre la nostra comprensione
-• Il rapporto UAP 2023 al Congresso: cosa ammette (finalmente) il governo USA
-• Implicazioni spirituali e filosofiche del contatto extraterrestre
-• Il ruolo dell'Italia nella ricerca ufologica: casi italiani documentati
-• Verso il Disclosure completo: timeline e aspettative per il futuro
-
-🎙️ OSPITE SPECIALE
-
-Nome: Dr. Roberto Pinotti
-Bio: Ufologo italiano di fama internazionale, presidente del Centro Ufologico Nazionale (CUN) per oltre 40 anni, autore di numerosi libri tra cui "UFO: La verità nascosta" e "Alieni: Un incontro annunciato".
-Contatti: 
-• Website: www.centroufologiconazionale.net
-• Email: info@cun-italia.net
-
-Ringraziamo il Dr. Pinotti per averci condiviso la sua vasta esperienza e documentazione esclusiva sul fenomeno UFO in Italia e nel mondo.
-
-━━━━━━━━━━━━━━━━━━━━━
-
-Questo video rappresenta una svolta nella comprensione del fenomeno UFO. Dopo decenni di negazioni, ridicolizzazioni e insabbiamenti, finalmente i governi stanno ammettendo ciò che ricercatori indipendenti sostenevano da anni: non siamo soli, e qualcuno ci sta osservando con tecnologie che sfidano la nostra fisica. Ma perché proprio ora? Cosa è cambiato? E soprattutto, cosa ci stanno ancora nascondendo? La verità completa potrebbe avere implicazioni talmente profonde sulla nostra visione della realtà, della spiritualità e del nostro posto nell'universo da richiedere una preparazione graduale della coscienza collettiva. Questo video è un passo in quella direzione: informazione documentata, analisi critica, e l'invito a guardare il cielo con occhi nuovi.
-
-━━━━━━━━━━━━━━━━━━━━━
-
-💫 SUPPORTA IL CANALE:
-
-📺 ISCRIVITI al canale ➜ @ilpuntodivista_official
-🔔 Attiva le NOTIFICHE per non perdere i nuovi video
-👍 Lascia un LIKE se il video ti è piaciuto
-💬 COMMENTA con la tua opinione - hai mai avvistato qualcosa di inspiegabile?
-📤 CONDIVIDI con chi sta cercando la verità
-
-━━━━━━━━━━━━━━━━━━━━━
-
-🌐 SEGUICI SU:
-
-• YouTube: @ilpuntodivista_official
-• Telegram: https://t.me/ilpuntodivista
-• Facebook: fb.com/ilpuntodivista
-• Instagram: @ilpuntodivista
-
-━━━━━━━━━━━━━━━━━━━━━
-
-#IlPuntoDiVista #Disclosure #UFO #Alieni #UAP #FenomeniUAP #Spiritualità #Consapevolezza #DeclassificatiCIA #VeritàNascoste #Mistero #ContattoCOSMICO
-
-━━━━━━━━━━━━━━━━━━━━━
-
-⚠️ DISCLAIMER:
-Le opinioni espresse in questo video sono degli ospiti e dell'autore e hanno scopo puramente divulgativo. Invitiamo sempre al pensiero critico e alla verifica indipendente delle informazioni presentate.
-```
-
----
-
-### ESEMPIO 2: Video su Spiritualità/Esoterismo
-
-```
-🌿 Questo video è offerto da Biovital – Progetto Italia
-Per il benessere del corpo e dell'anima: www.biovital.it
-
----
-
-Esiste una conoscenza antica, tramandata attraverso millenni, che può trasformare radicalmente la nostra comprensione della realtà e della coscienza? In questo viaggio esoterico, esploriamo i segreti dell'alchimia spirituale, dal simbolismo dei Tarocchi agli insegnamenti ermetici, scoprendo come queste pratiche possano guidarci verso un risveglio autentico.
-
-⏰ TIMESTAMP:
-
-00:00 🎬 Introduzione: L'alchimia come via spirituale
-06:15 📚 Le origini storiche dell'esoterismo occidentale
-15:40 🌌 Il simbolismo alchemico: oro, piombo e trasformazione interiore
-28:20 💡 I Tarocchi come mappa dell'anima: gli Arcani Maggiori
-42:10 🧘 Pratiche meditative esoteriche: la via dell'integrazione
-55:35 ⚡ Sincronicità e legge di attrazione: oltre il materialismo
-01:08:50 🌟 Il risveglio della coscienza: testimonianze ed esperienze
-01:22:40 🎯 Conclusioni: integrare l'esoterismo nella vita quotidiana
-
-📌 IN QUESTO VIDEO ESPLORIAMO:
-
-• Le radici storiche dell'esoterismo: da Ermete Trismegisto alla Golden Dawn
-• Alchimia spirituale vs alchimia materiale: la vera trasmutazione è interiore
-• Il significato profondo dei 22 Arcani Maggiori dei Tarocchi
-• Tecniche meditative per accedere a stati di coscienza espansi
-• La sincronicità secondo Jung: quando il caso non esiste
-• Testimonianze di risveglio spirituale: esperienze reali di trasformazione
-• Come integrare pratiche esoteriche nella vita moderna senza dogmi
-
-━━━━━━━━━━━━━━━━━━━━━
-
-L'esoterismo non è superstizione o magia da palcoscenico: è un sistema di conoscenza millenario che offre strumenti concreti per l'evoluzione della coscienza. In un'epoca dominata dal materialismo e dalla disconnessione spirituale, riscoprire queste antiche saggezze diventa un atto rivoluzionario. L'alchimia ci insegna che la vera trasformazione avviene dentro di noi, non nel mondo esterno. I Tarocchi sono specchi dell'anima, non predittori del futuro. La meditazione è esplorazione scientifica della mente, non fuga dalla realtà. Questo video è un invito a esplorare con mente aperta, ma sempre critica, un universo di possibilità per la nostra crescita personale e spirituale.
-
-━━━━━━━━━━━━━━━━━━━━━
-
-💫 SUPPORTA IL CANALE:
-
-📺 ISCRIVITI al canale ➜ @ilpuntodivista_official
-🔔 Attiva le NOTIFICHE per non perdere i nuovi video
-👍 Lascia un LIKE se il video ti è piaciuto
-💬 COMMENTA le tue esperienze spirituali - siamo una comunità
-📤 CONDIVIDI con chi è in cammino verso la consapevolezza
-
-━━━━━━━━━━━━━━━━━━━━━
-
-🌐 SEGUICI SU:
-
-• YouTube: @ilpuntodivista_official
-• Telegram: https://t.me/ilpuntodivista
-
-━━━━━━━━━━━━━━━━━━━━━
-
-#IlPuntoDiVista #Esoterismo #Spiritualità #Alchimia #Tarocchi #Meditazione #Consapevolezza #CrescitaPersonale #Risveglio #AnticaSaggezza #TradizioneSacra #Mistero
-
-━━━━━━━━━━━━━━━━━━━━━
-
-⚠️ DISCLAIMER:
-I contenuti di questo video hanno scopo divulgativo e di esplorazione culturale. Non sostituiscono percorsi terapeutici o consulenze professionali.
-```
-
----
-
-## ⚠️ ERRORI COMUNI DA EVITARE
-
-### ❌ NON FARE:
-1. **Copiare frasi dalla trascrizione verbatim** - Riassumi e sintetizza
-2. **Usare linguaggio troppo tecnico** senza spiegazioni
-3. **Essere vago** - "temi interessanti", "cose importanti"
-4. **Omettere lo sponsor** - Va SEMPRE in cima
-5. **Timestamp generici** - "Parte 1", "Parte 2" (non informativo)
-6. **Hashtag spam** - Max 12, tutti pertinenti
-7. **Tono clickbait** - "NON CREDERAI A QUESTO!!!" (evita)
-8. **Dimenticare CTA** - Le call to action sono essenziali
-9. **Scrivere troppo corto** - Min 800 caratteri
-10. **Ignorare SEO** - Keywords naturalmente integrate
-
-### ✅ FARE:
-1. **Leggere TUTTA la trascrizione** prima di scrivere
-2. **Identificare il tema centrale** chiaro
-3. **Estrarre 3-5 keyword primarie** dalla trascrizione
-4. **Seguire la struttura** esattamente come indicato
-5. **Rileggere** per coerenza e fluidità
-6. **Verificare lunghezza** (1200-1800 caratteri ideale)
-7. **Controllare emoji** appropriate per ogni sezione
-8. **Includere sponsor** sempre per primo
-9. **Mantenere tono** coerente con il canale
-10. **Essere specifico** - nomi, date, fatti concreti
-
----
-
-## 🎓 CHECKLIST FINALE PRE-INVIO
-
-Prima di consegnare la descrizione, verifica:
-
-- [ ] Sponsor presente e corretto (prima sezione)
-- [ ] Hook iniziale accattivante (2-3 frasi)
-- [ ] Timestamp dettagliati (min 5, con emoji)
-- [ ] Bullet points specifici (5-8 punti)
-- [ ] Ospite menzionato (se presente nel video)
-- [ ] Paragrafo approfondimento (4-6 frasi)
-- [ ] Call to action completa
-- [ ] Link social inclusi
-- [ ] Hashtag pertinenti (8-12)
-- [ ] Lunghezza 1200-1800 caratteri
-- [ ] Nessun errore grammaticale
-- [ ] Tono coerente con il canale
-- [ ] Keywords SEO integrate naturalmente
-- [ ] Disclaimer (se necessario)
-- [ ] Formattazione pulita con separatori `━━━`
-
----
-
-## 🚀 OUTPUT RICHIESTO
-
-**Formato di risposta:**
-
-Genera SOLO il testo della descrizione, senza commenti aggiuntivi, note o spiegazioni.
-
-Il tuo output deve essere direttamente copy-pastabile su YouTube come descrizione del video.
-
-Inizia con lo sponsor e termina con gli hashtag (o disclaimer se necessario).
-
-**NON includere:**
-- ❌ "Ecco la descrizione..."
-- ❌ "Ho generato il seguente testo..."
-- ❌ Note o commenti sulla generazione
-- ❌ Alternative o opzioni
-
-**Output pulito, professionale, pronto all'uso.**
-
----
-
-## 📝 ULTIMI PROMEMORIA
-
-1. **Qualità > Quantità** - Meglio una descrizione eccellente da 1500 caratteri che una da 2500 mediocre
-2. **Specificità è key** - Nomi, date, fatti concreti battono sempre generalizzazioni
-3. **Tono = Brand** - Mantieni sempre lo stile "Il Punto di Vista"
-4. **SEO naturale** - Keywords integrate, non forzate
-5. **CTA potente** - Inviti all'azione chiari e motivanti
-
----
-
-**Versione Prompt:** 2.0  
-**Lunghezza:** 350+ righe  
-**Ottimizzazione:** GPT-4 / Claude  
-**Testato per:** Canale YouTube "Il Punto di Vista"
+## REGOLE CRITICHE
+
+### TIMESTAMP (⚠️ MOLTO IMPORTANTE)
+- I timestamp DEVONO coprire TUTTA la durata del video
+- L'ULTIMO timestamp deve essere vicino alla fine del video
+- Se il video dura 1:47:45, l'ultimo timestamp deve essere intorno a 1:40:00-1:45:00
+- NON fermarti a metà video!
+- Posiziona i timestamp in base ai CAMBI DI ARGOMENTO nella trascrizione
+- NON usare intervalli fissi - segui il flusso naturale della discussione
+- Usa il formato corretto: MM:SS per video < 1 ora, H:MM:SS per video > 1 ora
+
+### LINK UTILI
+- USA SEMPRE i link ESATTI forniti sopra
+- NON lasciare parentesi vuote ()
+- NON inventare link
+
+### ARGOMENTI TRATTATI
+- Scrivi argomenti CHIARI e SPECIFICI
+- Saranno usati come CATEGORIE del video
+- Esempio buono: "Energia eterica: Discussione su edifici che avrebbero utilizzato energia libera"
+- Esempio cattivo: "Discussione generale sul tema"
+
+### OSPITI E PERSONE
+- OSPITI = chi PARLA nel video (oltre al conduttore)
+- PERSONE MENZIONATE = chi viene CITATO ma non parla
+- Includi SEMPRE Nome e Cognome completi
+- Se estrai un nome dal TITOLO, mettilo negli Ospiti
+
+### HASHTAG
+- 20-25 hashtag
+- TUTTI su una riga
+- Includi hashtag per ogni persona menzionata (#NomeCognome)
+- Includi hashtag per ogni argomento principale
+- Sempre: #IlPuntoDiVista #PuntiDiVista
+
+## OUTPUT
+Genera SOLO la descrizione formattata.
+NESSUN commento aggiuntivo.
+USA I LINK ESATTI forniti.
 PROMPT;
     }
 }

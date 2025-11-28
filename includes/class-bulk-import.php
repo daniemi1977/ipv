@@ -77,7 +77,7 @@ class IPV_Prod_Bulk_Import {
 
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-dashboard' ) ); ?>">
+                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production' ) ); ?>">
                         <i class="bi bi-speedometer2 me-1"></i>Dashboard
                     </a>
                 </li>
@@ -677,7 +677,7 @@ class IPV_Prod_Bulk_Import {
 
         // Check 1: Meta del post
         $exists = get_posts( [
-            'post_type'   => 'video_ipv',
+            'post_type'   => 'ipv_video',
             'post_status' => 'any',
             'meta_key'    => '_ipv_video_id',
             'meta_value'  => $video_id,

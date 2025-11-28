@@ -11,14 +11,17 @@ class IPV_Prod_YouTube_Importer {
         }
 
         $notice = '';
-        if ( isset( $_GET['ipv_import_success'] ) && '1' === $_GET['ipv_import_success'] ) {
+        if ( isset( $_GET['success'] ) && '1' === $_GET['success'] ) {
+            $post_id = isset( $_GET['post_id'] ) ? intval( $_GET['post_id'] ) : 0;
+            $edit_link = $post_id ? get_edit_post_link( $post_id, 'raw' ) : '';
             $notice = '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                <strong>Video aggiunto in coda con successo!</strong> Verrà processato automaticamente dal sistema.
+                <strong>Video importato e pubblicato!</strong> 
+                ' . ( $edit_link ? '<a href="' . esc_url( $edit_link ) . '" class="alert-link">Modifica video</a>' : '' ) . '
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>';
-        } elseif ( isset( $_GET['ipv_import_error'] ) ) {
-            $msg    = sanitize_text_field( wp_unslash( $_GET['ipv_import_error'] ) );
+        } elseif ( isset( $_GET['error'] ) ) {
+            $msg = sanitize_text_field( wp_unslash( $_GET['error'] ) );
             $notice = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
                 <strong>Errore:</strong> ' . esc_html( $msg ) . '
@@ -42,7 +45,7 @@ class IPV_Prod_YouTube_Importer {
 
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-dashboard' ) ); ?>">
+                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production' ) ); ?>">
                         <i class="bi bi-speedometer2 me-1"></i>Dashboard
                     </a>
                 </li>
@@ -82,48 +85,31 @@ class IPV_Prod_YouTube_Importer {
                         </div>
                         <div class="card-body">
                             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="ipv-form">
-                                <?php wp_nonce_field( 'ipv_prod_import_video', 'ipv_prod_import_video_nonce' ); ?>
-                                <input type="hidden" name="action" value="ipv_prod_import_video" />
+                                <?php wp_nonce_field( 'ipv_simple_import_nonce' ); ?>
+                                <input type="hidden" name="action" value="ipv_simple_import" />
 
                                 <div class="mb-4">
-                                    <label for="ipv_youtube_url" class="form-label">
+                                    <label for="youtube_url" class="form-label">
                                         <i class="bi bi-youtube text-danger me-1"></i>
                                         URL YouTube
                                         <span class="text-danger">*</span>
                                     </label>
                                     <input type="url" 
-                                           id="ipv_youtube_url" 
-                                           name="ipv_youtube_url" 
-                                           class="form-control form-control-lg ipv-validate" 
+                                           id="youtube_url" 
+                                           name="youtube_url" 
+                                           class="form-control form-control-lg" 
                                            placeholder="https://www.youtube.com/watch?v=..." 
-                                           data-validate-type="required"
                                            required />
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Incolla l'URL completo del video YouTube da processare
-                                    </div>
-                                </div>
-
-                                <div class="mb-4">
-                                    <label for="ipv_source" class="form-label">
-                                        <i class="bi bi-tag me-1"></i>
-                                        Fonte
-                                    </label>
-                                    <select name="ipv_source" id="ipv_source" class="form-select">
-                                        <option value="manual">Manuale</option>
-                                        <option value="rss">RSS Feed</option>
-                                        <option value="playlist">Playlist</option>
-                                    </select>
-                                    <div class="form-text">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        Indica da dove proviene il video (per statistiche)
+                                        Incolla l'URL del video - verrà importato e pubblicato subito!
                                     </div>
                                 </div>
 
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-primary btn-lg">
-                                        <i class="bi bi-plus-circle me-1"></i>
-                                        Aggiungi alla Coda
+                                        <i class="bi bi-lightning me-1"></i>
+                                        Importa e Pubblica
                                     </button>
                                 </div>
                             </form>

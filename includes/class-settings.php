@@ -11,6 +11,8 @@ class IPV_Prod_Settings {
         register_setting( 'ipv_prod_settings_group', 'ipv_openai_api_key' );
         register_setting( 'ipv_prod_settings_group', 'ipv_ai_prompt' );
         register_setting( 'ipv_prod_settings_group', 'ipv_youtube_api_key' );
+        register_setting( 'ipv_prod_settings_group', 'ipv_min_duration_minutes' );
+        register_setting( 'ipv_prod_settings_group', 'ipv_exclude_shorts' );
         register_setting( 'ipv_prod_settings_group', 'ipv_default_sponsor' );
         register_setting( 'ipv_prod_settings_group', 'ipv_sponsor_link' );
         register_setting( 'ipv_prod_settings_group', 'ipv_social_telegram' );
@@ -26,16 +28,17 @@ class IPV_Prod_Settings {
         }
 
         // Salva le impostazioni se il form è stato inviato
-        if ( isset( $_POST['ipv_save_settings'] ) ) {
-            check_admin_referer( 'ipv_prod_settings_save' );
-            self::save_settings();
-            ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>
-                <strong>Impostazioni salvate con successo!</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <?php
+        if ( isset( $_POST['ipv_save_settings'] ) && isset( $_POST['ipv_settings_nonce'] ) ) {
+            if ( wp_verify_nonce( $_POST['ipv_settings_nonce'], 'ipv_prod_settings_save' ) ) {
+                self::save_settings();
+                ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Impostazioni salvate con successo!</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php
+            }
         }
 
         $supadata_key     = get_option( 'ipv_supadata_api_key', '' );
@@ -43,13 +46,16 @@ class IPV_Prod_Settings {
         $openai_key       = get_option( 'ipv_openai_api_key', '' );
         $youtube_key      = get_option( 'ipv_youtube_api_key', '' );
         $default_sponsor  = get_option( 'ipv_default_sponsor', 'Biovital – Progetto Italia' );
-        $sponsor_link     = get_option( 'ipv_sponsor_link', '' );
-        $telegram         = get_option( 'ipv_social_telegram', '' );
-        $facebook         = get_option( 'ipv_social_facebook', '' );
-        $instagram        = get_option( 'ipv_social_instagram', '' );
-        $website          = get_option( 'ipv_social_website', '' );
+        $sponsor_link     = get_option( 'ipv_sponsor_link', 'https://biovital-italia.com/?bio=17' );
+        $telegram         = get_option( 'ipv_social_telegram', 'https://t.me/il_punto_divista' );
+        $facebook         = get_option( 'ipv_social_facebook', 'https://facebook.com/groups/4102938329737588' );
+        $instagram        = get_option( 'ipv_social_instagram', 'https://instagram.com/_ilpuntodivista._' );
+        $website          = get_option( 'ipv_social_website', 'https://ilpuntodivistachannel.com' );
         $email            = get_option( 'ipv_contact_email', '' );
         $custom_prompt    = get_option( 'ipv_ai_prompt', '' );
+        $min_duration     = get_option( 'ipv_min_duration_minutes', 0 );
+        $exclude_shorts   = get_option( 'ipv_exclude_shorts', '0' );
+        $paypal_link      = get_option( 'ipv_paypal_link', 'https://paypal.me/adrianfiorelli' );
         ?>
         <div class="wrap ipv-prod-wrap">
             <div class="ipv-prod-header">
@@ -66,7 +72,7 @@ class IPV_Prod_Settings {
 
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-dashboard' ) ); ?>">
+                    <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production' ) ); ?>">
                         <i class="bi bi-speedometer2 me-1"></i>Dashboard
                     </a>
                 </li>
@@ -92,8 +98,8 @@ class IPV_Prod_Settings {
                 </li>
             </ul>
 
-            <form method="post" action="" class="ipv-form">
-                <?php wp_nonce_field( 'ipv_prod_settings_save' ); ?>
+            <form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-settings' ) ); ?>" class="ipv-form">
+                <?php wp_nonce_field( 'ipv_prod_settings_save', 'ipv_settings_nonce' ); ?>
                 <input type="hidden" name="ipv_save_settings" value="1" />
 
                 <div class="row g-4">
@@ -184,6 +190,51 @@ class IPV_Prod_Settings {
                                         <i class="bi bi-info-circle me-1"></i>
                                         Per recuperare titoli corretti dei video
                                     </div>
+
+                                <!-- Filtri Import YouTube -->
+                                <div class="mb-4 mt-4">
+                                    <label class="form-label">
+                                        <i class="bi bi-clock-history me-1"></i>
+                                        Filtri Import YouTube
+                                    </label>
+
+                                    <div class="row g-3 align-items-center">
+                                        <div class="col-md-4">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Durata minima</span>
+                                                <input type="number"
+                                                       class="form-control"
+                                                       name="ipv_min_duration_minutes"
+                                                       value="<?php echo esc_attr( $min_duration ); ?>"
+                                                       min="0"
+                                                       step="1" />
+                                                <span class="input-group-text">min</span>
+                                            </div>
+                                            <div class="form-text">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                I video con durata inferiore non vengono importati (0 = disattivato).
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-check mt-2">
+                                                <input type="checkbox"
+                                                       class="form-check-input"
+                                                       id="ipv_exclude_shorts"
+                                                       name="ipv_exclude_shorts"
+                                                       value="1"
+                                                       <?php checked( $exclude_shorts, '1' ); ?> />
+                                                <label class="form-check-label" for="ipv_exclude_shorts">
+                                                    Escludi automaticamente Shorts / Reel
+                                                </label>
+                                                <div class="form-text">
+                                                    <i class="bi bi-info-circle me-1"></i>
+                                                    Riconosciuti in base alla durata (≤ 90 sec) e agli URL /shorts/.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -351,6 +402,7 @@ class IPV_Prod_Settings {
             'ipv_transcript_mode',
             'ipv_openai_api_key',
             'ipv_youtube_api_key',
+            'ipv_min_duration_minutes',
             'ipv_default_sponsor',
             'ipv_sponsor_link',
             'ipv_social_telegram',
@@ -364,14 +416,23 @@ class IPV_Prod_Settings {
         foreach ( $fields as $field ) {
             if ( isset( $_POST[ $field ] ) ) {
                 $value = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
-                
+
                 // Gestione speciale per textarea
                 if ( $field === 'ipv_ai_prompt' ) {
                     $value = sanitize_textarea_field( wp_unslash( $_POST[ $field ] ) );
                 }
 
+                // Normalizza la durata minima come intero >= 0
+                if ( $field === 'ipv_min_duration_minutes' ) {
+                    $value = max( 0, (int) $value );
+                }
+
                 update_option( $field, $value );
             }
         }
+
+        // Checkbox "Escludi Shorts/Reel"
+        $exclude_shorts = isset( $_POST['ipv_exclude_shorts'] ) ? '1' : '0';
+        update_option( 'ipv_exclude_shorts', $exclude_shorts );
     }
 }
