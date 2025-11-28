@@ -24,6 +24,23 @@ class IPV_Prod_Video_Wall {
             IPV_PROD_VERSION
         );
 
+        // Add custom colors from admin settings
+        $accent_color = get_option( 'ipv_wall_accent_color', '#FB0F5A' );
+        $card_bg      = get_option( 'ipv_wall_card_bg', '#F5F5F5' );
+        $meta_bg      = get_option( 'ipv_wall_meta_bg', '#EAEAEA' );
+        $text_color   = get_option( 'ipv_wall_text_color', '#555' );
+
+        $custom_css = "
+        :root {
+            --ipv-accent-color: {$accent_color};
+            --ipv-card-bg: {$card_bg};
+            --ipv-meta-bg: {$meta_bg};
+            --ipv-text-color: {$text_color};
+        }
+        ";
+
+        wp_add_inline_style( 'ipv-video-wall', $custom_css );
+
         wp_enqueue_script(
             'ipv-video-wall',
             IPV_PROD_PLUGIN_URL . 'assets/js/video-wall.js',

@@ -1,6 +1,80 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.1 - 2025-11-28
+### 🎛️ Pannello Admin Completo per Video Wall
+
+### 🆕 NUOVO: Pannello di Controllo Video Wall
+- **NEW**: Classe `IPV_Prod_Video_Wall_Admin` per gestione completa
+- **NEW**: Menu admin dedicato in "Video IPV → Video Wall"
+- **NEW**: Interfaccia grafica completa con sidebar informativa
+- **NEW**: Salvataggio opzioni nel database WordPress
+
+### 🎨 Impostazioni Layout e Struttura
+- **Layout Griglia**: 2+3, Standard, Masonry, Lista
+- **Video per Pagina**: 1-50 video configurabili
+- **Numero Colonne**: 2, 3, 4, 5 colonne
+- **Filtri**: On/Off per categorie e relatori
+- **Ricerca**: On/Off per campo ricerca
+
+### 👁️ Elementi Visibili Configurabili
+- ✅/❌ Data pubblicazione
+- ✅/❌ Categoria
+- ✅/❌ Relatore/Speaker
+- ✅/❌ Numero visualizzazioni
+- ✅/❌ Durata video
+- **Estratto**: Lunghezza caratteri estratto (0 = disabilitato)
+
+### 🎨 Personalizzazione Colori (Color Picker)
+- **Accent Color**: Badge data, link hover, pulsanti
+- **Background Card**: Sfondo card video
+- **Background Meta**: Sfondo barra info
+- **Colore Testo**: Colore testo principale
+- Preview live dei colori nel pannello
+
+### 🔃 Ordinamento Video
+- **Ordina per**: Data, Titolo, Modificato, Casuale, Visualizzazioni
+- **Ordine**: Crescente/Decrescente
+
+### ✨ Animazioni Configurabili
+- **Hover Effect**: Lift (solleva), Zoom (ingrandisce), Nessuno
+- **Load Animation**: Fade In, Slide Up, Nessuna
+
+### 📋 Shortcode Generator
+- **Generator automatico** con parametri dinamici
+- **Copia shortcode** con 1 click
+- Shortcode base: `[ipv_video_wall]`
+- Shortcode personalizzato con parametri da panel
+
+### 📊 Sidebar Informativa
+- **Statistiche**: Video totali, Categorie, Relatori
+- **Preview colori live**: Vedi modifiche in tempo reale
+- **Guida rapida**: Help contestuale
+
+### 🎛️ Funzioni Pannello
+- **Salva Impostazioni**: Persist nel database
+- **Ripristina Predefiniti**: Reset alle impostazioni default
+- **Color Picker**: WordPress native color picker
+- **Visual Feedback**: Animazioni su save/copy
+
+### 🔧 Integrazione Tecnica
+- Video Wall ora legge tutte le opzioni dal database
+- CSS dinamico iniettato con `wp_add_inline_style`
+- CSS Variables aggiornate dinamicamente
+- Backward compatibility con shortcode parametri
+
+### 📦 File Nuovi/Modificati
+- **NEW**: `includes/class-video-wall-admin.php` - Admin panel class
+- **NEW**: `assets/css/video-wall-admin.css` - Admin panel styles
+- **NEW**: `assets/js/video-wall-admin.js` - Admin panel interactions
+- **MODIFIED**: `includes/class-video-wall.php` - Dynamic CSS colors
+- **MODIFIED**: `ipv-production-system-pro.php` - Init admin class
+
+### 🎯 Come Accedere
+WordPress Admin → **Video IPV** → **Video Wall**
+
+---
+
 ## v7.9.0 - 2025-11-28
 ### 🎨 Video Wall Redesign - Influencer Theme Style
 
