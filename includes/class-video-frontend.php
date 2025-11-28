@@ -17,6 +17,10 @@ class IPV_Prod_Video_Frontend {
         // Inserisci embed YouTube all'inizio del contenuto
         add_filter( 'the_content', [ __CLASS__, 'prepend_youtube_embed' ], 5 );
 
+        // Hook alternativo per temi che non usano the_content standard
+        add_action( 'wp_head', [ __CLASS__, 'inject_embed_styles' ] );
+        add_action( 'loop_start', [ __CLASS__, 'maybe_output_embed' ] );
+
         // Rimuovi featured image per ipv_video
         add_filter( 'post_thumbnail_html', [ __CLASS__, 'remove_featured_image' ], 10, 2 );
 
@@ -179,12 +183,178 @@ class IPV_Prod_Video_Frontend {
     }
 
     /**
+     * Inietta CSS per embed nel <head>
+     */
+    public static function inject_embed_styles() {
+        if ( ! is_singular( 'ipv_video' ) ) {
+            return;
+        }
+        ?>
+        <style>
+        /* Container principale - width 100% dell'area contenuto (non viewport) */
+        body.single-ipv_video .ipv-video-embed-container,
+        body .ipv-video-embed-container {
+            width: 100% !important;
+            max-width: 100% !important;
+            position: relative !important;
+            margin: 0 auto 40px auto !important;
+            padding: 0 !important;
+            display: block !important;
+            clear: both !important;
+            overflow: visible !important;
+            min-height: 0 !important;
+        }
+
+        /* Fix per contenitori del tema che potrebbero tagliare */
+        body.single-ipv_video .entry-content,
+        body.single-ipv_video .post-content,
+        body.single-ipv_video article,
+        body.single-ipv_video .hentry {
+            overflow: visible !important;
+        }
+
+        /* Wrapper responsive 16:9 - aspect ratio perfetto */
+        body.single-ipv_video .ipv-video-embed-container .ipv-embed-wrapper,
+        body .ipv-video-embed-container .ipv-embed-wrapper {
+            position: relative !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            padding-bottom: 56.25% !important; /* 16:9 aspect ratio */
+            padding-top: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            border-radius: 0 !important;
+            background: #000 !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+        }
+
+        /* iframe - riempie completamente il wrapper senza margini */
+        body.single-ipv_video .ipv-video-embed-container .ipv-embed-wrapper iframe,
+        body .ipv-video-embed-container .ipv-embed-wrapper iframe,
+        body.single-ipv_video iframe[src*="youtube"],
+        body.single-ipv_video iframe[src*="vimeo"] {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100% !important;
+            max-height: 100% !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
+        }
+
+        /* Mobile responsive - mantieni full width anche su mobile */
+        @media (max-width: 768px) {
+            body.single-ipv_video .ipv-video-embed-container,
+            body .ipv-video-embed-container {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto 30px auto !important;
+                padding: 0 !important;
+                position: relative !important;
+                overflow: visible !important;
+                min-height: 0 !important;
+                height: auto !important;
+                max-height: none !important;
+            }
+
+            body.single-ipv_video .ipv-video-embed-container .ipv-embed-wrapper,
+            body .ipv-video-embed-container .ipv-embed-wrapper {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: relative !important;
+                width: 100% !important;
+                padding-bottom: 56.25% !important;
+                height: 0 !important;
+                overflow: hidden !important;
+            }
+
+            body.single-ipv_video .ipv-video-embed-container iframe,
+            body .ipv-video-embed-container iframe {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            /* Forza visibilità anche sui contenitori padre */
+            body.single-ipv_video .entry-content,
+            body.single-ipv_video .post-content,
+            body.single-ipv_video article {
+                overflow: visible !important;
+                max-height: none !important;
+            }
+        }
+        </style>
+        <?php
+    }
+
+    /**
+     * Output embed all'inizio del loop per temi che non usano the_content standard
+     */
+    public static function maybe_output_embed( $query ) {
+        // Solo per main query di ipv_video singolo
+        if ( ! $query->is_main_query() || ! is_singular( 'ipv_video' ) ) {
+            return;
+        }
+
+        // Flag per evitare output multipli
+        static $embed_outputted = false;
+        if ( $embed_outputted ) {
+            return;
+        }
+
+        $post_id = get_the_ID();
+        $yt_id   = get_post_meta( $post_id, '_ipv_video_id', true );
+
+        if ( empty( $yt_id ) ) {
+            return;
+        }
+
+        $embed_outputted = true;
+
+        // Output dell'embed
+        ?>
+        <div class="ipv-video-embed-container">
+            <div class="ipv-embed-wrapper">
+                <iframe
+                    src="https://www.youtube.com/embed/<?php echo esc_attr( $yt_id ); ?>?rel=0&modestbranding=1&showinfo=0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+        <?php
+    }
+
+    /**
      * Rimuove featured image per ipv_video SOLO nel post principale
      */
     public static function remove_featured_image( $html, $post_id ) {
-        // Rimuovi solo se siamo nel main query del post singolo
-        if ( get_post_type( $post_id ) === 'ipv_video' && is_singular( 'ipv_video' ) && is_main_query() ) {
-            return '';
+        // Rimuovi solo se siamo nella pagina single del post ipv_video
+        // E solo se il post_id corrisponde al post corrente (non nei related posts)
+        if ( get_post_type( $post_id ) === 'ipv_video' && is_singular( 'ipv_video' ) ) {
+            // Controlla se questo è il post principale della pagina
+            $current_post_id = get_queried_object_id();
+            if ( $post_id === $current_post_id ) {
+                return '';
+            }
         }
         return $html;
     }

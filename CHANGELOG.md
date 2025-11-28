@@ -1,6 +1,48 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.13 - 2025-11-28
+### 🔧 CRITICAL FIX: Featured Image e Video Embed
+
+### 🐛 Problemi Risolti
+- **BUG 1**: Featured images grigie nei related posts
+- **BUG 2**: Video embed non visualizzato nei CPT ipv_video
+
+### 💡 Soluzioni Implementate
+
+#### 1. Fix Featured Image nei Related Posts
+- **PROBLEMA**: Il filtro `remove_featured_image` troppo aggressivo rimuoveva featured images anche dai related posts
+- **SOLUZIONE**: Usa `get_queried_object_id()` per verificare che sia il post principale
+- **RISULTATO**: Featured images visualizzate nei related posts, rimossa solo nel post principale
+
+#### 2. Fix Video Embed Non Visualizzato
+- **PROBLEMA**: Template obsoleto `single-ipv_video.php` interferiva con il sistema
+- **PROBLEMA 2**: Tema Influencer potrebbe non usare `the_content()` in modo standard
+- **SOLUZIONE**:
+  - Rimosso template obsoleto `single-ipv_video.php` (usava chiave meta sbagliata `_ipv_youtube_id`)
+  - Aggiunto hook `inject_embed_styles()` per CSS nel `<head>`
+  - Aggiunto hook `maybe_output_embed()` su `loop_start` per temi non standard
+  - CSS iniettato globalmente via `wp_head`
+- **RISULTATO**: Video embed funziona sia con temi standard che con Influencer
+
+### 📝 File Modificati
+- `ipv-production-system-pro.php`: Versione 7.9.12 → 7.9.13
+- `includes/class-video-frontend.php`:
+  - Funzione `remove_featured_image()` con check `get_queried_object_id()`
+  - Funzione `inject_embed_styles()` per CSS globale
+  - Funzione `maybe_output_embed()` per output via loop_start
+  - Hook `wp_head` per styles
+  - Hook `loop_start` per embed output
+- `templates/single-ipv_video.php`: Rimosso (obsoleto)
+
+### ✅ Risultato
+- ✅ Featured images visualizzate correttamente nei related posts
+- ✅ Video embed visualizzato nei CPT ipv_video
+- ✅ Compatibilità con tema Influencer e temi standard
+- ✅ Doppio sistema di output: via `the_content` E via `loop_start`
+
+---
+
 ## v7.9.12 - 2025-11-28
 ### 📱 Mobile Sidebar Removal + Enhanced YouTube Views System
 
