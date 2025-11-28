@@ -1,6 +1,23 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.2 - 2025-11-28
+### 🤖 Golden Prompt v4.4 - Anti-Procrastinazione Saluti Finali
+
+### 🎯 Fix Timestamp "Saluti Finali"
+- **FIX**: Risolto problema timestamp finali spacchettati in più voci
+- **PRIMA**: `1:53:30 — Ringraziamenti / 1:59:00 — Chiusura / 2:03:40 — Fine`
+- **DOPO**: `1:53:30 — Saluti finali` (timestamp unico)
+- **NEW**: Istruzioni esplicite per NON dividere ringraziamenti/chiusura/fine
+- **NEW**: Regola anti-procrastinazione: quando arrivi a saluti, FERMATI
+
+### 📝 File Modificati
+- `includes/class-ai-generator.php` - Golden Prompt v4.4 (linee 679-680)
+- Aggiunta istruzione: "Quando arrivi a 'Saluti finali', FERMATI LÌ"
+- Aggiunta istruzione: "L'ultimo timestamp deve essere UNICO"
+
+---
+
 ## v7.9.1 - 2025-11-28
 ### 🎛️ Pannello Admin Completo per Video Wall
 

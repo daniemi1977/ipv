@@ -676,6 +676,8 @@ PROMPT;
         $instructions .= "- Leggi la trascrizione FINO ALLA FINE prima di generare i timestamp\n";
         $instructions .= "- Conta MINIMO 15-20 timestamp per video > 60 minuti\n";
         $instructions .= "- NON usare intervalli fissi - segui il flusso naturale della discussione\n";
+        $instructions .= "- ⚠️ IMPORTANTE: Quando arrivi a 'Saluti finali' o 'Ringraziamenti', FERMATI LÌ. NON creare timestamp separati per 'Chiusura', 'Fine', 'Call to Action' dopo i saluti.\n";
+        $instructions .= "- L'ultimo timestamp deve essere UNICO e chiamarsi 'Saluti finali' o simile, NON spacchettarlo in più timestamp.\n";
 
         if ( $hours >= 1 ) {
             $instructions .= "- FORMATO OBBLIGATORIO: H:MM:SS (es: 1:23:45) perché il video supera 1 ora\n";
@@ -698,7 +700,7 @@ PROMPT;
             : self::get_timestamp_instructions( $duration_formatted, $duration_seconds );
 
         return <<<PROMPT
-# GOLDEN PROMPT v4.3 - "Il Punto di Vista" - Sistema Editoriale YouTube-Friendly
+# GOLDEN PROMPT v4.4 - "Il Punto di Vista" - Sistema Editoriale YouTube-Friendly
 
 ## IDENTITÀ
 Sei un copywriter esperto per il canale YouTube italiano **"Il Punto di Vista"** (@ilpuntodivista_official).
