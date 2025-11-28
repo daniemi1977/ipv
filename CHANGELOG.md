@@ -1,6 +1,41 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.11 - 2025-11-28
+### 📊 Views YouTube invece di Views WordPress
+
+### 🎯 Modifica Richiesta
+- **RICHIESTA**: Mostrare views YouTube invece di views WordPress nel CPT
+- **PROBLEMA**: Tema mostra "3 min read, 3 Views, 0 Comments" con dati WordPress
+- **OBIETTIVO**: Sostituire "Views" con dati reali da YouTube Data API v3
+
+### 💡 Soluzione Implementata
+- **NEW**: Filtro `get_post_metadata` per intercettare richieste views
+- **NEW**: Funzione `replace_views_with_youtube()` che sostituisce automaticamente
+- **NEW**: Supporto per tutte le chiavi meta usate dai temi popolari:
+  - `post_views_count`
+  - `views`
+  - `_post_views_count`
+  - `wpb_post_views_count`
+  - `post_view_count`
+  - `wpb_views`
+- **NEW**: CSS per nascondere "reading time" e "comment count"
+
+### 📝 File Modificati
+- `includes/class-video-frontend.php`:
+  - Filtro `get_post_metadata` aggiunto
+  - Funzione `replace_views_with_youtube()` per sostituzione automatica
+  - CSS per nascondere `.reading-time`, `.comment-count`, `.post-views`
+  - Recupera `_ipv_yt_views` salvato da YouTube Data API
+
+### ✅ Risultato
+- ✅ Views YouTube mostrate automaticamente al posto di quelle WordPress
+- ✅ Funziona con tema Influencer e altri temi popolari
+- ✅ Nessuna modifica ai template del tema richiesta
+- ✅ Aggiornamento automatico views ogni ora (CRON esistente)
+
+---
+
 ## v7.9.10 - 2025-11-28
 ### 📱 CRITICAL FIX: Video Embed Invisibile su Mobile
 

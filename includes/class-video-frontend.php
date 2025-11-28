@@ -22,6 +22,9 @@ class IPV_Prod_Video_Frontend {
 
         // Rimuovi tag e categorie cliccabili
         add_action( 'wp_head', [ __CLASS__, 'hide_tags_and_meta' ] );
+
+        // Sostituisci views WordPress con views YouTube
+        add_filter( 'get_post_metadata', [ __CLASS__, 'replace_views_with_youtube' ], 10, 4 );
     }
 
     /**
@@ -180,6 +183,37 @@ class IPV_Prod_Video_Frontend {
     }
 
     /**
+     * Sostituisce views WordPress con views YouTube per ipv_video
+     */
+    public static function replace_views_with_youtube( $value, $object_id, $meta_key, $single ) {
+        // Solo per ipv_video
+        if ( get_post_type( $object_id ) !== 'ipv_video' ) {
+            return $value;
+        }
+
+        // Chiavi meta usate dai temi per contare le views
+        $view_keys = [
+            'post_views_count',
+            'views',
+            '_post_views_count',
+            'wpb_post_views_count',
+            'post_view_count',
+            'wpb_views',
+        ];
+
+        if ( in_array( $meta_key, $view_keys, true ) ) {
+            // Recupera views YouTube
+            $youtube_views = get_post_meta( $object_id, '_ipv_yt_views', true );
+
+            if ( ! empty( $youtube_views ) ) {
+                return $single ? $youtube_views : [ $youtube_views ];
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Nasconde tag, categorie e metadati per ipv_video
      */
     public static function hide_tags_and_meta() {
@@ -213,7 +247,11 @@ class IPV_Prod_Video_Frontend {
         body.single-ipv_video .entry-categories,
         body.single-ipv_video .entry-tags,
         body.single-ipv_video .taxonomy-links,
-        body.single-ipv_video .bt-post-tags {
+        body.single-ipv_video .bt-post-tags,
+        body.single-ipv_video .post-views,
+        body.single-ipv_video .reading-time,
+        body.single-ipv_video .comment-count,
+        body.single-ipv_video .comments-link {
             display: none !important;
         }
 
