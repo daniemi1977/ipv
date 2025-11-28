@@ -1,32 +1,38 @@
 
 # IPV Production System Pro – Changelog
 
-## v7.9.6 - 2025-11-28
-### 📺 Video Embed Full Width Desktop
+## v7.9.7 - 2025-11-28
+### 📺 Video Embed Centrato - Larghezza Area Contenuto
 
-### 🎯 Modifica Richiesta
-- **RICHIESTA**: Video embed full width anche su desktop (attualmente limitato dalla larghezza del tema)
-- **OBIETTIVO**: Video che occupa tutta la larghezza dello schermo su desktop e mobile
+### 🎯 Correzione Richiesta
+- **FEEDBACK v7.9.6**: Video viewport breakout troppo largo, esce dall'area contenuto
+- **RICHIESTA**: Video centrato che occupi tutta la larghezza dell'area contenuto CPT
+- **OBIETTIVO**: Stesso comportamento desktop/mobile, nessun bordo nero, centrato
 
 ### 💡 Soluzione Implementata
-- **NEW**: Viewport breakout technique con `width: 100vw` e margini negativi
-- **NEW**: `left: 50%` e `margin-left: -50vw` per far uscire dal container del tema
-- **REMOVED**: Border-radius su desktop (ora 0 per look cinema)
-- **REMOVED**: Box-shadow su desktop
-- **MANTAINED**: Full width anche su mobile
+- **REVERTED**: Rimosso viewport breakout (100vw con margini negativi)
+- **NEW**: `width: 100%` (larghezza area contenuto, non viewport)
+- **NEW**: `margin: 0 auto` (centrato nell'area contenuto)
+- **REMOVED**: `left: 50%`, `margin-left: -50vw` (no breakout)
+- **MAINTAINED**: Aspect ratio 16:9 perfetto, nessun border-radius
 
 ### 📝 File Modificati
 - `includes/class-video-frontend.php`:
-  - Container con viewport breakout CSS
-  - `width: 100vw !important`
-  - `margin-left: -50vw !important`
-  - `border-radius: 0 !important`
+  - Container: `width: 100% !important` (non 100vw)
+  - Container: `margin: 0 auto 40px auto !important`
+  - Rimossi left, right, margini negativi viewport
 
 ### ✅ Risultato
-- ✅ Video full width viewport su desktop
-- ✅ Video full width viewport su mobile
-- ✅ Nessun bordo arrotondato (cinema look)
+- ✅ Video centrato nell'area contenuto CPT
+- ✅ Larghezza 100% dell'area contenuto (non viewport)
+- ✅ Nessun bordo nero sopra/lati
 - ✅ Aspect ratio 16:9 perfetto
+- ✅ Stesso comportamento desktop e mobile
+
+---
+
+## v7.9.6 - 2025-11-28 [SUPERSEDED by v7.9.7]
+### 📺 Video Embed Full Width Desktop (REVERTED)
 
 ---
 

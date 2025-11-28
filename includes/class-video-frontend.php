@@ -43,18 +43,13 @@ class IPV_Prod_Video_Frontend {
         // CSS inline con altissima specificità per evitare conflitti con il tema
         $embed_html = '
         <style>
-        /* Container principale - FULL WIDTH viewport breakout */
+        /* Container principale - width 100% dell\'area contenuto (non viewport) */
         body.single-ipv_video .ipv-video-embed-container,
         body .ipv-video-embed-container {
-            width: 100vw !important;
-            max-width: 100vw !important;
+            width: 100% !important;
+            max-width: 100% !important;
             position: relative !important;
-            left: 50% !important;
-            right: 50% !important;
-            margin-left: -50vw !important;
-            margin-right: -50vw !important;
-            margin-top: 0 !important;
-            margin-bottom: 40px !important;
+            margin: 0 auto 40px auto !important;
             padding: 0 !important;
             display: block !important;
             clear: both !important;
