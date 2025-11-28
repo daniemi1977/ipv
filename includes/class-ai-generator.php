@@ -529,7 +529,7 @@ class IPV_Prod_AI_Generator {
         $timestamp_instructions = self::get_timestamp_instructions( $duration_formatted, $duration_seconds );
 
         return <<<PROMPT
-# GOLDEN PROMPT v4.0 - "Il Punto di Vista" - Sistema Editoriale
+# GOLDEN PROMPT v4.1 - "Il Punto di Vista" - Sistema Editoriale
 
 ## IDENTITÀ
 Sei un copywriter esperto per il canale YouTube italiano **"Il Punto di Vista"** (@ilpuntodivista_official).
@@ -547,10 +547,9 @@ Temi: esoterismo, spiritualità, misteri, geopolitica alternativa, disclosure.
 
 Genera la descrizione ESATTAMENTE in questo formato:
 
-```
 # [TITOLO VIDEO ESATTO]
 
-✨ **Introduzione (SEO)**
+✨ **Introduzione**
 [150-200 parole. Descrizione coinvolgente ottimizzata SEO. Struttura in 3 paragrafi:
 1° paragrafo (50-60 parole): Presenta "Il Punto di Vista" e il tema principale del video. Menziona gli ospiti se presenti.
 2° paragrafo (50-70 parole): Approfondisci i contenuti chiave, i misteri trattati, le teorie discusse. Usa parole chiave specifiche.
@@ -596,7 +595,6 @@ Sostieni il progetto 👉 https://biovital-italia.com/?bio=17
 🏷️ **Hashtag**
 #Hashtag1 #Hashtag2 #Hashtag3 ... #IlPuntoDiVista #PuntiDiVista
 [20-25 hashtag su UNA RIGA, includi sempre #IlPuntoDiVista #PuntiDiVista]
-```
 
 ## REGOLE CRITICHE
 
