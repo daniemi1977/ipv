@@ -82,17 +82,17 @@
     min-width: 0;
 }
 
-/* PRIMA RIGA: 2 video al 50% ciascuno */
-.ipv-video-grid .ipv-video-card:nth-child(5n+1),
-.ipv-video-grid .ipv-video-card:nth-child(5n+2) {
-    width: calc(50% - 15px);
+/* LAYOUT 2+3: PRIMA RIGA - 2 video al 50% ciascuno */
+.ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+1),
+.ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+2) {
+    width: calc(50% - 15px) !important;
 }
 
-/* SECONDA RIGA: 3 video al 33.333% ciascuno */
-.ipv-video-grid .ipv-video-card:nth-child(5n+3),
-.ipv-video-grid .ipv-video-card:nth-child(5n+4),
-.ipv-video-grid .ipv-video-card:nth-child(5n+5) {
-    width: calc(33.333% - 20px);
+/* LAYOUT 2+3: SECONDA RIGA - 3 video al 33.333% ciascuno */
+.ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+3),
+.ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+4),
+.ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+5) {
+    width: calc(33.333% - 20px) !important;
 }
 
 /* Video Card - Influencer Theme Style */
@@ -400,13 +400,13 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-    /* Su tablet: 2 colonne per tutte le card */
-    .ipv-video-grid .ipv-video-card:nth-child(5n+1),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+2),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+3),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+4),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+5) {
-        width: calc(50% - 15px);
+    /* LAYOUT 2+3: Su tablet - 2 colonne per tutte le card */
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+1),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+2),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+3),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+4),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+5) {
+        width: calc(50% - 15px) !important;
     }
 }
 
@@ -424,13 +424,13 @@
         gap: 20px;
     }
 
-    /* Su mobile: 1 colonna (100% larghezza) */
-    .ipv-video-grid .ipv-video-card:nth-child(5n+1),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+2),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+3),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+4),
-    .ipv-video-grid .ipv-video-card:nth-child(5n+5) {
-        width: 100%;
+    /* LAYOUT 2+3: Su mobile - 1 colonna (100% larghezza) */
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+1),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+2),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+3),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+4),
+    .ipv-video-grid.ipv-layout-2-3 .ipv-video-card:nth-child(5n+5) {
+        width: 100% !important;
     }
 
     .ipv-load-more-btn {

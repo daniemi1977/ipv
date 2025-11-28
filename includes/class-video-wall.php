@@ -78,7 +78,7 @@ class IPV_Prod_Video_Wall {
             <?php endif; ?>
 
             <div class="ipv-video-grid-wrapper">
-                <div class="ipv-video-grid ipv-columns-<?php echo esc_attr( $atts['columns'] ); ?>">
+                <div class="ipv-video-grid ipv-layout-<?php echo esc_attr( str_replace( '+', '-', $atts['layout'] ) ); ?> ipv-columns-<?php echo esc_attr( $atts['columns'] ); ?>">
                     <?php self::render_videos( $atts ); ?>
                 </div>
                 <div class="ipv-video-loading" style="display:none;">

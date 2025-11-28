@@ -1,6 +1,31 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.3 - 2025-11-28
+### 🔧 Fix Layout 2+3 Video Wall
+
+### 🎯 Problema Risolto
+- **FIX**: Layout "2+3" non veniva applicato correttamente
+- **CAUSA**: Parametro `layout` non utilizzato per applicare classe CSS
+- **CAUSA**: Regole CSS `ipv-columns-3` con `!important` sovrascrivevano layout 2+3
+
+### 💡 Soluzione Implementata
+- **NEW**: Classe `ipv-layout-2-3` applicata al grid container
+- **NEW**: CSS con specificità aumentata: `.ipv-video-grid.ipv-layout-2-3`
+- **NEW**: `!important` sulle regole layout 2+3 per priorità corretta
+- **FIX**: Media queries responsive aggiornate per layout 2+3
+
+### 📝 File Modificati
+- `includes/class-video-wall.php` (linea 81) - Aggiunta classe layout
+- `assets/css/video-wall.css` (linee 85-96, 401-434) - CSS layout specifico
+
+### ✅ Risultato
+- **Desktop**: 2 video al 50% (prima riga) + 3 video al 33% (seconda riga)
+- **Tablet**: 2 colonne uniformi
+- **Mobile**: 1 colonna al 100%
+
+---
+
 ## v7.9.2 - 2025-11-28
 ### 🤖 Golden Prompt v4.4 - Anti-Procrastinazione Saluti Finali
 
