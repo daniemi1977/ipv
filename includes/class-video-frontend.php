@@ -53,6 +53,16 @@ class IPV_Prod_Video_Frontend {
             padding: 0 !important;
             display: block !important;
             clear: both !important;
+            overflow: visible !important;
+            min-height: 0 !important;
+        }
+
+        /* Fix per contenitori del tema che potrebbero tagliare */
+        body.single-ipv_video .entry-content,
+        body.single-ipv_video .post-content,
+        body.single-ipv_video article,
+        body.single-ipv_video .hentry {
+            overflow: visible !important;
         }
 
         /* Wrapper responsive 16:9 - aspect ratio perfetto */

@@ -1,6 +1,46 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.9.9 - 2025-11-28
+### 🔍 Tool Controllo Duplicati + Fix Video Embed Tagliato
+
+### 🎯 Nuove Funzionalità
+- **NEW**: Pannello "Controllo Duplicati" in admin
+- **NEW**: Check post duplicati per titolo
+- **NEW**: Check post duplicati per Video ID YouTube
+- **NEW**: Check media duplicati per nome file
+- **NEW**: Comparazione visiva media con anteprime
+- **NEW**: Info dimensioni file per ogni media
+
+### 🐛 Bug Risolti
+- **FIX**: Video embed tagliato/troncato sul lato destro/inferiore
+- **CAUSA**: Overflow del tema nascondeva parte del video
+- **FIX**: Aggiunto `overflow: visible !important` ai contenitori
+
+### 📝 File Nuovi/Modificati
+- **NEW**: `includes/class-duplicate-checker.php`
+  - Pannello admin "🔍 Duplicati" sotto "Video IPV"
+  - Query SQL ottimizzate per trovare duplicati
+  - Anteprime visuali per media
+  - Link diretti per modificare/eliminare
+
+- `includes/class-video-frontend.php`:
+  - CSS: `overflow: visible !important` per container video
+  - CSS: Fix contenitori tema (entry-content, post-content, article, hentry)
+  - `min-height: 0 !important` per prevenire altezza minima del tema
+
+- `ipv-production-system-pro.php`:
+  - Aggiunto require per class-duplicate-checker.php
+
+### ✅ Risultato
+- ✅ Video embed completo (non più tagliato)
+- ✅ Tool duplicati accessibile da "Video IPV → 🔍 Duplicati"
+- ✅ Identificazione rapida post duplicati
+- ✅ Identificazione rapida media duplicati
+- ✅ Comparazione visiva immagini
+
+---
+
 ## v7.9.8 - 2025-11-28
 ### 🔧 Fix: Featured Image nei Related Posts + CSS .bt-post-tags
 
