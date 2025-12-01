@@ -1,6 +1,66 @@
 
 # IPV Production System Pro – Changelog
 
+## v8.0.1 - 2025-12-01
+### 📐 PATCH: Elementor Pre-Built Templates
+
+**Quick Update**: 4 template Elementor professionali pronti all'uso
+
+### 📐 ELEMENTOR TEMPLATES (4)
+- **Single Video Page**: Pagina singola video con player, meta e related videos
+- **Video Gallery**: Galleria con search form, filtri e grid responsive
+- **Video Landing Page**: Landing moderna con hero video, stats e CTA
+- **Video Channel Home**: Home stile YouTube con sezioni multiple
+
+### 🎯 Sistema Template Manager
+- **UI Admin**: Menu dedicato "📐 Elementor Templates" in IPV Video
+- **Import 1-Click**: Importa template direttamente nella libreria Elementor
+- **Preview Cards**: Anteprima visiva con descrizione e features
+- **Auto-Detection**: Sistema compatibile solo se Elementor installato
+
+### 📁 Come Usare
+1. Vai su `IPV Video → 📐 Elementor Templates`
+2. Clicca "⬇️ Importa Template" sul template desiderato
+3. Apri Elementor editor su una pagina
+4. Clicca icona 📁 "Aggiungi Template"
+5. Trova il template in "Le mie librerie"
+6. Clicca "Inserisci" e personalizza!
+
+### 📊 Template Details
+
+**1. Single Video Page**
+- IPV Video Player (full-width)
+- Video Stats inline
+- Related Videos Grid (6 video, 3 colonne)
+
+**2. Video Gallery**
+- Hero gradient header
+- IPV Search widget con filtri
+- Video Grid (12 video, 4 colonne, gap 30px)
+
+**3. Video Landing Page**
+- Hero con Video Player (80% width)
+- IPV Stats cards (4 metriche)
+- Latest Videos section
+
+**4. Video Channel Home**
+- Hero gradient con stats
+- Latest Videos (8 video, 4 colonne)
+- Popular Videos (order by views)
+- Video Wall con infinite scroll
+
+### 📁 File Nuovo
+- `includes/class-elementor-templates.php` (600 righe)
+
+### 🔧 Technical
+- Template format: Elementor JSON structure
+- Post type: `elementor_library`
+- Template type: `page`
+- Dynamic ID generation per elementi
+- AJAX import con security nonce
+
+---
+
 ## v8.0.0 - 2025-12-01
 ### 🎨 MAJOR UPDATE: Golden Prompt AI & Universal Theme Compatibility
 
