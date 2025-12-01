@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione video per "Il Punto di Vista": importazione YouTube, trascrizioni SupaData, AI con Golden Prompt, Video Wall con filtri AJAX.
- * Version: 7.11.0
+ * Version: 7.12.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 6.0
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '7.11.0' );
+define( 'IPV_PROD_VERSION', '7.12.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -68,6 +68,14 @@ require_once IPV_PROD_PLUGIN_DIR . 'includes/class-analytics.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-performance.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-ai-enhancements.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-vimeo-api.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-dailymotion-api.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-unified-importer.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-rest-api.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-gutenberg-blocks.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-wp-cli.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-sitemap.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-bulk-operations.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-qr-generator.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-wall.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-wall-settings.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-wall-admin.php';

@@ -1,6 +1,83 @@
 
 # IPV Production System Pro – Changelog
 
+## v7.12.0 - 2025-12-01
+### 🌟 ENTERPRISE UPDATE: Multi-Source, API, Automation & Tools
+
+**Implementazione "TUTTO TRANNE CDN"**: REST API, Multi-Source completo, Automation avanzata, Gutenberg, WP-CLI, SEO Pro
+
+### 🎬 MULTI-SOURCE COMPLETO
+- **Dailymotion API**: Integration completa (class-dailymotion-api.php)
+- **Unified Importer**: Auto-detect YouTube/Vimeo/Dailymotion da URL
+- UI unificata con rilevamento automatico fonte
+- Source switcher e gestione multi-platform
+
+### 🔌 REST API & INTEGRATIONS
+- **Custom REST API**: 7 endpoints (`/videos`, `/stats`, `/search`, `/webhook`)
+- GET /videos: Lista paginata con filtri
+- POST /videos: Import da URL con auth
+- GET /stats: Statistiche aggregate
+- **Webhook Support**: Zapier, Make.com integration
+- Signature verification HMAC SHA256
+
+### 🧱 GUTENBERG BLOCKS
+- **Video Player Block**: Embed player con settings
+- **Video Grid Block**: Grid responsive con category filter
+- Inspector controls (autoplay, columns, count)
+- Server-side rendering
+- blocks.js completo con React components
+
+### 💻 WP-CLI COMMANDS
+- `wp ipv import <url>`: Import da command line
+- `wp ipv list`: Lista tutti video (table/json/csv)
+- `wp ipv stats`: Statistiche aggregate
+- `wp ipv optimize`: Database optimization
+- `wp ipv regen-thumbnails`: Bulk thumbnail regen
+
+### 🔧 BULK OPERATIONS
+- **Bulk Edit**: Category/tag assignment massivo
+- **Auto-Publish Scheduler**: Schedule pubblicazioni con intervallo
+- **Template Descriptions**: Salva e riusa descrizioni
+- Custom bulk actions nella lista video
+- UI completa admin
+
+### 🗺️ VIDEO SITEMAP XML
+- Auto-generate sitemap: `/video-sitemap.xml`
+- Google Video Schema completo
+- Cache 24h con auto-refresh
+- robots.txt integration automatica
+- 1000+ video supportati
+
+### 📱 QR CODE GENERATOR
+- Generate QR per ogni video
+- Meta box nella edit page
+- Download diretto PNG
+- API qrserver.com integration
+- Auto-save in media library
+
+### 📝 File Nuovi (9)
+1. `includes/class-dailymotion-api.php` (150 righe)
+2. `includes/class-unified-importer.php` (400 righe)
+3. `includes/class-rest-api.php` (250 righe)
+4. `includes/class-gutenberg-blocks.php` (200 righe)
+5. `assets/js/blocks.js` (150 righe)
+6. `includes/class-wp-cli.php` (200 righe)
+7. `includes/class-video-sitemap.php` (180 righe)
+8. `includes/class-bulk-operations.php` (350 righe)
+9. `includes/class-qr-generator.php` (150 righe)
+
+### 📊 Metrics v7.12.0
+- **Codice**: +2.000 righe
+- **Nuovi File**: 9
+- **Features**: 20+
+- **REST Endpoints**: +7
+- **WP-CLI Commands**: +5
+- **Gutenberg Blocks**: +2
+- **Multi-Source**: YouTube + Vimeo + Dailymotion
+
+---
+
+
 ## v7.11.0 - 2025-12-01
 ### 🚀 MASSIVE UPDATE: Analytics, Performance, AI & Multi-Source
 
