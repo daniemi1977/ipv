@@ -14,6 +14,7 @@ class IPV_Prod_Duplicate_Checker {
 
     public static function init() {
         add_action( 'admin_menu', [ __CLASS__, 'add_admin_page' ], 99 );
+        add_action( 'wp_ajax_ipv_delete_duplicate_posts', [ __CLASS__, 'ajax_delete_duplicates' ] );
     }
 
     public static function add_admin_page() {
@@ -46,6 +47,55 @@ class IPV_Prod_Duplicate_Checker {
                 </div>
             </div>
         </div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            $('.ipv-delete-dups').on('click', function() {
+                var $btn = $(this);
+                var postIds = $btn.data('post-ids');
+                var videoId = $btn.data('video-id');
+                var idsArray = postIds.toString().split(',');
+
+                var confirmMsg = 'ATTENZIONE: Stai per eliminare ' + (idsArray.length - 1) + ' post duplicati.\n\n';
+                confirmMsg += 'Video ID YouTube: ' + videoId + '\n';
+                confirmMsg += 'Verrà mantenuto il post ID ' + idsArray[0] + ' (il più vecchio)\n';
+                confirmMsg += 'Verranno eliminati: ' + idsArray.slice(1).join(', ') + '\n\n';
+                confirmMsg += 'QUESTA AZIONE È IRREVERSIBILE!\n\nContinuare?';
+
+                if (!confirm(confirmMsg)) {
+                    return;
+                }
+
+                $btn.prop('disabled', true).text('⏳ Eliminazione...');
+
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'ipv_delete_duplicate_posts',
+                        nonce: '<?php echo wp_create_nonce( 'ipv_duplicate_checker_nonce' ); ?>',
+                        post_ids: postIds
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            alert('✅ ' + response.data.message);
+                            // Rimuovi la riga dalla tabella
+                            $btn.closest('tr').fadeOut(400, function() {
+                                $(this).remove();
+                            });
+                        } else {
+                            alert('❌ Errore: ' + response.data);
+                            $btn.prop('disabled', false).text('Elimina Duplicati');
+                        }
+                    },
+                    error: function() {
+                        alert('❌ Errore di connessione');
+                        $btn.prop('disabled', false).text('Elimina Duplicati');
+                    }
+                });
+            });
+        });
+        </script>
         <?php
     }
 
@@ -130,7 +180,7 @@ class IPV_Prod_Duplicate_Checker {
                     }
                 }
                 echo '</td>';
-                echo '<td><button class="button button-small button-link-delete" onclick="if(confirm(\'Eliminare i duplicati?\')) { /* TODO */ }">Elimina Duplicati</button></td>';
+                echo '<td><button class="button button-small button-link-delete ipv-delete-dups" data-post-ids="' . esc_attr( $dup->post_ids ) . '" data-video-id="' . esc_attr( $dup->video_id ) . '">Elimina Duplicati</button></td>';
                 echo '</tr>';
             }
 
@@ -231,6 +281,55 @@ class IPV_Prod_Duplicate_Checker {
             echo '<p style="color: #17a2b8;">ℹ️ Trovate <strong>' . count( $duplicates_by_size ) . '</strong> gruppi di immagini con dimensione identica.</p>';
             echo '<p><small>Nota: Stessa dimensione non significa necessariamente immagine duplicata. Controllare visivamente.</small></p>';
         }
+    }
+
+    /**
+     * AJAX: Elimina post duplicati (mantiene solo il più vecchio)
+     */
+    public static function ajax_delete_duplicates() {
+        check_ajax_referer( 'ipv_duplicate_checker_nonce', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( 'Permessi insufficienti' );
+        }
+
+        $post_ids_raw = isset( $_POST['post_ids'] ) ? sanitize_text_field( $_POST['post_ids'] ) : '';
+        if ( empty( $post_ids_raw ) ) {
+            wp_send_json_error( 'Nessun ID fornito' );
+        }
+
+        $post_ids = array_map( 'intval', explode( ',', $post_ids_raw ) );
+        if ( count( $post_ids ) < 2 ) {
+            wp_send_json_error( 'Servono almeno 2 post per eliminare duplicati' );
+        }
+
+        // Mantieni il più vecchio (primo ID), elimina gli altri
+        $keep_id = $post_ids[0];
+        $to_delete = array_slice( $post_ids, 1 );
+
+        $deleted = [];
+        $errors = [];
+
+        foreach ( $to_delete as $post_id ) {
+            $result = wp_delete_post( $post_id, true ); // true = force delete, skip trash
+            if ( $result ) {
+                $deleted[] = $post_id;
+            } else {
+                $errors[] = $post_id;
+            }
+        }
+
+        wp_send_json_success( [
+            'kept' => $keep_id,
+            'deleted' => $deleted,
+            'deleted_count' => count( $deleted ),
+            'errors' => $errors,
+            'message' => sprintf(
+                'Mantenuto post ID %d, eliminati %d duplicati',
+                $keep_id,
+                count( $deleted )
+            )
+        ] );
     }
 }
 

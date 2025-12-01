@@ -1,8 +1,9 @@
 <?php
 /**
  * IPV Bulk Tools - Strumenti di rigenerazione massiva
+ * v7.9.19: Integrato tool immagini orfane
  * 
- * @version 7.5.7
+ * @version 7.9.19
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -14,13 +15,17 @@ class IPV_Prod_Bulk_Tools {
     public static function init() {
         add_action( 'admin_menu', [ __CLASS__, 'add_submenu' ], 99 );
         
-        // AJAX handlers
+        // AJAX handlers video
         add_action( 'wp_ajax_ipv_bulk_get_videos', [ __CLASS__, 'ajax_get_videos' ] );
         add_action( 'wp_ajax_ipv_bulk_regen_taxonomies', [ __CLASS__, 'ajax_regen_taxonomies' ] );
         add_action( 'wp_ajax_ipv_bulk_regen_description', [ __CLASS__, 'ajax_regen_description' ] );
         add_action( 'wp_ajax_ipv_bulk_regen_transcript', [ __CLASS__, 'ajax_regen_transcript' ] );
         add_action( 'wp_ajax_ipv_bulk_regen_thumbnail', [ __CLASS__, 'ajax_regen_thumbnail' ] );
         add_action( 'wp_ajax_ipv_bulk_clear_data', [ __CLASS__, 'ajax_clear_data' ] );
+        
+        // AJAX handlers immagini orfane
+        add_action( 'wp_ajax_ipv_scan_orphan_images', [ __CLASS__, 'ajax_scan_orphan_images' ] );
+        add_action( 'wp_ajax_ipv_delete_orphan_images', [ __CLASS__, 'ajax_delete_orphan_images' ] );
     }
 
     public static function add_submenu() {
@@ -155,6 +160,64 @@ class IPV_Prod_Bulk_Tools {
 
                 </div>
 
+                <!-- Sezione Immagini Orfane (full width) -->
+                <div class="card" style="margin-top:20px;padding:0;">
+                    <div style="padding:15px 20px;background:#fef0f0;border-bottom:1px solid #d63638;">
+                        <h2 style="margin:0;display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:24px;">🗑️</span>
+                            Immagini Orfane
+                        </h2>
+                    </div>
+                    <div style="padding:20px;">
+                        <p>Trova e elimina immagini dalla Media Library non associate a nessun post, pagina o CPT.</p>
+                        
+                        <div style="margin:15px 0;">
+                            <button type="button" id="ipv-scan-orphans" class="button button-primary">
+                                🔍 Scansiona Immagini Orfane
+                            </button>
+                            <span id="ipv-orphan-scan-status" style="margin-left:15px;display:none;">
+                                <span class="spinner is-active" style="float:none;"></span>
+                                Scansione in corso...
+                            </span>
+                        </div>
+
+                        <!-- Risultati Scansione -->
+                        <div id="ipv-orphan-results" style="display:none;">
+                            <div style="margin:15px 0;padding:15px;background:#fef8e7;border-left:4px solid #ffb900;border-radius:4px;">
+                                <strong>Trovate: </strong><span id="ipv-orphan-count">0</span> immagini orfane
+                                (<span id="ipv-orphan-size">0 KB</span> di spazio recuperabile)
+                            </div>
+
+                            <div style="margin:15px 0;">
+                                <button type="button" id="ipv-orphan-select-all" class="button">☑️ Seleziona Tutte</button>
+                                <button type="button" id="ipv-orphan-deselect-all" class="button">☐ Deseleziona</button>
+                                <button type="button" id="ipv-orphan-delete" class="button" style="background:#d63638;border-color:#d63638;color:#fff;">
+                                    🗑️ Elimina Selezionate (<span id="ipv-orphan-selected">0</span>)
+                                </button>
+                            </div>
+
+                            <table class="wp-list-table widefat fixed striped" id="ipv-orphan-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;"><input type="checkbox" id="ipv-orphan-check-all"></th>
+                                        <th style="width:80px;">Anteprima</th>
+                                        <th>Nome File</th>
+                                        <th style="width:100px;">Dimensione</th>
+                                        <th style="width:100px;">Data</th>
+                                        <th style="width:60px;">ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ipv-orphan-tbody"></tbody>
+                            </table>
+                        </div>
+
+                        <!-- Nessuna immagine orfana -->
+                        <div id="ipv-orphan-none" style="display:none;margin:15px 0;padding:15px;background:#d4edda;border-left:4px solid #28a745;border-radius:4px;">
+                            ✅ <strong>Ottimo!</strong> Non ci sono immagini orfane.
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Progress Box -->
                 <div id="ipv-bulk-progress" class="card" style="margin-top:25px;padding:0;display:none;">
                     <div style="padding:15px 20px;background:#f6f7f7;border-bottom:1px solid #c3c4c7;">
@@ -201,6 +264,27 @@ class IPV_Prod_Bulk_Tools {
         #ipv-progress-log::-webkit-scrollbar-thumb {
             background: #50575e;
             border-radius: 4px;
+        }
+        /* Stili Immagini Orfane */
+        .ipv-orphan-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .ipv-orphan-thumb:hover {
+            transform: scale(2);
+            position: relative;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        #ipv-orphan-table tbody tr:hover {
+            background: #f0f6fc;
+        }
+        #ipv-orphan-table tbody tr.selected {
+            background: #fff3cd;
         }
         </style>
 
@@ -374,6 +458,167 @@ class IPV_Prod_Bulk_Tools {
                 $log.append('[' + time + '] ' + msg + '\n');
                 $log.scrollTop($log[0].scrollHeight);
             }
+
+            // ========== IMMAGINI ORFANE ==========
+            var orphanImages = [];
+
+            // Scansiona
+            $('#ipv-scan-orphans').on('click', function() {
+                var $btn = $(this);
+                var $status = $('#ipv-orphan-scan-status');
+                
+                $btn.prop('disabled', true);
+                $status.show();
+                
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'ipv_scan_orphan_images',
+                        nonce: '<?php echo wp_create_nonce("ipv_orphan_images"); ?>'
+                    },
+                    success: function(response) {
+                        $btn.prop('disabled', false);
+                        $status.hide();
+                        
+                        if (response.success) {
+                            orphanImages = response.data.orphans;
+                            
+                            if (response.data.count > 0) {
+                                $('#ipv-orphan-count').text(response.data.count);
+                                $('#ipv-orphan-size').text(response.data.total_size);
+                                renderOrphanTable(orphanImages);
+                                $('#ipv-orphan-results').show();
+                                $('#ipv-orphan-none').hide();
+                            } else {
+                                $('#ipv-orphan-results').hide();
+                                $('#ipv-orphan-none').show();
+                            }
+                        } else {
+                            alert('Errore: ' + response.data);
+                        }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false);
+                        $status.hide();
+                        alert('Errore di connessione');
+                    }
+                });
+            });
+
+            function renderOrphanTable(images) {
+                var $tbody = $('#ipv-orphan-tbody');
+                $tbody.empty();
+                
+                images.forEach(function(img) {
+                    var thumbHtml = img.thumb_url 
+                        ? '<img src="' + img.thumb_url + '" class="ipv-orphan-thumb">'
+                        : '<span style="color:#999;">-</span>';
+                    
+                    var row = '<tr data-id="' + img.id + '">' +
+                        '<td><input type="checkbox" class="ipv-orphan-check" value="' + img.id + '"></td>' +
+                        '<td>' + thumbHtml + '</td>' +
+                        '<td><a href="' + img.full_url + '" target="_blank">' + img.filename + '</a></td>' +
+                        '<td>' + img.size + '</td>' +
+                        '<td>' + img.date + '</td>' +
+                        '<td>' + img.id + '</td>' +
+                    '</tr>';
+                    $tbody.append(row);
+                });
+                
+                updateOrphanCount();
+            }
+
+            function updateOrphanCount() {
+                var count = $('.ipv-orphan-check:checked').length;
+                $('#ipv-orphan-selected').text(count);
+                
+                $('#ipv-orphan-tbody tr').each(function() {
+                    $(this).toggleClass('selected', $(this).find('.ipv-orphan-check').is(':checked'));
+                });
+            }
+
+            $(document).on('change', '.ipv-orphan-check', updateOrphanCount);
+            
+            $('#ipv-orphan-check-all').on('change', function() {
+                $('.ipv-orphan-check').prop('checked', $(this).is(':checked'));
+                updateOrphanCount();
+            });
+
+            $('#ipv-orphan-select-all').on('click', function() {
+                $('.ipv-orphan-check').prop('checked', true);
+                $('#ipv-orphan-check-all').prop('checked', true);
+                updateOrphanCount();
+            });
+
+            $('#ipv-orphan-deselect-all').on('click', function() {
+                $('.ipv-orphan-check').prop('checked', false);
+                $('#ipv-orphan-check-all').prop('checked', false);
+                updateOrphanCount();
+            });
+
+            // Elimina selezionate
+            $('#ipv-orphan-delete').on('click', function() {
+                var ids = [];
+                $('.ipv-orphan-check:checked').each(function() {
+                    ids.push($(this).val());
+                });
+                
+                if (ids.length === 0) {
+                    alert('Seleziona almeno un\'immagine');
+                    return;
+                }
+                
+                if (!confirm('Eliminare ' + ids.length + ' immagini?\n\nAzione IRREVERSIBILE!')) {
+                    return;
+                }
+                
+                var $btn = $(this);
+                $btn.prop('disabled', true).text('🗑️ Eliminazione...');
+                
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'ipv_delete_orphan_images',
+                        nonce: '<?php echo wp_create_nonce("ipv_orphan_images"); ?>',
+                        ids: ids
+                    },
+                    success: function(response) {
+                        $btn.prop('disabled', false).html('🗑️ Elimina Selezionate (<span id="ipv-orphan-selected">0</span>)');
+                        
+                        if (response.success) {
+                            alert(response.data.message);
+                            
+                            ids.forEach(function(id) {
+                                $('#ipv-orphan-tbody tr[data-id="' + id + '"]').fadeOut(300, function() {
+                                    $(this).remove();
+                                    var remaining = $('#ipv-orphan-tbody tr').length;
+                                    $('#ipv-orphan-count').text(remaining);
+                                    if (remaining === 0) {
+                                        $('#ipv-orphan-results').hide();
+                                        $('#ipv-orphan-none').show();
+                                    }
+                                    updateOrphanCount();
+                                });
+                            });
+                        } else {
+                            alert('Errore: ' + response.data);
+                        }
+                    },
+                    error: function() {
+                        $btn.prop('disabled', false).html('🗑️ Elimina Selezionate (<span id="ipv-orphan-selected">0</span>)');
+                        alert('Errore di connessione');
+                    }
+                });
+            });
+
+            // Click su riga seleziona checkbox
+            $(document).on('click', '#ipv-orphan-tbody tr td:not(:first-child)', function() {
+                var $cb = $(this).closest('tr').find('.ipv-orphan-check');
+                $cb.prop('checked', !$cb.is(':checked'));
+                updateOrphanCount();
+            });
         });
         </script>
         <?php
@@ -595,6 +840,163 @@ class IPV_Prod_Bulk_Tools {
         } else {
             wp_send_json_error( 'Classe Queue non trovata' );
         }
+    }
+
+    // ========== IMMAGINI ORFANE ==========
+
+    /**
+     * Trova immagini orfane nella Media Library
+     */
+    public static function find_orphan_images() {
+        global $wpdb;
+
+        // 1. Tutte le immagini
+        $attachments = get_posts( [
+            'post_type'      => 'attachment',
+            'post_mime_type' => 'image',
+            'posts_per_page' => -1,
+            'post_status'    => 'inherit',
+            'fields'         => 'ids',
+        ] );
+
+        if ( empty( $attachments ) ) {
+            return [];
+        }
+
+        $orphans = [];
+
+        // 2. Featured images
+        $featured_ids = $wpdb->get_col( "
+            SELECT DISTINCT meta_value 
+            FROM {$wpdb->postmeta} 
+            WHERE meta_key = '_thumbnail_id' 
+            AND meta_value != ''
+        " );
+        $featured_ids = array_map( 'intval', $featured_ids );
+
+        // 3. Attachment con parent
+        $attached_ids = $wpdb->get_col( "
+            SELECT ID FROM {$wpdb->posts} 
+            WHERE post_type = 'attachment' AND post_parent > 0
+        " );
+        $attached_ids = array_map( 'intval', $attached_ids );
+
+        // 4. Immagini nei contenuti
+        $content_images = [];
+        $all_posts = $wpdb->get_results( "
+            SELECT ID, post_content FROM {$wpdb->posts} 
+            WHERE post_status IN ('publish', 'draft', 'private', 'pending')
+            AND post_content LIKE '%wp-image-%'
+        " );
+
+        foreach ( $all_posts as $post ) {
+            preg_match_all( '/wp-image-(\d+)/', $post->post_content, $matches );
+            if ( ! empty( $matches[1] ) ) {
+                $content_images = array_merge( $content_images, $matches[1] );
+            }
+        }
+        $content_images = array_map( 'intval', array_unique( $content_images ) );
+
+        // 5. ID nei meta
+        $meta_images = [];
+        $meta_results = $wpdb->get_col( "
+            SELECT DISTINCT meta_value FROM {$wpdb->postmeta} 
+            WHERE meta_value REGEXP '^[0-9]+$' AND CAST(meta_value AS UNSIGNED) > 0
+        " );
+
+        foreach ( $meta_results as $meta_val ) {
+            if ( is_numeric( $meta_val ) && $meta_val > 0 ) {
+                $meta_images[] = intval( $meta_val );
+            }
+        }
+
+        // 6. Combina tutti gli ID usati
+        $used_ids = array_unique( array_merge(
+            $featured_ids,
+            $attached_ids,
+            $content_images,
+            $meta_images
+        ) );
+
+        // 7. Trova orfane
+        foreach ( $attachments as $attachment_id ) {
+            if ( ! in_array( $attachment_id, $used_ids, true ) ) {
+                $orphans[] = $attachment_id;
+            }
+        }
+
+        return $orphans;
+    }
+
+    /**
+     * AJAX: Scansiona immagini orfane
+     */
+    public static function ajax_scan_orphan_images() {
+        check_ajax_referer( 'ipv_orphan_images', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( 'Permessi insufficienti' );
+        }
+
+        $orphans = self::find_orphan_images();
+        $orphan_data = [];
+
+        foreach ( $orphans as $attachment_id ) {
+            $file_path = get_attached_file( $attachment_id );
+            $file_size = file_exists( $file_path ) ? filesize( $file_path ) : 0;
+            $thumb_url = wp_get_attachment_image_url( $attachment_id, 'thumbnail' );
+            $full_url  = wp_get_attachment_url( $attachment_id );
+
+            $orphan_data[] = [
+                'id'        => $attachment_id,
+                'filename'  => basename( $file_path ),
+                'size'      => size_format( $file_size ),
+                'size_raw'  => $file_size,
+                'thumb_url' => $thumb_url ?: '',
+                'full_url'  => $full_url ?: '',
+                'date'      => get_the_date( 'd/m/Y', $attachment_id ),
+            ];
+        }
+
+        $total_size = array_sum( array_column( $orphan_data, 'size_raw' ) );
+
+        wp_send_json_success( [
+            'orphans'    => $orphan_data,
+            'count'      => count( $orphan_data ),
+            'total_size' => size_format( $total_size ),
+        ] );
+    }
+
+    /**
+     * AJAX: Elimina immagini orfane
+     */
+    public static function ajax_delete_orphan_images() {
+        check_ajax_referer( 'ipv_orphan_images', 'nonce' );
+
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_send_json_error( 'Permessi insufficienti' );
+        }
+
+        $ids = isset( $_POST['ids'] ) ? array_map( 'intval', (array) $_POST['ids'] ) : [];
+
+        if ( empty( $ids ) ) {
+            wp_send_json_error( 'Nessuna immagine selezionata' );
+        }
+
+        $deleted = 0;
+
+        foreach ( $ids as $attachment_id ) {
+            if ( get_post_type( $attachment_id ) === 'attachment' ) {
+                if ( wp_delete_attachment( $attachment_id, true ) ) {
+                    $deleted++;
+                }
+            }
+        }
+
+        wp_send_json_success( [
+            'deleted' => $deleted,
+            'message' => sprintf( 'Eliminate %d immagini', $deleted ),
+        ] );
     }
 }
 

@@ -3,8 +3,10 @@
  * IPV Video Frontend
  * Inserisce embed YouTube nel contenuto del CPT ipv_video
  * Fix margini neri: CSS con specificità massima per sovrascrivere tema
+ * v7.9.17: Fix duplicazione embed con flag anti-duplicazione condiviso
+ * v7.9.20: Fix barra grigia Related Posts
  *
- * @version 7.7.1
+ * @version 7.9.20
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,13 +15,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class IPV_Prod_Video_Frontend {
 
+    /**
+     * Flag per evitare duplicazione embed tra diversi hook
+     */
+    private static $embed_rendered = false;
+
     public static function init() {
         // Inserisci embed YouTube all'inizio del contenuto
         add_filter( 'the_content', [ __CLASS__, 'prepend_youtube_embed' ], 5 );
 
         // Hook alternativo per temi che non usano the_content standard
+        // NOTA: Disabilitato per evitare duplicazione con temi come Influencers
+        // add_action( 'loop_start', [ __CLASS__, 'maybe_output_embed' ] );
+        
+        // Inietta stili CSS
         add_action( 'wp_head', [ __CLASS__, 'inject_embed_styles' ] );
-        add_action( 'loop_start', [ __CLASS__, 'maybe_output_embed' ] );
 
         // Rimuovi tag e categorie cliccabili
         add_action( 'wp_head', [ __CLASS__, 'hide_tags_and_meta' ] );
@@ -44,8 +54,20 @@ class IPV_Prod_Video_Frontend {
             return $content;
         }
 
+        // Evita duplicazione se già renderizzato
+        if ( self::$embed_rendered ) {
+            return $content;
+        }
+
         $post_id = get_the_ID();
         $yt_id   = get_post_meta( $post_id, '_ipv_video_id', true );
+
+        if ( empty( $yt_id ) ) {
+            return $content;
+        }
+
+        // Segna come già renderizzato
+        self::$embed_rendered = true;
 
         if ( empty( $yt_id ) ) {
             return $content;
@@ -163,17 +185,79 @@ class IPV_Prod_Video_Frontend {
                 max-height: none !important;
             }
         }
+        /* Lazy loading styles */
+        .ipv-lazy-load-thumbnail {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            cursor: pointer !important;
+            background-size: cover !important;
+            background-position: center !important;
+            transition: filter 0.3s ease !important;
+        }
+
+        .ipv-lazy-load-thumbnail:hover {
+            filter: brightness(1.1) !important;
+        }
+
+        .ipv-play-button {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 80px !important;
+            height: 56px !important;
+            background: rgba(255, 0, 0, 0.9) !important;
+            border-radius: 14px !important;
+            transition: all 0.3s ease !important;
+            z-index: 10 !important;
+        }
+
+        .ipv-lazy-load-thumbnail:hover .ipv-play-button {
+            background: rgba(255, 0, 0, 1) !important;
+            transform: translate(-50%, -50%) scale(1.1) !important;
+        }
+
+        .ipv-play-button::before {
+            content: "" !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 55% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-style: solid !important;
+            border-width: 12px 0 12px 20px !important;
+            border-color: transparent transparent transparent #fff !important;
+        }
         </style>
         <div class="ipv-video-embed-container">
             <div class="ipv-embed-wrapper">
-                <iframe
-                    src="https://www.youtube.com/embed/' . esc_attr( $yt_id ) . '?rel=0&modestbranding=1&showinfo=0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                    loading="lazy">
-                </iframe>
+                <div class="ipv-lazy-load-thumbnail"
+                     data-video-id="' . esc_attr( $yt_id ) . '"
+                     style="background-image: url(https://i.ytimg.com/vi/' . esc_attr( $yt_id ) . '/maxresdefault.jpg);">
+                    <div class="ipv-play-button"></div>
+                </div>
             </div>
         </div>
+        <script>
+        (function() {
+            var thumbnail = document.querySelector(".ipv-lazy-load-thumbnail");
+            if (thumbnail) {
+                thumbnail.addEventListener("click", function() {
+                    var videoId = this.getAttribute("data-video-id");
+                    var iframe = document.createElement("iframe");
+                    iframe.setAttribute("src", "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0&modestbranding=1&showinfo=0");
+                    iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+                    iframe.setAttribute("allowfullscreen", "");
+                    iframe.style.cssText = "position: absolute !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; border: 0 !important;";
+                    this.parentNode.replaceChild(iframe, this);
+                });
+            }
+        })();
+        </script>
         ';
 
         return $embed_html . $content;
@@ -303,6 +387,7 @@ class IPV_Prod_Video_Frontend {
 
     /**
      * Output embed all'inizio del loop per temi che non usano the_content standard
+     * NOTA: Disabilitato di default, usare solo se the_content non funziona
      */
     public static function maybe_output_embed( $query ) {
         // Solo per main query di ipv_video singolo
@@ -310,9 +395,8 @@ class IPV_Prod_Video_Frontend {
             return;
         }
 
-        // Flag per evitare output multipli
-        static $embed_outputted = false;
-        if ( $embed_outputted ) {
+        // Evita duplicazione con prepend_youtube_embed
+        if ( self::$embed_rendered ) {
             return;
         }
 
@@ -323,7 +407,8 @@ class IPV_Prod_Video_Frontend {
             return;
         }
 
-        $embed_outputted = true;
+        // Segna come già renderizzato
+        self::$embed_rendered = true;
 
         // Output dell'embed
         ?>
@@ -418,7 +503,7 @@ class IPV_Prod_Video_Frontend {
     }
 
     /**
-     * Nasconde tag, categorie e metadati per ipv_video
+     * Nasconde tag, categorie, metadati e featured image per ipv_video singolo
      */
     public static function hide_tags_and_meta() {
         if ( ! is_singular( 'ipv_video' ) ) {
@@ -426,6 +511,79 @@ class IPV_Prod_Video_Frontend {
         }
         ?>
         <style>
+        /* =====================================================
+         * NASCONDE FEATURED IMAGE SOLO NEL SINGOLO POST
+         * La featured image rimane visibile negli archivi/related posts
+         * Selettori specifici per tema Influencers
+         * ===================================================== */
+        
+        /* TEMA INFLUENCERS - Featured image nel post principale */
+        body.single-ipv_video .bt-main-post > .bt-post > .bt-post--featured,
+        body.single-ipv_video .bt-main-post > article > .bt-post--featured,
+        body.single-ipv_video .bt-main-post .bt-post > .bt-post--featured,
+        body.single-ipv_video article.bt-post > .bt-post--featured:first-of-type {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* ESCLUSIONE ESPLICITA - Related Posts devono MANTENERE le thumbnail */
+        body.single-ipv_video .bt-related-posts .bt-post--featured,
+        body.single-ipv_video .bt-related-posts .bt-post--inner .bt-post--featured,
+        body.single-ipv_video .bt-related-posts .bt-cover-image {
+            display: block !important;
+            visibility: visible !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            opacity: 1 !important;
+        }
+        
+        body.single-ipv_video .bt-related-posts .bt-post--featured img,
+        body.single-ipv_video .bt-related-posts .bt-cover-image img {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            height: auto !important;
+            max-height: none !important;
+        }
+
+        /* FIX BARRA GRIGIA - Related Posts */
+        body.single-ipv_video .bt-related-posts .bt-cover-image {
+            padding-bottom: 0 !important;
+            background: transparent !important;
+        }
+        body.single-ipv_video .bt-related-posts .bt-cover-image::before,
+        body.single-ipv_video .bt-related-posts .bt-cover-image::after,
+        body.single-ipv_video .bt-related-posts .bt-post--featured::before,
+        body.single-ipv_video .bt-related-posts .bt-post--featured::after {
+            display: none !important;
+            content: none !important;
+        }
+        body.single-ipv_video .bt-related-posts .bt-post--featured a {
+            display: block !important;
+            line-height: 0 !important;
+        }
+        body.single-ipv_video .bt-related-posts .bt-cover-image img {
+            position: relative !important;
+            width: 100% !important;
+            height: auto !important;
+            object-fit: cover !important;
+        }
+
+        /* Fallback per altri temi - solo nel main content, non nei widget/related */
+        body.single-ipv_video .bt-main-post-col > .bt-main-post .post-thumbnail,
+        body.single-ipv_video .bt-main-post-col > .bt-main-post .featured-image,
+        body.single-ipv_video .bt-main-post-col > .bt-main-post .entry-thumbnail,
+        body.single-ipv_video .bt-main-post-col > .bt-main-post .wp-post-image {
+            display: none !important;
+        }
+
         /* Nasconde tag e categorie cliccabili (tema Influencer + standard) */
         body.single-ipv_video .entry-meta,
         body.single-ipv_video .post-meta,
