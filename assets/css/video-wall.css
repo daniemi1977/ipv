@@ -472,3 +472,128 @@
         padding-top: 42px;
     }
 }
+
+/* ============================================
+   RESPONSIVE GRID LAYOUTS (v7.11.0)
+   ============================================ */
+
+/* 2 Column Layout */
+.ipv-video-grid.ipv-columns-2 .ipv-video-card {
+    width: calc(50% - 15px) !important;
+}
+
+/* 3 Column Layout (Default) */
+.ipv-video-grid.ipv-columns-3 .ipv-video-card {
+    width: calc(33.333% - 20px) !important;
+}
+
+/* 4 Column Layout */
+.ipv-video-grid.ipv-columns-4 .ipv-video-card {
+    width: calc(25% - 22.5px) !important;
+}
+
+/* 5 Column Layout */
+.ipv-video-grid.ipv-columns-5 .ipv-video-card {
+    width: calc(20% - 24px) !important;
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+    /* 4 e 5 colonne diventano 3 */
+    .ipv-video-grid.ipv-columns-4 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-5 .ipv-video-card {
+        width: calc(33.333% - 20px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Tutto diventa 2 colonne */
+    .ipv-video-grid.ipv-columns-2 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-3 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-4 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-5 .ipv-video-card {
+        width: calc(50% - 15px) !important;
+    }
+
+    /* Filtri vanno in verticale */
+    .ipv-filters-row {
+        flex-direction: column;
+    }
+
+    .ipv-filter-group {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Mobile: 1 colonna */
+    .ipv-video-grid.ipv-columns-2 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-3 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-4 .ipv-video-card,
+    .ipv-video-grid.ipv-columns-5 .ipv-video-card {
+        width: 100% !important;
+    }
+}
+
+/* Infinite Scroll Loading Indicator */
+.ipv-infinite-scroll-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.ipv-infinite-scroll-loading .ipv-spinner {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 15px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--ipv-accent-color);
+    border-radius: 50%;
+    animation: ipv-spin 1s linear infinite;
+}
+
+@keyframes ipv-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Sorting Visual Feedback */
+.ipv-filter-select:focus,
+.ipv-filter-input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(251, 15, 90, 0.15);
+}
+
+/* Grid Layout Selector Styling */
+#ipv-filter-grid {
+    font-weight: 600;
+    color: var(--ipv-accent-color);
+}
+
+/* Checkbox Styling for Infinite Scroll Toggle */
+#ipv-filter-infinite-scroll {
+    margin-right: 8px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.ipv-filter-group label:has(#ipv-filter-infinite-scroll) {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Smooth Transitions */
+.ipv-video-card {
+    transition: all 0.3s ease;
+}
+
+.ipv-video-grid.ipv-columns-2 .ipv-video-card,
+.ipv-video-grid.ipv-columns-3 .ipv-video-card,
+.ipv-video-grid.ipv-columns-4 .ipv-video-card,
+.ipv-video-grid.ipv-columns-5 .ipv-video-card {
+    transition: width 0.3s ease, opacity 0.3s ease;
+}

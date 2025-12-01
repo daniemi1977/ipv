@@ -136,6 +136,37 @@ class IPV_Prod_Video_Wall {
                 <label for="ipv-filter-search">Cerca:</label>
                 <input type="text" id="ipv-filter-search" class="ipv-filter-input" placeholder="Cerca nei video...">
             </div>
+
+            <div class="ipv-filter-group">
+                <label for="ipv-filter-sort">Ordina per:</label>
+                <select id="ipv-filter-sort" class="ipv-filter-select">
+                    <option value="date_desc">Più recenti</option>
+                    <option value="date_asc">Meno recenti</option>
+                    <option value="views_desc">Più visti</option>
+                    <option value="views_asc">Meno visti</option>
+                    <option value="duration_desc">Più lunghi</option>
+                    <option value="duration_asc">Più corti</option>
+                    <option value="title_asc">Titolo (A-Z)</option>
+                    <option value="title_desc">Titolo (Z-A)</option>
+                </select>
+            </div>
+
+            <div class="ipv-filter-group">
+                <label for="ipv-filter-grid">Layout:</label>
+                <select id="ipv-filter-grid" class="ipv-filter-select">
+                    <option value="2">2 colonne</option>
+                    <option value="3" selected>3 colonne</option>
+                    <option value="4">4 colonne</option>
+                    <option value="5">5 colonne</option>
+                </select>
+            </div>
+
+            <div class="ipv-filter-group">
+                <label>
+                    <input type="checkbox" id="ipv-filter-infinite-scroll" checked>
+                    Scroll infinito
+                </label>
+            </div>
         </div>
         <?php
     }
@@ -341,15 +372,57 @@ class IPV_Prod_Video_Wall {
         $categoria = isset( $_POST['categoria'] ) ? sanitize_text_field( $_POST['categoria'] ) : '';
         $relatore = isset( $_POST['relatore'] ) ? sanitize_text_field( $_POST['relatore'] ) : '';
         $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
+        $sort = isset( $_POST['sort'] ) ? sanitize_text_field( $_POST['sort'] ) : 'date_desc';
 
         $args = [
             'post_type'      => 'ipv_video',
             'posts_per_page' => $per_page,
             'paged'          => $paged,
             'post_status'    => 'publish',
-            'orderby'        => 'date',
-            'order'          => 'DESC',
         ];
+
+        // Handle sorting
+        switch ( $sort ) {
+            case 'date_desc':
+                $args['orderby'] = 'date';
+                $args['order'] = 'DESC';
+                break;
+            case 'date_asc':
+                $args['orderby'] = 'date';
+                $args['order'] = 'ASC';
+                break;
+            case 'views_desc':
+                $args['orderby'] = 'meta_value_num';
+                $args['meta_key'] = '_ipv_yt_view_count';
+                $args['order'] = 'DESC';
+                break;
+            case 'views_asc':
+                $args['orderby'] = 'meta_value_num';
+                $args['meta_key'] = '_ipv_yt_view_count';
+                $args['order'] = 'ASC';
+                break;
+            case 'duration_desc':
+                $args['orderby'] = 'meta_value_num';
+                $args['meta_key'] = '_ipv_yt_duration_seconds';
+                $args['order'] = 'DESC';
+                break;
+            case 'duration_asc':
+                $args['orderby'] = 'meta_value_num';
+                $args['meta_key'] = '_ipv_yt_duration_seconds';
+                $args['order'] = 'ASC';
+                break;
+            case 'title_asc':
+                $args['orderby'] = 'title';
+                $args['order'] = 'ASC';
+                break;
+            case 'title_desc':
+                $args['orderby'] = 'title';
+                $args['order'] = 'DESC';
+                break;
+            default:
+                $args['orderby'] = 'date';
+                $args['order'] = 'DESC';
+        }
 
         // Filter out YouTube Shorts (videos shorter than 60 seconds)
         $args['meta_query'] = [

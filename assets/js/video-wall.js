@@ -1,6 +1,7 @@
 /**
  * IPV Video Wall JavaScript
- * Handles AJAX filtering, pagination, and interactions
+ * Handles AJAX filtering, pagination, sorting, infinite scroll, and grid layout
+ * v7.11.0
  */
 
 (function($) {
@@ -9,11 +10,13 @@
     let currentPage = 1;
     let totalPages = 1;
     let isLoading = false;
+    let infiniteScrollEnabled = true;
 
     const VideoWall = {
         init: function() {
             this.bindEvents();
             this.updatePaginationState();
+            this.setupInfiniteScroll();
         },
 
         bindEvents: function() {
@@ -55,6 +58,50 @@
                     VideoWall.loadMoreVideos(nextPage);
                 }
             });
+
+            // Grid layout change
+            $(document).on('change', '#ipv-filter-grid', function() {
+                const columns = $(this).val();
+                $('.ipv-video-grid').removeClass('ipv-columns-2 ipv-columns-3 ipv-columns-4 ipv-columns-5')
+                                    .addClass('ipv-columns-' + columns);
+            });
+
+            // Infinite scroll toggle
+            $(document).on('change', '#ipv-filter-infinite-scroll', function() {
+                infiniteScrollEnabled = $(this).is(':checked');
+                if (infiniteScrollEnabled) {
+                    VideoWall.setupInfiniteScroll();
+                } else {
+                    $(window).off('scroll.infiniteScroll');
+                }
+            });
+        },
+
+        setupInfiniteScroll: function() {
+            $(window).on('scroll.infiniteScroll', function() {
+                if (!infiniteScrollEnabled || isLoading) {
+                    return;
+                }
+
+                const $loadMoreBtn = $('.ipv-load-more-btn');
+                if ($loadMoreBtn.length === 0) {
+                    return; // No more content to load
+                }
+
+                const scrollTop = $(window).scrollTop();
+                const windowHeight = $(window).height();
+                const docHeight = $(document).height();
+
+                // Trigger when user scrolls to 80% of page
+                if (scrollTop + windowHeight > docHeight * 0.8) {
+                    const nextPage = parseInt($loadMoreBtn.data('page')) + 1;
+                    const totalPages = parseInt($loadMoreBtn.data('total-pages'));
+
+                    if (nextPage <= totalPages) {
+                        VideoWall.loadMoreVideos(nextPage);
+                    }
+                }
+            });
         },
 
         resetAndLoadVideos: function() {
@@ -63,6 +110,7 @@
             $('.ipv-video-grid').empty();
             $('.ipv-load-more-btn').data('page', 0);
             $('.ipv-videos-loaded').text('0');
+            $('.ipv-load-more-wrapper').show();
             VideoWall.loadMoreVideos(1);
         },
 
@@ -84,6 +132,7 @@
             const categoria = $('#ipv-filter-categoria').val() || '';
             const relatore = $('#ipv-filter-relatore').val() || '';
             const search = $('#ipv-filter-search').val() || '';
+            const sort = $('#ipv-filter-sort').val() || 'date_desc';
 
             // Show loading state
             $loadMoreBtn.prop('disabled', true).find('.ipv-load-more-text').text('Caricamento...');
@@ -99,7 +148,8 @@
                     per_page: perPage,
                     categoria: categoria,
                     relatore: relatore,
-                    search: search
+                    search: search,
+                    sort: sort
                 },
                 success: function(response) {
                     if (response.success) {
@@ -110,9 +160,11 @@
 
                         // Update button state and counter
                         $loadMoreBtn.data('page', currentPage);
+                        $loadMoreBtn.data('total-pages', totalPages);
 
                         const videosLoaded = $grid.find('.ipv-video-card').length;
                         $('.ipv-videos-loaded').text(videosLoaded);
+                        $('.ipv-videos-total').text(response.data.found_posts);
 
                         // Hide button if no more pages
                         if (currentPage >= totalPages) {
@@ -132,7 +184,7 @@
                 },
                 complete: function() {
                     $loading.hide();
-                    $loadMoreBtn.prop('disabled', false).find('.ipv-load-more-text').text('Carica altri 5 video');
+                    $loadMoreBtn.prop('disabled', false).find('.ipv-load-more-text').text('Carica altri ' + perPage + ' video');
                     isLoading = false;
                 }
             });
