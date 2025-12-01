@@ -40,8 +40,22 @@ class IPV_Prod_AI_Generator {
             return new WP_Error( 'ipv_openai_no_key', 'OpenAI API Key non configurata.' );
         }
 
-        $custom_prompt = get_option( 'ipv_ai_prompt', '' );
-        $system_prompt = ! empty( $custom_prompt ) ? $custom_prompt : self::get_default_prompt( $duration_formatted, $duration_seconds, ! empty( $native_chapters ) );
+        // v8.0: Usa Golden Prompt Manager per il sistema prompt
+        // Fallback al vecchio sistema se Golden Prompt non disponibile
+        if ( class_exists( 'IPV_Prod_Golden_Prompt_Manager' ) ) {
+            $video_data = [
+                'title' => $video_title,
+                'description' => $transcript,
+                'duration' => $duration_seconds,
+                'duration_formatted' => $duration_formatted,
+                'has_chapters' => ! empty( $native_chapters ),
+            ];
+            $system_prompt = IPV_Prod_Golden_Prompt_Manager::process_prompt( $video_data );
+        } else {
+            // Fallback al vecchio sistema
+            $custom_prompt = get_option( 'ipv_ai_prompt', '' );
+            $system_prompt = ! empty( $custom_prompt ) ? $custom_prompt : self::get_default_prompt( $duration_formatted, $duration_seconds, ! empty( $native_chapters ) );
+        }
 
         $user_content  = "TITOLO VIDEO: " . $video_title . "\n\n";
 

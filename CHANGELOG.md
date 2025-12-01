@@ -1,6 +1,153 @@
 
 # IPV Production System Pro – Changelog
 
+## v8.0.0 - 2025-12-01
+### 🎨 MAJOR UPDATE: Golden Prompt AI & Universal Theme Compatibility
+
+**BREAKING CHANGES**: Major version con Golden Prompt customizable, Elementor widgets, shortcode universali e template system
+
+### ✨ GOLDEN PROMPT AI MANAGER
+- **Custom AI Prompt System**: Upload/edit/download del golden prompt
+- **UI Settings Page**: Gestione completa prompt dalla dashboard
+- **Default Template**: Prompt predefinito professionale scaricabile
+- **Integration completa**: AI Generator usa automaticamente il golden prompt
+- **Variables Support**: {title}, {description}, {duration}, {channel}, {tags}
+- **Statistics Dashboard**: Word count, char count, status (default/custom)
+- **Backup & Reset**: Download prompt corrente, ripristino default
+
+### 🎭 ELEMENTOR WIDGETS (3)
+- **IPV Video Player Widget**: Embed video con controlli completi
+  - Video selector dropdown (ultimi 100 video)
+  - Settings: autoplay, controls, mute, loop
+  - Aspect ratio: 16:9, 4:3, 21:9, 1:1
+  - Responsive width control
+  - Multi-source support (YouTube, Vimeo, Dailymotion)
+
+- **IPV Video Grid Widget**: Griglia video responsive
+  - Posts per page, columns (responsive)
+  - Category filter (multiple)
+  - Order by: date, title, random, views
+  - Toggle: title, excerpt, meta
+  - Gap & border radius controls
+  - Auto-responsive (tablet/mobile)
+
+- **IPV Video Wall Widget**: Video wall completo
+  - Layout: grid, masonry, list
+  - Infinite scroll
+  - Category filters
+  - Search box
+  - AJAX loading
+
+### 📝 SHORTCODES UNIVERSALI (4)
+- **[ipv_video]**: Video player embed
+  - Parametri: id, autoplay, controls, mute, loop, width, aspect
+  - Multi-source support
+  - Esempio: `[ipv_video id="123" width="100%" aspect="16:9"]`
+
+- **[ipv_grid]**: Video grid/lista
+  - Parametri: count, columns, category, orderby, order
+  - Toggle: show_title, show_excerpt, show_meta
+  - Auto-responsive
+  - Esempio: `[ipv_grid count="6" columns="3" category="1,2"]`
+
+- **[ipv_search]**: Search form avanzato
+  - Parametri: placeholder, button_text, show_filters, show_sorting
+  - Category & speaker filters
+  - Sort by: newest, title, views, random
+  - Esempio: `[ipv_search show_filters="yes"]`
+
+- **[ipv_stats]**: Statistics display
+  - Parametri: show, style
+  - Show: total, views, categories, recent
+  - Style: cards, list, inline
+  - Esempio: `[ipv_stats show="total,views,categories" style="cards"]`
+
+### 🎨 TEMPLATE SYSTEM
+- **Theme Override Support**: Copy templates to `your-theme/ipv-production-templates/`
+- **Template Hierarchy**:
+  1. Theme: `/ipv-production-templates/{template}`
+  2. Plugin: `/templates/{template}`
+- **Templates Included**:
+  - `single-ipv_video.php` - Single video page
+  - `archive-ipv_video.php` - Archive/taxonomy page
+  - `content-video-player.php` - Player template part
+  - `content-video-card.php` - Video card template part
+- **Custom CSS Support**: `your-theme/ipv-production-templates/ipv-custom.css`
+
+### 🔧 HOOKS & FILTERS (15+)
+**Filters**:
+- `ipv_video_player_args` - Modify player arguments
+- `ipv_video_card_args` - Modify card arguments
+- `ipv_video_data` - Modify video data
+- `ipv_load_frontend_styles` - Control plugin styles loading
+- `ipv_locate_template_before` - Override template location
+- `ipv_locate_template` - Modify located template
+- `ipv_get_template_part_args` - Modify template args
+- `ipv_video_embed_url` - Modify embed URL
+- `ipv_single_video_content` - Filter single video content
+
+**Actions**:
+- `ipv_before_video_player` / `ipv_after_video_player`
+- `ipv_before_video_card` / `ipv_after_video_card`
+- `ipv_before_template_part` / `ipv_after_template_part`
+- `ipv_before_single_video_content` / `ipv_after_single_video_content`
+- `ipv_before_video_archive` / `ipv_after_video_archive`
+
+### 📁 File Nuovi (12)
+1. `includes/class-golden-prompt-manager.php` (300 righe) - Golden prompt management
+2. `default-golden-prompt.txt` (80 righe) - Default AI prompt template
+3. `includes/class-elementor-widgets.php` (60 righe) - Elementor integration
+4. `includes/elementor-widgets/video-player-widget.php` (250 righe)
+5. `includes/elementor-widgets/video-grid-widget.php` (300 righe)
+6. `includes/elementor-widgets/video-wall-widget.php` (220 righe)
+7. `includes/class-shortcodes.php` (550 righe) - All shortcodes
+8. `includes/class-theme-compatibility.php` (400 righe) - Template system
+9. `templates/single-ipv_video.php` (150 righe)
+10. `templates/archive-ipv_video.php` (100 righe)
+11. `templates/content-video-player.php` (80 righe)
+12. `templates/content-video-card.php` (150 righe)
+
+### 📊 Metrics v8.0.0
+- **Codice**: +2.500 righe
+- **Nuovi File**: 12
+- **Features**: 25+
+- **Elementor Widgets**: 3
+- **Shortcodes**: 4
+- **Templates**: 4
+- **Hooks/Filters**: 15+
+- **Theme Compatibility**: UNIVERSALE (tutti i temi)
+
+### 🎯 Developer Features
+- **Template Override**: Copia template nel tema per personalizzazione
+- **Custom CSS**: Supporto CSS custom nel tema
+- **Hooks System**: 15+ hooks per customization avanzata
+- **Elementor Ready**: 3 widget nativi per Elementor
+- **Shortcode Everywhere**: Usa ovunque (post, page, widget)
+- **Multi-Source**: YouTube, Vimeo, Dailymotion supportati ovunque
+
+### 📚 Documentation Enhancements
+Esempi pratici per theme developers:
+```php
+// Override template
+// 1. Copy /templates/single-ipv_video.php to /your-theme/ipv-production-templates/
+
+// Use hooks
+add_action('ipv_before_video_player', function($post_id, $args) {
+    echo '<div class="custom-player-intro">Watch this amazing video:</div>';
+}, 10, 2);
+
+// Filter video data
+add_filter('ipv_video_data', function($data, $post_id) {
+    $data['custom_field'] = get_post_meta($post_id, '_custom', true);
+    return $data;
+}, 10, 2);
+
+// Disable plugin styles (use theme styles)
+add_filter('ipv_load_frontend_styles', '__return_false');
+```
+
+---
+
 ## v7.12.0 - 2025-12-01
 ### 🌟 ENTERPRISE UPDATE: Multi-Source, API, Automation & Tools
 

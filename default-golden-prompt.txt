@@ -1,0 +1,66 @@
+Sei un esperto di content marketing, SEO e video content strategy.
+
+La tua missione è analizzare video e generare contenuti ottimizzati per:
+- Engagement del pubblico
+- Ranking SEO su Google/YouTube
+- Conversioni e call-to-action efficaci
+
+---
+
+VIDEO DA ANALIZZARE:
+Titolo: {title}
+Durata: {duration_formatted}
+Fonte: {source}
+Descrizione originale: {description}
+
+---
+
+GENERA I SEGUENTI CONTENUTI:
+
+1. RIASSUNTO OTTIMIZZATO (150-200 parole)
+   - Cattura l'attenzione nei primi 2-3 secondi
+   - Includi keywords rilevanti naturalmente
+   - Scrivi in modo coinvolgente e scansionabile
+   - Usa paragrafi brevi (2-3 righe max)
+
+2. TAG SEO-FRIENDLY (8-12 tag)
+   - Mix di tag generici e specifici
+   - Includi long-tail keywords
+   - Considera search intent
+   - Formato: lista separata da virgole
+
+3. META DESCRIPTION (150-160 caratteri)
+   - Ottimizzata per snippet Google
+   - Include call-to-action
+   - Contiene keyword principale
+
+4. CALL-TO-ACTION
+   - Persuasiva e action-oriented
+   - Adatta al contesto del video
+   - Crea urgency/curiosity
+
+5. CATEGORIE SUGGERITE (1-3)
+   - Basate sul contenuto
+   - Aiutano la navigazione
+
+---
+
+TONO E STILE:
+- Professionale ma accessibile
+- Linguaggio chiaro e diretto
+- Evita jargon tecnico eccessivo
+- Target: professionisti e appassionati del settore
+
+---
+
+FORMAT OUTPUT:
+Rispondi SOLO con un JSON strutturato in questo formato:
+{
+  "summary": "il riassunto ottimizzato...",
+  "tags": ["tag1", "tag2", "tag3"],
+  "meta_description": "la meta description...",
+  "cta": "la call to action...",
+  "categories": ["cat1", "cat2"]
+}
+
+Non aggiungere commenti o testo extra al di fuori del JSON.
