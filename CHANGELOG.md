@@ -2,9 +2,9 @@
 # IPV Production System Pro – Changelog
 
 ## v8.0.1 - 2025-12-01
-### 📐 PATCH: Elementor Pre-Built Templates
+### 📐 PATCH: Elementor Pre-Built Templates + CPT Bulk Actions
 
-**Quick Update**: 4 template Elementor professionali pronti all'uso
+**Quick Update**: 4 template Elementor professionali + 4 azioni di gruppo nel CPT
 
 ### 📐 ELEMENTOR TEMPLATES (4)
 - **Single Video Page**: Pagina singola video con player, meta e related videos
@@ -49,15 +49,67 @@
 - Popular Videos (order by views)
 - Video Wall con infinite scroll
 
-### 📁 File Nuovo
+### 📁 File Nuovi
 - `includes/class-elementor-templates.php` (600 righe)
+- `includes/class-cpt-bulk-actions.php` (350 righe)
 
-### 🔧 Technical
+### 🔧 Technical Elementor
 - Template format: Elementor JSON structure
 - Post type: `elementor_library`
 - Template type: `page`
 - Dynamic ID generation per elementi
 - AJAX import con security nonce
+
+### ⚡ CPT BULK ACTIONS (4)
+Sistema completo di azioni di gruppo nella lista video CPT
+
+**Azioni disponibili**:
+1. **🔄 Refresh Dati YouTube** - Aggiorna views, likes, duration da API
+   - Supporto multi-source: YouTube, Vimeo, Dailymotion
+   - Aggiorna: views, likes, comments, duration, thumbnail, channel info
+   - Veloce (solo chiamate API, no AI)
+
+2. **📝 Rigenera Trascrizioni** - Riscarica trascrizioni da SupaData
+   - Per video senza trascrizione o con errori
+   - Usa crediti SupaData
+   - Lento (dipende da API esterna)
+
+3. **✨ Rigenera Descrizioni AI** - Rigenera descrizioni con OpenAI
+   - Usa Golden Prompt corrente
+   - Richiede trascrizione esistente
+   - Usa crediti OpenAI (GPT-4o)
+   - Rigenera anche tassonomie (tag, categorie, relatori)
+
+4. **🚀 Pipeline Completa (T + AI)** - Trascrizione + Descrizione AI
+   - Combina azioni 2 + 3
+   - Workflow completo automatico
+   - Usa crediti SupaData + OpenAI
+   - Molto lento ma completo
+
+### 🎯 Features Bulk Actions
+- ✅ **Conferma dialog**: Alert per azioni che consumano crediti
+- ✅ **Admin notice**: Feedback con numero video processati
+- ✅ **Error handling**: Skip video con errori, continua gli altri
+- ✅ **Logging**: Tutte le azioni loggiate
+- ✅ **Multi-select**: Seleziona video specifici o "Seleziona tutti"
+
+### 📍 Come Usare Bulk Actions
+1. Vai su `Video IPV` (lista CPT)
+2. Seleziona uno o più video (checkbox)
+3. Apri dropdown "Azioni di gruppo"
+4. Scegli l'azione desiderata
+5. Clicca "Applica"
+6. Conferma (se richiesto)
+7. Attendi completamento
+8. Vedi notice di successo
+
+### 🔧 Technical Bulk Actions
+- Hook: `bulk_actions-edit-ipv_video`
+- Handler: `handle_bulk_actions-edit-ipv_video`
+- Admin notices con query args
+- JavaScript confirmation per azioni lente
+- Integration con API: YouTube, Vimeo, Dailymotion, SupaData, OpenAI
+- Logging completo per debug
 
 ---
 

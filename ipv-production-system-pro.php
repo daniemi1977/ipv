@@ -49,6 +49,7 @@ spl_autoload_register( function( $class ) {
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-logger.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-settings.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-cpt.php';
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-cpt-bulk-actions.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-supadata.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-ai-generator.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-queue.php';
