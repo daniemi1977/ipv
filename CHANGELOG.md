@@ -1,6 +1,31 @@
 
 # IPV Production System Pro – Changelog
 
+## v8.0.2 - 2025-12-02
+### 🔧 PATCH: Taxonomy Menu Visibility Fix
+
+**Quick Fix**: Aggiunta visibilità menu per tassonomie CPT
+
+### 🐛 Bug Risolto
+- **PROBLEMA**: Tassonomie "Categorie Video" e "Relatori" non visibili nel menu admin "Video IPV"
+- **CAUSA**: Parametro `'show_in_menu' => true` mancante nella registrazione tassonomie
+- **FIX**: Aggiunto `'show_in_menu' => true` a:
+  - `ipv_categoria` (Categorie Video)
+  - `ipv_relatore` (Relatori)
+
+### 📝 File Modificati
+- `includes/class-cpt.php`:
+  - Linea 121: Aggiunto `'show_in_menu' => true` a ipv_categoria
+  - Linea 143: Aggiunto `'show_in_menu' => true` a ipv_relatore
+- `ipv-production-system-pro.php`: Versione 8.0.1 → 8.0.2
+
+### ✅ Risultato
+- ✅ Menu "Video IPV" ora mostra link a "Categorie Video"
+- ✅ Menu "Video IPV" ora mostra link a "Relatori"
+- ✅ Accesso diretto alle tassonomie dalla sidebar admin
+
+---
+
 ## v8.0.1 - 2025-12-01
 ### 📐 PATCH: Elementor Pre-Built Templates + CPT Bulk Actions
 

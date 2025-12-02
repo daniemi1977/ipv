@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione video per "Il Punto di Vista": importazione YouTube, trascrizioni SupaData, AI con Golden Prompt, Video Wall con filtri AJAX.
- * Version: 8.0.1
+ * Version: 8.0.2
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 6.0
