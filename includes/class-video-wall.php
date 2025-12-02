@@ -177,8 +177,7 @@ class IPV_Prod_Video_Wall {
             'posts_per_page' => $atts['per_page'],
             'paged'          => $paged,
             'post_status'    => 'publish',
-            'orderby'        => 'meta_value',
-            'meta_key'       => '_ipv_yt_published_at',
+            'orderby'        => 'date',
             'order'          => 'DESC',
         ];
 
@@ -385,13 +384,11 @@ class IPV_Prod_Video_Wall {
         // Handle sorting
         switch ( $sort ) {
             case 'date_desc':
-                $args['orderby'] = 'meta_value';
-                $args['meta_key'] = '_ipv_yt_published_at';
+                $args['orderby'] = 'date';
                 $args['order'] = 'DESC';
                 break;
             case 'date_asc':
-                $args['orderby'] = 'meta_value';
-                $args['meta_key'] = '_ipv_yt_published_at';
+                $args['orderby'] = 'date';
                 $args['order'] = 'ASC';
                 break;
             case 'views_desc':
@@ -423,8 +420,7 @@ class IPV_Prod_Video_Wall {
                 $args['order'] = 'DESC';
                 break;
             default:
-                $args['orderby'] = 'meta_value';
-                $args['meta_key'] = '_ipv_yt_published_at';
+                $args['orderby'] = 'date';
                 $args['order'] = 'DESC';
         }
 

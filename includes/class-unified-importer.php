@@ -416,12 +416,20 @@ class IPV_Prod_Unified_Importer {
         }
 
         // Create post
-        $post_id = wp_insert_post( [
+        $post_data = [
             'post_type' => 'ipv_video',
             'post_title' => $video_data['title'],
             'post_content' => $video_data['description'],
             'post_status' => 'draft',
-        ] );
+        ];
+
+        // Use video publish date as post_date if available
+        if ( ! empty( $video_data['published_at'] ) ) {
+            $post_data['post_date'] = get_date_from_gmt( $video_data['published_at'] );
+            $post_data['post_date_gmt'] = $video_data['published_at'];
+        }
+
+        $post_id = wp_insert_post( $post_data );
 
         if ( is_wp_error( $post_id ) ) {
             return $post_id;

@@ -1,6 +1,77 @@
 
 # IPV Production System Pro – Changelog
 
+## v8.0.5 - 2025-12-02
+### 🚀 MAJOR FIX: WordPress post_date = YouTube publish_date
+
+**Approccio Migliore**: Invece di ordinare per meta_key, impostiamo la `post_date` di WordPress uguale alla data di pubblicazione YouTube durante l'import.
+
+### ✅ Vantaggi
+
+1. **Ordinamento Nativo**: Usa indici database WordPress esistenti (molto più veloce)
+2. **Compatibilità**: Funziona con tutti i plugin e temi che ordinano per data
+3. **Semplicità**: Non serve più query complesse con meta_key
+4. **Performance**: Query molto più efficienti
+5. **Coerenza**: La data post riflette la data YouTube reale
+
+### 🔧 Modifiche Implementate
+
+**3 Punti di Import Modificati**:
+
+1. **class-queue.php** (linee 203-207)
+   - Aggiunto `post_date` e `post_date_gmt` da `published_at`
+   - Conversione con `get_date_from_gmt()`
+
+2. **class-simple-import.php** (linee 110-114)
+   - Import semplice ora usa data YouTube
+   - Post pubblicati immediatamente con data corretta
+
+3. **class-unified-importer.php** (linee 426-430)
+   - Import unificato (YouTube/Vimeo/Dailymotion)
+   - Data video sempre usata come post_date
+
+**Video Wall Ripristinato**:
+- `render_videos()`: Rimosso `meta_key`, torna a `orderby => 'date'`
+- AJAX `date_desc`: Rimosso `meta_key`, torna a `orderby => 'date'`
+- AJAX `date_asc`: Rimosso `meta_key`, torna a `orderby => 'date'`
+- Default: Rimosso `meta_key`, torna a `orderby => 'date'`
+
+### 📝 File Modificati
+- `includes/class-queue.php`: Aggiunto post_date da YouTube
+- `includes/class-simple-import.php`: Aggiunto post_date da YouTube
+- `includes/class-unified-importer.php`: Aggiunto post_date da video source
+- `includes/class-video-wall.php`: Ripristinato ordinamento nativo WordPress
+- `ipv-production-system-pro.php`: Version 8.0.4 → 8.0.5
+
+### ✅ Risultato
+
+**Prima (v8.0.4)**:
+- Query complesse con `meta_key`
+- Indici database custom necessari
+- Query lente su grandi dataset
+
+**Dopo (v8.0.5)**:
+- Query native WordPress `ORDER BY post_date`
+- Usa indici database esistenti
+- Performance ottimale ✅
+- Video con data YouTube reale nella timeline WordPress ✅
+
+### 📊 Esempio
+
+**Video pubblicato YouTube**: 2020-01-15
+**Post WordPress**:
+- `post_date`: 2020-01-15 (locale)
+- `post_date_gmt`: 2020-01-15 (GMT)
+- Appare nella posizione cronologica corretta ovunque in WordPress ✅
+
+### ⚠️ Nota per Video Esistenti
+
+I video già importati manterranno la loro `post_date` originale. Per aggiornarli:
+1. Usa "🔄 Refresh Dati YouTube" (bulk action)
+2. Oppure re-importa i video
+
+---
+
 ## v8.0.4 - 2025-12-02
 ### 🔧 PATCH: Video Wall YouTube Date Sorting Fix
 

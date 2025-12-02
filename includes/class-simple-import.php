@@ -107,6 +107,12 @@ class IPV_Simple_Import {
             'post_content' => $video_data['description'] ?? '',
         ];
 
+        // Use YouTube publish date as post_date if available
+        if ( ! empty( $video_data['published_at'] ) ) {
+            $post_data['post_date'] = get_date_from_gmt( $video_data['published_at'] );
+            $post_data['post_date_gmt'] = $video_data['published_at'];
+        }
+
         $post_id = wp_insert_post( $post_data );
 
         if ( ! $post_id || is_wp_error( $post_id ) ) {

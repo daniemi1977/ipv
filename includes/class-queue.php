@@ -200,6 +200,12 @@ class IPV_Prod_Queue {
                 'post_status' => 'publish',
             ];
 
+            // Use YouTube publish date as post_date if available
+            if ( $video_data && ! empty( $video_data['published_at'] ) ) {
+                $post_arr['post_date'] = get_date_from_gmt( $video_data['published_at'] );
+                $post_arr['post_date_gmt'] = $video_data['published_at'];
+            }
+
             $post_id = wp_insert_post( $post_arr );
             if ( ! $post_id || is_wp_error( $post_id ) ) {
                 throw new Exception( 'Impossibile creare il post video.' );
