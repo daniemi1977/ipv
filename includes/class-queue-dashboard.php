@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 class IPV_Queue_Dashboard {
     public static function init(){
         add_submenu_page(
-            'ipv-production-system',
+            'ipv-production',
             'AI Queue',
             'AI Queue',
             'manage_options',

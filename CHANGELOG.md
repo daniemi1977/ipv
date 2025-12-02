@@ -1,6 +1,55 @@
 
 # IPV Production System Pro – Changelog
 
+## v8.0.3 - 2025-12-02
+### 🔧 PATCH: Admin Menu Registration Fix
+
+**Quick Fix**: Risolti 3 problemi critici di registrazione menu admin
+
+### 🐛 Bug Risolti
+
+**1. Bulk Import NON Registrato**
+- **PROBLEMA**: La classe `IPV_Prod_Bulk_Import` (746 righe) esisteva ma non era registrata nel menu
+- **FIX**: Aggiunta voce "Bulk Import" nel menu "IPV Production"
+- **DOVE**: Dopo "Importa Video"
+- **SLUG**: `ipv-production-bulk-import`
+
+**2. Voce "Coda" - Classe Sbagliata**
+- **PROBLEMA**: Menu "Coda" chiamava `IPV_Prod_Bulk_Import::render_page` invece della classe corretta
+- **RISULTATO**: Cliccando su "Coda" si apriva il Bulk Import
+- **FIX**: Corretto a `IPV_Prod_Queue::render_admin_page`
+
+**3. Queue Dashboard - Parent Menu Inesistente**
+- **PROBLEMA**: Parent menu impostato a `'ipv-production-system'` (NON ESISTE)
+- **RISULTATO**: Menu "AI Queue" invisibile in WordPress admin
+- **FIX**: Corretto parent a `'ipv-production'`
+
+### 📝 File Modificati
+- `ipv-production-system-pro.php`:
+  - Linea 6: Version 8.0.2 → 8.0.3
+  - Linea 21: IPV_PROD_VERSION 8.0.1 → 8.0.3
+  - Linea 233-241: Aggiunta registrazione menu "Bulk Import"
+  - Linea 260: Corretto callback Coda da `IPV_Prod_Bulk_Import` a `IPV_Prod_Queue`
+- `includes/class-queue-dashboard.php`:
+  - Linea 7: Parent menu `'ipv-production-system'` → `'ipv-production'`
+
+### ✅ Risultato
+- ✅ Menu "IPV Production" → "Bulk Import" ora funzionante
+- ✅ Menu "IPV Production" → "Coda" ora apre la pagina corretta
+- ✅ Menu "IPV Production" → "AI Queue" ora visibile
+
+### 📊 Menu Disponibili (IPV Production)
+1. Dashboard
+2. Importa Video
+3. **Bulk Import** ✨ (nuovo!)
+4. Auto-Import RSS
+5. Coda ✅ (corretto!)
+6. Video Wall
+7. Impostazioni
+8. **AI Queue** ✨ (ora visibile!)
+
+---
+
 ## v8.0.2 - 2025-12-02
 ### 🔧 PATCH: Taxonomy Menu Visibility Fix
 

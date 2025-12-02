@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
  * Description: Sistema di produzione video per "Il Punto di Vista": importazione YouTube, trascrizioni SupaData, AI con Golden Prompt, Video Wall con filtri AJAX.
- * Version: 8.0.2
+ * Version: 8.0.3
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Requires at least: 6.0
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '8.0.1' );
+define( 'IPV_PROD_VERSION', '8.0.3' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -230,6 +230,16 @@ class IPV_Production_System_Pro {
             [ 'IPV_Prod_YouTube_Importer', 'render_page' ]
         );
 
+        // Bulk Import
+        add_submenu_page(
+            'ipv-production',
+            'Bulk Import',
+            'Bulk Import',
+            'manage_options',
+            'ipv-production-bulk-import',
+            [ 'IPV_Prod_Bulk_Import', 'render_page' ]
+        );
+
         // RSS Auto-Import
         add_submenu_page(
             'ipv-production',
@@ -247,7 +257,7 @@ class IPV_Production_System_Pro {
             'Coda',
             'manage_options',
             'ipv-production-queue',
-            [ 'IPV_Prod_Bulk_Import', 'render_page' ]
+            [ 'IPV_Prod_Queue', 'render_admin_page' ]
         );
 
         // Video Wall
