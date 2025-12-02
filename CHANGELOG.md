@@ -1,6 +1,56 @@
 
 # IPV Production System Pro – Changelog
 
+## v8.0.4 - 2025-12-02
+### 🔧 PATCH: Video Wall YouTube Date Sorting Fix
+
+**Quick Fix**: Ordinamento per data YouTube reale invece di post_date WordPress
+
+### 🐛 Bug Risolti
+
+**1. Meta Key Errato per Data Pubblicazione**
+- **PROBLEMA**: Video Wall cercava `_ipv_yt_published` (NON ESISTE)
+- **CORRETTO**: Usato `_ipv_yt_published_at` (meta key reale salvato da YouTube API)
+- **DOVE**: `render_video_card()` linea 242
+
+**2. Ordinamento per Post Date WordPress invece di YouTube Date**
+- **PROBLEMA**: I video venivano ordinati per `post_date` (data creazione post WordPress)
+- **RISULTATO**: Video importati recentemente apparivano in alto anche se vecchi su YouTube
+- **FIX**: Ordinamento ora usa `_ipv_yt_published_at` (data pubblicazione YouTube reale)
+- **DOVE**:
+  - Initial render: linee 180-182
+  - AJAX date_desc: linee 388-390
+  - AJAX date_asc: linee 393-395
+  - Default fallback: linee 426-428
+
+### 📝 File Modificati
+- `includes/class-video-wall.php`:
+  - Linea 242: `_ipv_yt_published` → `_ipv_yt_published_at`
+  - Linea 180: `orderby` → `meta_value` con `meta_key` → `_ipv_yt_published_at`
+  - Linea 388-390: AJAX date_desc usa data YouTube
+  - Linea 393-395: AJAX date_asc usa data YouTube
+  - Linea 426-428: Default usa data YouTube
+- `ipv-production-system-pro.php`: Version 8.0.3 → 8.0.4
+
+### ✅ Risultato
+- ✅ Date pubblicazione corrette visualizzate nelle card video
+- ✅ Ordinamento "Più recenti" ora ordina per data YouTube reale
+- ✅ Ordinamento "Meno recenti" ora ordina per data YouTube reale
+- ✅ Video importati tardivamente non appaiono più come "recenti"
+
+### 📊 Comportamento Corretto
+**Prima (SBAGLIATO)**:
+- Video pubblicato su YouTube: 2020-01-01
+- Importato in WordPress: 2025-12-02
+- Appariva come "più recente" ❌
+
+**Dopo (CORRETTO)**:
+- Video pubblicato su YouTube: 2020-01-01
+- Importato in WordPress: 2025-12-02
+- Appare nella posizione corretta (2020) ✅
+
+---
+
 ## v8.0.3 - 2025-12-02
 ### 🔧 PATCH: Admin Menu Registration Fix
 
