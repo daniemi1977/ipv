@@ -1,0 +1,236 @@
+=== Strings Needing Translation ===
+
+String: "Trascrizione non disponibile"
+Files: class-ai-enhancements.php
+
+String: "Trascrizione mancante"
+Files: class-ai-generator.php, class-video-list-columns.php
+
+String: "Hashtag salvati come tag"
+Files: class-ai-generator.php
+
+String: "Relatore da regola manuale"
+Files: class-ai-generator.php
+
+String: "Persone menzionate"
+Files: class-ai-generator.php
+
+String: "Nessun ospite"
+Files: class-ai-generator.php
+
+String: "Relatori salvati"
+Files: class-ai-generator.php
+
+String: "Argomenti trattati"
+Files: class-ai-generator.php
+
+String: "Categorie salvate"
+Files: class-ai-generator.php
+
+String: "Saluti finali"
+Files: class-ai-generator.php
+
+String: "Energia libera"
+Files: class-ai-generator.php
+
+String: "Primo argomento"
+Files: class-ai-generator.php
+
+String: "Tartaria impero nascosto"
+Files: class-ai-generator.php
+
+String: "Secondo argomento"
+Files: class-ai-generator.php
+
+String: "Il mistero dell"
+Files: class-ai-generator.php
+
+String: "Geopolitica nuovo ordine mondiale"
+Files: class-ai-generator.php
+
+String: "Risveglio spirituale coscienza"
+Files: class-ai-generator.php
+
+String: "Discussione generale"
+Files: class-ai-generator.php
+
+String: "Argomento interessante"
+Files: class-ai-generator.php
+
+String: "Tema del video"
+Files: class-ai-generator.php
+
+String: "Nessun ospite presente"
+Files: class-ai-generator.php
+
+String: "Personalizza canale"
+Files: class-bulk-import.php
+
+String: "Seleziona almeno un video da importare"
+Files: class-bulk-import.php
+
+String: "Nome template"
+Files: class-bulk-operations.php
+
+String: "Compila entrambi i campi"
+Files: class-bulk-operations.php
+
+String: "Nessun video trovato"
+Files: class-bulk-tools.php
+
+String: "Errore di connessione"
+Files: class-bulk-tools.php, class-speaker-rules.php, class-unified-importer.php
+
+String: "Permessi insufficienti"
+Files: class-bulk-tools.php, class-duplicate-checker.php, class-elementor-templates.php, class-speaker-rules.php
+
+String: "Video non trovato"
+Files: class-bulk-tools.php
+
+String: "Descrizione rigenerata"
+Files: class-bulk-tools.php
+
+String: "Thumbnail scaricata"
+Files: class-bulk-tools.php
+
+String: "Errore download thumbnail"
+Files: class-bulk-tools.php
+
+String: "Nessuna immagine selezionata"
+Files: class-bulk-tools.php
+
+String: "Dailymotion video meta saved"
+Files: class-dailymotion-api.php
+
+String: "Le mie librerie"
+Files: class-elementor-templates.php
+
+String: "Template non specificato"
+Files: class-elementor-templates.php
+
+String: "Template non trovato"
+Files: class-elementor-templates.php
+
+String: "Errore durante la creazione del template"
+Files: class-elementor-templates.php
+
+String: "Elementor template imported"
+Files: class-elementor-templates.php
+
+String: "Golden prompt reset to default"
+Files: class-golden-prompt-manager.php
+
+String: "File not found"
+Files: class-golden-prompt-manager.php
+
+String: "File is empty"
+Files: class-golden-prompt-manager.php
+
+String: "Golden prompt uploaded from file"
+Files: class-golden-prompt-manager.php
+
+String: "Database indices created for performance optimization"
+Files: class-performance.php
+
+String: "Database tables optimized"
+Files: class-performance.php
+
+String: "All caches cleared"
+Files: class-performance.php
+
+String: "Cache warmed up with critical data"
+Files: class-performance.php
+
+String: "Job inserito in coda"
+Files: class-queue.php
+
+String: "Errore processando job"
+Files: class-queue.php
+
+String: "Job completato con successo"
+Files: class-queue.php
+
+String: "Check premiere videos"
+Files: class-queue.php
+
+String: "Video not found"
+Files: class-rest-api.php
+
+String: "Webhook received"
+Files: class-rest-api.php
+
+String: "Impossibile creare il post"
+Files: class-simple-import.php
+
+String: "Video importato e pubblicato"
+Files: class-simple-import.php
+
+String: "Errore sconosciuto"
+Files: class-speaker-rules.php, class-supadata.php, class-youtube-api.php
+
+String: "Pattern e relatore sono obbligatori"
+Files: class-speaker-rules.php
+
+String: "Questo pattern esiste già"
+Files: class-speaker-rules.php
+
+String: "Regola aggiunta"
+Files: class-speaker-rules.php
+
+String: "Regola non trovata"
+Files: class-speaker-rules.php
+
+String: "Regola eliminata"
+Files: class-speaker-rules.php
+
+String: "Richiesta non valida"
+Files: class-supadata.php
+
+String: "Job fallito senza dettagli"
+Files: class-supadata.php
+
+String: "Rileva prima la fonte del video"
+Files: class-unified-importer.php
+
+String: "Parametri mancanti"
+Files: class-unified-importer.php
+
+String: "Fonte non valida"
+Files: class-unified-importer.php
+
+String: "Unified import successful"
+Files: class-unified-importer.php
+
+String: "Trascrizione presente"
+Files: class-video-list-columns.php
+
+String: "Featured image presente"
+Files: class-video-list-columns.php
+
+String: "Video per pagina"
+Files: class-video-wall-settings.php
+
+String: "Tipo paginazione"
+Files: class-video-wall-settings.php
+
+String: "Mostra filtri"
+Files: class-video-wall-settings.php
+
+String: "Carica altri"
+Files: class-video-wall-settings.php
+
+String: "Griglia uniforme"
+Files: class-video-wall-settings.php
+
+String: "Salva impostazioni"
+Files: class-video-wall-settings.php
+
+String: "Vimeo video meta saved"
+Files: class-vimeo-api.php
+
+String: "Rigenerazione thumbnails"
+Files: class-wp-cli.php
+
+String: "Verifica copertura timestamp"
+Files: class-youtube-chapters.php
+
