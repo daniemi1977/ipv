@@ -36,35 +36,35 @@ class IPV_Prod_CPT {
     }
 
     /**
-     * Registra il Custom Post Type
+     * Register the Custom Post Type
      */
     public static function register() {
         $labels = [
-            'name'                  => 'Video IPV',
-            'singular_name'         => 'Video IPV',
-            'menu_name'             => 'Video IPV',
-            'add_new'               => 'Aggiungi nuovo',
-            'add_new_item'          => 'Aggiungi nuovo Video',
-            'edit_item'             => 'Modifica Video',
-            'new_item'              => 'Nuovo Video',
-            'view_item'             => 'Vedi Video',
-            'view_items'            => 'Vedi Video',
-            'search_items'          => 'Cerca Video',
-            'not_found'             => 'Nessun video trovato',
-            'not_found_in_trash'    => 'Nessun video nel cestino',
-            'all_items'             => 'Tutti i Video',
-            'archives'              => 'Archivio Video',
-            'attributes'            => 'Attributi Video',
-            'insert_into_item'      => 'Inserisci nel video',
-            'uploaded_to_this_item' => 'Caricato in questo video',
-            'filter_items_list'     => 'Filtra video',
-            'items_list_navigation' => 'Navigazione video',
-            'items_list'            => 'Lista video',
+            'name'                  => _x( 'IPV Videos', 'post type general name', 'ipv-production-system-pro' ),
+            'singular_name'         => _x( 'IPV Video', 'post type singular name', 'ipv-production-system-pro' ),
+            'menu_name'             => _x( 'IPV Videos', 'admin menu', 'ipv-production-system-pro' ),
+            'add_new'               => __( 'Add New', 'ipv-production-system-pro' ),
+            'add_new_item'          => __( 'Add New Video', 'ipv-production-system-pro' ),
+            'edit_item'             => __( 'Edit Video', 'ipv-production-system-pro' ),
+            'new_item'              => __( 'New Video', 'ipv-production-system-pro' ),
+            'view_item'             => __( 'View Video', 'ipv-production-system-pro' ),
+            'view_items'            => __( 'View Videos', 'ipv-production-system-pro' ),
+            'search_items'          => __( 'Search Videos', 'ipv-production-system-pro' ),
+            'not_found'             => __( 'No videos found', 'ipv-production-system-pro' ),
+            'not_found_in_trash'    => __( 'No videos found in Trash', 'ipv-production-system-pro' ),
+            'all_items'             => __( 'All Videos', 'ipv-production-system-pro' ),
+            'archives'              => __( 'Video Archives', 'ipv-production-system-pro' ),
+            'attributes'            => __( 'Video Attributes', 'ipv-production-system-pro' ),
+            'insert_into_item'      => __( 'Insert into video', 'ipv-production-system-pro' ),
+            'uploaded_to_this_item' => __( 'Uploaded to this video', 'ipv-production-system-pro' ),
+            'filter_items_list'     => __( 'Filter videos list', 'ipv-production-system-pro' ),
+            'items_list_navigation' => __( 'Videos list navigation', 'ipv-production-system-pro' ),
+            'items_list'            => __( 'Videos list', 'ipv-production-system-pro' ),
         ];
 
         $args = [
             'labels'              => $labels,
-            'description'         => 'Video importati da YouTube con trascrizione e descrizione AI.',
+            'description'         => __( 'Videos imported from YouTube with transcription and AI description.', 'ipv-production-system-pro' ),
             'public'              => true,
             'publicly_queryable'  => true,
             'show_ui'             => true,
@@ -98,61 +98,61 @@ class IPV_Prod_CPT {
     }
 
     /**
-     * Registra le tassonomie
+     * Register taxonomies
      */
     public static function register_taxonomies() {
-        // Categoria Video (ipv_categoria) - PRINCIPALE
+        // Video Category (ipv_categoria) - PRIMARY
         register_taxonomy( 'ipv_categoria', self::POST_TYPE, [
             'labels' => [
-                'name'              => 'Categorie Video',
-                'singular_name'     => 'Categoria Video',
-                'search_items'      => 'Cerca Categorie',
-                'all_items'         => 'Tutte le Categorie',
-                'parent_item'       => 'Categoria Padre',
-                'parent_item_colon' => 'Categoria Padre:',
-                'edit_item'         => 'Modifica Categoria',
-                'update_item'       => 'Aggiorna Categoria',
-                'add_new_item'      => 'Aggiungi Categoria',
-                'new_item_name'     => 'Nuova Categoria',
-                'menu_name'         => 'Categorie',
+                'name'              => _x( 'Video Categories', 'taxonomy general name', 'ipv-production-system-pro' ),
+                'singular_name'     => _x( 'Video Category', 'taxonomy singular name', 'ipv-production-system-pro' ),
+                'search_items'      => __( 'Search Categories', 'ipv-production-system-pro' ),
+                'all_items'         => __( 'All Categories', 'ipv-production-system-pro' ),
+                'parent_item'       => __( 'Parent Category', 'ipv-production-system-pro' ),
+                'parent_item_colon' => __( 'Parent Category:', 'ipv-production-system-pro' ),
+                'edit_item'         => __( 'Edit Category', 'ipv-production-system-pro' ),
+                'update_item'       => __( 'Update Category', 'ipv-production-system-pro' ),
+                'add_new_item'      => __( 'Add New Category', 'ipv-production-system-pro' ),
+                'new_item_name'     => __( 'New Category Name', 'ipv-production-system-pro' ),
+                'menu_name'         => __( 'Categories', 'ipv-production-system-pro' ),
             ],
             'hierarchical'      => true,
             'show_ui'           => true,
             'show_in_menu'      => true,
             'show_admin_column' => true,
             'query_var'         => true,
-            'rewrite'           => [ 'slug' => 'categoria-video' ],
+            'rewrite'           => [ 'slug' => 'video-category' ],
             'show_in_rest'      => true,
         ] );
 
-        // Relatore / Ospite (ipv_relatore) - NUOVO
+        // Speaker / Guest (ipv_relatore)
         register_taxonomy( 'ipv_relatore', self::POST_TYPE, [
             'labels' => [
-                'name'              => 'Relatori',
-                'singular_name'     => 'Relatore',
-                'search_items'      => 'Cerca Relatori',
-                'all_items'         => 'Tutti i Relatori',
-                'edit_item'         => 'Modifica Relatore',
-                'update_item'       => 'Aggiorna Relatore',
-                'add_new_item'      => 'Aggiungi Relatore',
-                'new_item_name'     => 'Nuovo Relatore',
-                'menu_name'         => 'Relatori',
+                'name'              => _x( 'Speakers', 'taxonomy general name', 'ipv-production-system-pro' ),
+                'singular_name'     => _x( 'Speaker', 'taxonomy singular name', 'ipv-production-system-pro' ),
+                'search_items'      => __( 'Search Speakers', 'ipv-production-system-pro' ),
+                'all_items'         => __( 'All Speakers', 'ipv-production-system-pro' ),
+                'edit_item'         => __( 'Edit Speaker', 'ipv-production-system-pro' ),
+                'update_item'       => __( 'Update Speaker', 'ipv-production-system-pro' ),
+                'add_new_item'      => __( 'Add New Speaker', 'ipv-production-system-pro' ),
+                'new_item_name'     => __( 'New Speaker Name', 'ipv-production-system-pro' ),
+                'menu_name'         => __( 'Speakers', 'ipv-production-system-pro' ),
             ],
             'hierarchical'      => false,
             'show_ui'           => true,
             'show_in_menu'      => true,
             'show_admin_column' => true,
             'query_var'         => true,
-            'rewrite'           => [ 'slug' => 'relatore' ],
+            'rewrite'           => [ 'slug' => 'speaker' ],
             'show_in_rest'      => true,
         ] );
 
-        // Mantieni video_category per retrocompatibilità (nascosto)
+        // Keep video_category for backward compatibility (hidden)
         register_taxonomy( 'video_category', self::POST_TYPE, [
             'labels' => [
-                'name'              => 'Categorie Legacy',
-                'singular_name'     => 'Categoria Legacy',
-                'menu_name'         => 'Legacy',
+                'name'              => __( 'Legacy Categories', 'ipv-production-system-pro' ),
+                'singular_name'     => __( 'Legacy Category', 'ipv-production-system-pro' ),
+                'menu_name'         => __( 'Legacy', 'ipv-production-system-pro' ),
             ],
             'hierarchical'      => true,
             'show_ui'           => false,
@@ -161,47 +161,47 @@ class IPV_Prod_CPT {
             'show_in_rest'      => true,
         ] );
 
-        // I tag standard di WordPress (post_tag) sono già disponibili
+        // Standard WordPress tags (post_tag) are already available
     }
 
     /**
-     * Aggiunge le Meta Boxes
+     * Add Meta Boxes
      */
     public static function add_meta_boxes() {
-        // Dati YouTube
+        // YouTube Data
         add_meta_box(
             'ipv_youtube_data',
-            '<span class="dashicons dashicons-youtube" style="color:#ff0000;"></span> Dati YouTube',
+            '<span class="dashicons dashicons-youtube" style="color:#ff0000;"></span> ' . __( 'YouTube Data', 'ipv-production-system-pro' ),
             [ __CLASS__, 'render_youtube_meta_box' ],
             self::POST_TYPE,
             'normal',
             'high'
         );
 
-        // Trascrizione
+        // Transcription
         add_meta_box(
             'ipv_transcript',
-            '<span class="dashicons dashicons-text-page"></span> Trascrizione',
+            '<span class="dashicons dashicons-text-page"></span> ' . __( 'Transcription', 'ipv-production-system-pro' ),
             [ __CLASS__, 'render_transcript_meta_box' ],
             self::POST_TYPE,
             'normal',
             'default'
         );
 
-        // Statistiche
+        // Statistics
         add_meta_box(
             'ipv_stats',
-            '<span class="dashicons dashicons-chart-bar"></span> Statistiche YouTube',
+            '<span class="dashicons dashicons-chart-bar"></span> ' . __( 'YouTube Statistics', 'ipv-production-system-pro' ),
             [ __CLASS__, 'render_stats_meta_box' ],
             self::POST_TYPE,
             'side',
             'default'
         );
 
-        // Azioni
+        // Actions
         add_meta_box(
             'ipv_actions',
-            '<span class="dashicons dashicons-admin-tools"></span> Azioni',
+            '<span class="dashicons dashicons-admin-tools"></span> ' . __( 'Actions', 'ipv-production-system-pro' ),
             [ __CLASS__, 'render_actions_meta_box' ],
             self::POST_TYPE,
             'side',
