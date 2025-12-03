@@ -215,8 +215,8 @@ class IPV_Production_System_Pro {
     public function register_menu() {
         // Main menu
         add_menu_page(
-            'IPV Production System',
-            'IPV Production',
+            __( 'IPV Production System', 'ipv-production-system-pro' ),
+            __( 'IPV Production', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production',
             [ $this, 'render_dashboard' ],
@@ -227,8 +227,8 @@ class IPV_Production_System_Pro {
         // Dashboard
         add_submenu_page(
             'ipv-production',
-            'Dashboard',
-            'Dashboard',
+            __( 'Dashboard', 'ipv-production-system-pro' ),
+            __( 'Dashboard', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production',
             [ $this, 'render_dashboard' ]
@@ -237,8 +237,8 @@ class IPV_Production_System_Pro {
         // Import Video
         add_submenu_page(
             'ipv-production',
-            'Importa Video',
-            'Importa Video',
+            __( 'Import Video', 'ipv-production-system-pro' ),
+            __( 'Import Video', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production-import',
             [ 'IPV_Prod_YouTube_Importer', 'render_page' ]
@@ -247,8 +247,8 @@ class IPV_Production_System_Pro {
         // Bulk Import
         add_submenu_page(
             'ipv-production',
-            'Bulk Import',
-            'Bulk Import',
+            __( 'Bulk Import', 'ipv-production-system-pro' ),
+            __( 'Bulk Import', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production-bulk-import',
             [ 'IPV_Prod_Bulk_Import', 'render_page' ]
@@ -257,8 +257,8 @@ class IPV_Production_System_Pro {
         // RSS Auto-Import
         add_submenu_page(
             'ipv-production',
-            'Auto-Import RSS',
-            'Auto-Import RSS',
+            __( 'RSS Auto-Import', 'ipv-production-system-pro' ),
+            __( 'RSS Auto-Import', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production-rss',
             [ 'IPV_Prod_RSS_Importer', 'render_settings_page' ]
@@ -267,8 +267,8 @@ class IPV_Production_System_Pro {
         // Queue
         add_submenu_page(
             'ipv-production',
-            'Coda',
-            'Coda',
+            __( 'Queue', 'ipv-production-system-pro' ),
+            __( 'Queue', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production-queue',
             [ 'IPV_Prod_Queue', 'render_admin_page' ]
@@ -277,8 +277,8 @@ class IPV_Production_System_Pro {
         // Video Wall
         add_submenu_page(
             'ipv-production',
-            'Video Wall',
-            'Video Wall',
+            __( 'Video Wall', 'ipv-production-system-pro' ),
+            __( 'Video Wall', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production-video-wall',
             [ 'IPV_Prod_Video_Wall_Settings', 'render_settings_page' ]
@@ -287,8 +287,8 @@ class IPV_Production_System_Pro {
         // Settings
         add_submenu_page(
             'ipv-production',
-            'Impostazioni',
-            'Impostazioni',
+            __( 'Settings', 'ipv-production-system-pro' ),
+            __( 'Settings', 'ipv-production-system-pro' ),
             'manage_options',
             'ipv-production-settings',
             [ 'IPV_Prod_Settings', 'render_page' ]
