@@ -2,10 +2,11 @@
 /**
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
- * Description: Sistema di produzione video per "Il Punto di Vista": importazione YouTube, trascrizioni SupaData, AI con Golden Prompt, Video Wall con filtri AJAX.
- * Version: 8.0.5
+ * Description: Professional video production system for YouTube content creators: multi-source imports (YouTube/Vimeo/Dailymotion), AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration.
+ * Version: 9.0.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
+ * Domain Path: /languages
  * Requires at least: 6.0
  * Requires PHP: 7.4
  */
@@ -18,10 +19,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '8.0.5' );
+define( 'IPV_PROD_VERSION', '9.0.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
+// ============================================
+// LOAD TEXT DOMAIN
+// ============================================
+
+function ipv_prod_load_textdomain() {
+    load_plugin_textdomain(
+        'ipv-production-system-pro',
+        false,
+        dirname( plugin_basename( __FILE__ ) ) . '/languages'
+    );
+}
+add_action( 'plugins_loaded', 'ipv_prod_load_textdomain' );
 
 // ============================================
 // AUTOLOAD CLASSES
