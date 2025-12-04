@@ -131,6 +131,7 @@
             // Get filter values
             const categoria = $('#ipv-filter-categoria').val() || '';
             const relatore = $('#ipv-filter-relatore').val() || '';
+            const tag = $('#ipv-filter-tag').val() || '';
             const search = $('#ipv-filter-search').val() || '';
             const sort = $('#ipv-filter-sort').val() || 'date_desc';
 
@@ -148,6 +149,7 @@
                     per_page: perPage,
                     categoria: categoria,
                     relatore: relatore,
+                    tag: tag,
                     search: search,
                     sort: sort
                 },

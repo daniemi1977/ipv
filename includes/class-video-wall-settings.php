@@ -44,6 +44,12 @@ class IPV_Prod_Video_Wall_Settings {
             'sanitize_callback' => 'sanitize_text_field',
         ]);
 
+        register_setting( 'ipv_video_wall_settings', 'ipv_wall_enabled_filters', [
+            'type'              => 'array',
+            'default'           => [ 'categories', 'speakers', 'tags', 'search', 'sort' ],
+            'sanitize_callback' => [ __CLASS__, 'sanitize_enabled_filters' ],
+        ]);
+
         add_settings_section(
             'ipv_video_wall_section',
             'Impostazioni Video Wall',
@@ -87,6 +93,14 @@ class IPV_Prod_Video_Wall_Settings {
             'ipv_wall_show_filters',
             'Mostra filtri',
             [ __CLASS__, 'render_show_filters_field' ],
+            'ipv_video_wall_settings',
+            'ipv_video_wall_section'
+        );
+
+        add_settings_field(
+            'ipv_wall_enabled_filters',
+            'Filtri da visualizzare',
+            [ __CLASS__, 'render_enabled_filters_field' ],
             'ipv_video_wall_settings',
             'ipv_video_wall_section'
         );
@@ -157,6 +171,39 @@ class IPV_Prod_Video_Wall_Settings {
         </label>
         <p class="description">Mostra i filtri per categoria e relatore sopra la griglia video</p>
         <?php
+    }
+
+    public static function render_enabled_filters_field() {
+        $enabled = get_option( 'ipv_wall_enabled_filters', [ 'categories', 'speakers', 'tags', 'search', 'sort' ] );
+        $available_filters = [
+            'categories' => 'Categorie (ipv_categoria)',
+            'speakers'   => 'Relatori (ipv_relatore)',
+            'tags'       => 'Tag (post_tag)',
+            'search'     => 'Cerca nei video',
+            'sort'       => 'Ordina per',
+        ];
+        ?>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 500px;">
+            <?php foreach ( $available_filters as $key => $label ) : ?>
+                <label style="display: flex; align-items: center;">
+                    <input type="checkbox"
+                           name="ipv_wall_enabled_filters[]"
+                           value="<?php echo esc_attr( $key ); ?>"
+                           <?php checked( in_array( $key, $enabled, true ) ); ?>>
+                    <span style="margin-left: 8px;"><?php echo esc_html( $label ); ?></span>
+                </label>
+            <?php endforeach; ?>
+        </div>
+        <p class="description">Seleziona quali filtri mostrare nella Video Wall. I filtri appaiono nell'ordine: Categories, Speakers, Tags, Sort, Search.</p>
+        <?php
+    }
+
+    public static function sanitize_enabled_filters( $value ) {
+        if ( ! is_array( $value ) ) {
+            return [ 'categories', 'speakers', 'tags', 'search', 'sort' ];
+        }
+        $valid_filters = [ 'categories', 'speakers', 'tags', 'search', 'sort' ];
+        return array_values( array_intersect( $value, $valid_filters ) );
     }
 
     public static function render_settings_page() {

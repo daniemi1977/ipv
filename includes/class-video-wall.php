@@ -96,47 +96,84 @@ class IPV_Prod_Video_Wall {
     }
 
     private static function render_filters() {
-        $categorie = get_terms([
-            'taxonomy'   => 'ipv_categoria',
-            'hide_empty' => true,
-        ]);
-
-        $relatori = get_terms([
-            'taxonomy'   => 'ipv_relatore',
-            'hide_empty' => true,
-        ]);
+        // Get enabled filters from settings
+        $enabled_filters = get_option( 'ipv_wall_enabled_filters', [ 'categories', 'speakers', 'tags', 'search', 'sort' ] );
 
         ?>
         <div class="ipv-filters-row">
-            <div class="ipv-filter-group">
-                <label for="ipv-filter-categoria">Categoria:</label>
-                <select id="ipv-filter-categoria" class="ipv-filter-select">
-                    <option value="">Tutte le categorie</option>
-                    <?php foreach ( $categorie as $cat ) : ?>
-                        <option value="<?php echo esc_attr( $cat->term_id ); ?>">
-                            <?php echo esc_html( $cat->name ); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <?php
+            // Categories filter
+            if ( in_array( 'categories', $enabled_filters, true ) ) :
+                $categorie = get_terms([
+                    'taxonomy'   => 'ipv_categoria',
+                    'hide_empty' => true,
+                ]);
+                if ( ! empty( $categorie ) && ! is_wp_error( $categorie ) ) :
+                ?>
+                <div class="ipv-filter-group">
+                    <label for="ipv-filter-categoria">Categoria:</label>
+                    <select id="ipv-filter-categoria" class="ipv-filter-select">
+                        <option value="">Tutte le categorie</option>
+                        <?php foreach ( $categorie as $cat ) : ?>
+                            <option value="<?php echo esc_attr( $cat->term_id ); ?>">
+                                <?php echo esc_html( $cat->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php
+                endif;
+            endif;
 
-            <div class="ipv-filter-group">
-                <label for="ipv-filter-relatore">Relatore:</label>
-                <select id="ipv-filter-relatore" class="ipv-filter-select">
-                    <option value="">Tutti i relatori</option>
-                    <?php foreach ( $relatori as $rel ) : ?>
-                        <option value="<?php echo esc_attr( $rel->term_id ); ?>">
-                            <?php echo esc_html( $rel->name ); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            // Speakers filter
+            if ( in_array( 'speakers', $enabled_filters, true ) ) :
+                $relatori = get_terms([
+                    'taxonomy'   => 'ipv_relatore',
+                    'hide_empty' => true,
+                ]);
+                if ( ! empty( $relatori ) && ! is_wp_error( $relatori ) ) :
+                ?>
+                <div class="ipv-filter-group">
+                    <label for="ipv-filter-relatore">Relatore:</label>
+                    <select id="ipv-filter-relatore" class="ipv-filter-select">
+                        <option value="">Tutti i relatori</option>
+                        <?php foreach ( $relatori as $rel ) : ?>
+                            <option value="<?php echo esc_attr( $rel->term_id ); ?>">
+                                <?php echo esc_html( $rel->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php
+                endif;
+            endif;
 
-            <div class="ipv-filter-group">
-                <label for="ipv-filter-search">Cerca:</label>
-                <input type="text" id="ipv-filter-search" class="ipv-filter-input" placeholder="Cerca nei video...">
-            </div>
+            // Tags filter
+            if ( in_array( 'tags', $enabled_filters, true ) ) :
+                $tags = get_terms([
+                    'taxonomy'   => 'post_tag',
+                    'hide_empty' => true,
+                ]);
+                if ( ! empty( $tags ) && ! is_wp_error( $tags ) ) :
+                ?>
+                <div class="ipv-filter-group">
+                    <label for="ipv-filter-tag">Tag:</label>
+                    <select id="ipv-filter-tag" class="ipv-filter-select">
+                        <option value="">Tutti i tag</option>
+                        <?php foreach ( $tags as $tag ) : ?>
+                            <option value="<?php echo esc_attr( $tag->term_id ); ?>">
+                                <?php echo esc_html( $tag->name ); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php
+                endif;
+            endif;
 
+            // Sort filter
+            if ( in_array( 'sort', $enabled_filters, true ) ) :
+            ?>
             <div class="ipv-filter-group">
                 <label for="ipv-filter-sort">Ordina per:</label>
                 <select id="ipv-filter-sort" class="ipv-filter-select">
@@ -150,23 +187,19 @@ class IPV_Prod_Video_Wall {
                     <option value="title_desc">Titolo (Z-A)</option>
                 </select>
             </div>
+            <?php
+            endif;
 
+            // Search filter - SPOSTATO ALLA FINE come richiesto
+            if ( in_array( 'search', $enabled_filters, true ) ) :
+            ?>
             <div class="ipv-filter-group">
-                <label for="ipv-filter-grid">Layout:</label>
-                <select id="ipv-filter-grid" class="ipv-filter-select">
-                    <option value="2">2 colonne</option>
-                    <option value="3" selected>3 colonne</option>
-                    <option value="4">4 colonne</option>
-                    <option value="5">5 colonne</option>
-                </select>
+                <label for="ipv-filter-search">Cerca:</label>
+                <input type="text" id="ipv-filter-search" class="ipv-filter-input" placeholder="Cerca nei video...">
             </div>
-
-            <div class="ipv-filter-group">
-                <label>
-                    <input type="checkbox" id="ipv-filter-infinite-scroll" checked>
-                    Scroll infinito
-                </label>
-            </div>
+            <?php
+            endif;
+            ?>
         </div>
         <?php
     }
@@ -371,6 +404,7 @@ class IPV_Prod_Video_Wall {
         $per_page = isset( $_POST['per_page'] ) ? absint( $_POST['per_page'] ) : 5;
         $categoria = isset( $_POST['categoria'] ) ? sanitize_text_field( $_POST['categoria'] ) : '';
         $relatore = isset( $_POST['relatore'] ) ? sanitize_text_field( $_POST['relatore'] ) : '';
+        $tag = isset( $_POST['tag'] ) ? sanitize_text_field( $_POST['tag'] ) : '';
         $search = isset( $_POST['search'] ) ? sanitize_text_field( $_POST['search'] ) : '';
         $sort = isset( $_POST['sort'] ) ? sanitize_text_field( $_POST['sort'] ) : 'date_desc';
 
@@ -460,6 +494,14 @@ class IPV_Prod_Video_Wall {
                 'taxonomy' => 'ipv_relatore',
                 'field'    => 'term_id',
                 'terms'    => absint( $relatore ),
+            ];
+        }
+
+        if ( ! empty( $tag ) ) {
+            $tax_query[] = [
+                'taxonomy' => 'post_tag',
+                'field'    => 'term_id',
+                'terms'    => absint( $tag ),
             ];
         }
 
