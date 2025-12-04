@@ -372,7 +372,7 @@ class IPV_Production_System_Pro {
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center">
                             <h2 class="display-4 mb-0"><?php echo esc_html( $published ); ?></h2>
-                            <p class="text-muted mb-0">Video Pubblicati</p>
+                            <p class="text-muted mb-0"><?php esc_html_e( 'Published Videos', 'ipv-production-system-pro' ); ?></p>
                         </div>
                     </div>
                 </div>
@@ -380,7 +380,7 @@ class IPV_Production_System_Pro {
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center">
                             <h2 class="display-4 mb-0"><?php echo esc_html( $pending + $draft ); ?></h2>
-                            <p class="text-muted mb-0">In Coda</p>
+                            <p class="text-muted mb-0"><?php esc_html_e( 'In Queue', 'ipv-production-system-pro' ); ?></p>
                         </div>
                     </div>
                 </div>
@@ -388,9 +388,9 @@ class IPV_Production_System_Pro {
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center">
                             <?php if ( $rss_enabled ) : ?>
-                                <span class="badge bg-success fs-5">✓ Attivo</span>
+                                <span class="badge bg-success fs-5">✓ <?php esc_html_e( 'Active', 'ipv-production-system-pro' ); ?></span>
                             <?php else : ?>
-                                <span class="badge bg-secondary fs-5">Disattivo</span>
+                                <span class="badge bg-secondary fs-5"><?php esc_html_e( 'Inactive', 'ipv-production-system-pro' ); ?></span>
                             <?php endif; ?>
                             <p class="text-muted mb-0 mt-2">Auto-Import RSS</p>
                         </div>
@@ -400,14 +400,14 @@ class IPV_Production_System_Pro {
                     <div class="card shadow-sm h-100">
                         <div class="card-body text-center">
                             <?php if ( wp_next_scheduled( 'ipv_prod_process_queue' ) ) : ?>
-                                <span class="badge bg-success fs-5">✓ Attivo</span>
+                                <span class="badge bg-success fs-5">✓ <?php esc_html_e( 'Active', 'ipv-production-system-pro' ); ?></span>
                                 <p class="text-muted mb-0 mt-2">CRON</p>
-                                <small class="text-muted">Prossima: <?php echo date( 'H:i:s', wp_next_scheduled( 'ipv_prod_process_queue' ) ); ?></small>
+                                <small class="text-muted"><?php esc_html_e( 'Next:', 'ipv-production-system-pro' ); ?> <?php echo date( 'H:i:s', wp_next_scheduled( 'ipv_prod_process_queue' ) ); ?></small>
                             <?php else : ?>
-                                <span class="badge bg-danger fs-5">Fermo</span>
+                                <span class="badge bg-danger fs-5"><?php esc_html_e( 'Stopped', 'ipv-production-system-pro' ); ?></span>
                                 <p class="text-muted mb-0 mt-2">CRON</p>
                                 <button type="button" class="btn btn-sm btn-success mt-2" id="ipv-start-cron-btn">
-                                    ▶ Avvia CRON
+                                    ▶ <?php esc_html_e( 'Start CRON', 'ipv-production-system-pro' ); ?>
                                 </button>
                             <?php endif; ?>
                         </div>
@@ -415,15 +415,15 @@ class IPV_Production_System_Pro {
                 </div>
             </div>
 
-            <!-- Pulsante Elabora Coda Manuale -->
+            <!-- Manual Queue Processing Button -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-lightning me-2"></i>Elaborazione Manuale</h5>
+                    <h5 class="mb-0"><i class="bi bi-lightning me-2"></i><?php esc_html_e( 'Manual Processing', 'ipv-production-system-pro' ); ?></h5>
                 </div>
                 <div class="card-body">
-                    <p class="text-muted">Se il CRON non funziona, puoi elaborare la coda manualmente:</p>
+                    <p class="text-muted"><?php esc_html_e( 'If CRON is not working, you can process the queue manually:', 'ipv-production-system-pro' ); ?></p>
                     <button type="button" class="btn btn-primary" id="ipv-process-queue-btn">
-                        <i class="bi bi-play-fill me-1"></i> Elabora Coda Adesso
+                        <i class="bi bi-play-fill me-1"></i> <?php esc_html_e( 'Process Queue Now', 'ipv-production-system-pro' ); ?>
                     </button>
                     <span id="ipv-process-result" class="ms-3"></span>
                 </div>
@@ -431,11 +431,11 @@ class IPV_Production_System_Pro {
 
             <script>
             jQuery(document).ready(function($) {
-                // Avvia CRON
+                // Start CRON
                 $('#ipv-start-cron-btn').on('click', function() {
                     var $btn = $(this);
-                    $btn.prop('disabled', true).text('Avvio...');
-                    
+                    $btn.prop('disabled', true).text('<?php esc_html_e( 'Starting...', 'ipv-production-system-pro' ); ?>');
+
                     $.ajax({
                         url: ajaxurl,
                         type: 'POST',
@@ -445,28 +445,28 @@ class IPV_Production_System_Pro {
                         },
                         success: function(response) {
                             if (response.success) {
-                                alert('CRON avviato! Prossima esecuzione: ' + response.data.next_run);
+                                alert('<?php esc_html_e( 'CRON started! Next execution:', 'ipv-production-system-pro' ); ?> ' + response.data.next_run);
                                 location.reload();
                             } else {
-                                alert('Errore: ' + response.data);
-                                $btn.prop('disabled', false).text('▶ Avvia CRON');
+                                alert('<?php esc_html_e( 'Error:', 'ipv-production-system-pro' ); ?> ' + response.data);
+                                $btn.prop('disabled', false).text('▶ <?php esc_html_e( 'Start CRON', 'ipv-production-system-pro' ); ?>');
                             }
                         },
                         error: function() {
-                            alert('Errore di connessione');
-                            $btn.prop('disabled', false).text('▶ Avvia CRON');
+                            alert('<?php esc_html_e( 'Connection error', 'ipv-production-system-pro' ); ?>');
+                            $btn.prop('disabled', false).text('▶ <?php esc_html_e( 'Start CRON', 'ipv-production-system-pro' ); ?>');
                         }
                     });
                 });
 
-                // Elabora coda manualmente
+                // Process queue manually
                 $('#ipv-process-queue-btn').on('click', function() {
                     var $btn = $(this);
                     var $result = $('#ipv-process-result');
-                    
-                    $btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i> Elaborazione...');
+
+                    $btn.prop('disabled', true).html('<i class="bi bi-hourglass-split me-1"></i> <?php esc_html_e( 'Processing...', 'ipv-production-system-pro' ); ?>');
                     $result.html('');
-                    
+
                     $.ajax({
                         url: ajaxurl,
                         type: 'POST',
@@ -478,14 +478,14 @@ class IPV_Production_System_Pro {
                             if (response.success) {
                                 $result.html('<span class="text-success">✓ ' + response.data.message + '</span>');
                             } else {
-                                $result.html('<span class="text-danger">✗ Errore</span>');
+                                $result.html('<span class="text-danger">✗ <?php esc_html_e( 'Error', 'ipv-production-system-pro' ); ?></span>');
                             }
                         },
                         error: function() {
-                            $result.html('<span class="text-danger">✗ Errore connessione</span>');
+                            $result.html('<span class="text-danger">✗ <?php esc_html_e( 'Connection error', 'ipv-production-system-pro' ); ?></span>');
                         },
                         complete: function() {
-                            $btn.prop('disabled', false).html('<i class="bi bi-play-fill me-1"></i> Elabora Coda Adesso');
+                            $btn.prop('disabled', false).html('<i class="bi bi-play-fill me-1"></i> <?php esc_html_e( 'Process Queue Now', 'ipv-production-system-pro' ); ?>');
                         }
                     });
                 });
@@ -495,29 +495,29 @@ class IPV_Production_System_Pro {
             <!-- API Status -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="bi bi-key me-2"></i>Stato API</h5>
+                    <h5 class="mb-0"><i class="bi bi-key me-2"></i><?php esc_html_e( 'API Status', 'ipv-production-system-pro' ); ?></h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4">
                             <?php if ( $supadata_key ) : ?>
-                                <i class="bi bi-check-circle-fill text-success"></i> SupaData: <strong>OK</strong>
+                                <i class="bi bi-check-circle-fill text-success"></i> SupaData: <strong><?php esc_html_e( 'OK', 'ipv-production-system-pro' ); ?></strong>
                             <?php else : ?>
-                                <i class="bi bi-x-circle-fill text-danger"></i> SupaData: <strong>Mancante</strong>
+                                <i class="bi bi-x-circle-fill text-danger"></i> SupaData: <strong><?php esc_html_e( 'Missing', 'ipv-production-system-pro' ); ?></strong>
                             <?php endif; ?>
                         </div>
                         <div class="col-md-4">
                             <?php if ( $openai_key ) : ?>
-                                <i class="bi bi-check-circle-fill text-success"></i> OpenAI: <strong>OK</strong>
+                                <i class="bi bi-check-circle-fill text-success"></i> OpenAI: <strong><?php esc_html_e( 'OK', 'ipv-production-system-pro' ); ?></strong>
                             <?php else : ?>
-                                <i class="bi bi-x-circle-fill text-danger"></i> OpenAI: <strong>Mancante</strong>
+                                <i class="bi bi-x-circle-fill text-danger"></i> OpenAI: <strong><?php esc_html_e( 'Missing', 'ipv-production-system-pro' ); ?></strong>
                             <?php endif; ?>
                         </div>
                         <div class="col-md-4">
                             <?php if ( $youtube_key ) : ?>
-                                <i class="bi bi-check-circle-fill text-success"></i> YouTube: <strong>OK</strong>
+                                <i class="bi bi-check-circle-fill text-success"></i> YouTube: <strong><?php esc_html_e( 'OK', 'ipv-production-system-pro' ); ?></strong>
                             <?php else : ?>
-                                <i class="bi bi-x-circle-fill text-danger"></i> YouTube: <strong>Mancante</strong>
+                                <i class="bi bi-x-circle-fill text-danger"></i> YouTube: <strong><?php esc_html_e( 'Missing', 'ipv-production-system-pro' ); ?></strong>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -527,23 +527,23 @@ class IPV_Production_System_Pro {
             <!-- Quick Actions -->
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="bi bi-lightning me-2"></i>Azioni Rapide</h5>
+                    <h5 class="mb-0"><i class="bi bi-lightning me-2"></i><?php esc_html_e( 'Quick Actions', 'ipv-production-system-pro' ); ?></h5>
                 </div>
                 <div class="card-body">
                     <a href="<?php echo admin_url( 'admin.php?page=ipv-production-import' ); ?>" class="btn btn-primary me-2">
-                        <i class="bi bi-youtube me-1"></i> Importa Video
+                        <i class="bi bi-youtube me-1"></i> <?php esc_html_e( 'Import Video', 'ipv-production-system-pro' ); ?>
                     </a>
                     <a href="<?php echo admin_url( 'edit.php?post_type=ipv_video' ); ?>" class="btn btn-outline-secondary me-2">
-                        <i class="bi bi-list me-1"></i> Gestisci Video
+                        <i class="bi bi-list me-1"></i> <?php esc_html_e( 'Manage Videos', 'ipv-production-system-pro' ); ?>
                     </a>
                     <a href="<?php echo admin_url( 'admin.php?page=ipv-production-settings' ); ?>" class="btn btn-outline-secondary">
-                        <i class="bi bi-gear me-1"></i> Impostazioni
+                        <i class="bi bi-gear me-1"></i> <?php esc_html_e( 'Settings', 'ipv-production-system-pro' ); ?>
                     </a>
                 </div>
             </div>
 
             <div class="mt-4 text-muted small">
-                <strong>Shortcode:</strong> <code>[ipv_video_wall]</code> oppure <code>[ipv_video_wall show_filters="yes"]</code>
+                <strong><?php esc_html_e( 'Shortcode:', 'ipv-production-system-pro' ); ?></strong> <code>[ipv_video_wall]</code> <?php esc_html_e( 'or', 'ipv-production-system-pro' ); ?> <code>[ipv_video_wall show_filters="yes"]</code>
             </div>
         </div>
         <?php

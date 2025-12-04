@@ -27,14 +27,14 @@ class IPV_Prod_Settings {
             return;
         }
 
-        // Salva le impostazioni se il form è stato inviato
+        // Save settings if form was submitted
         if ( isset( $_POST['ipv_save_settings'] ) && isset( $_POST['ipv_settings_nonce'] ) ) {
             if ( wp_verify_nonce( $_POST['ipv_settings_nonce'], 'ipv_prod_settings_save' ) ) {
                 self::save_settings();
                 ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
-                    <strong>Impostazioni salvate con successo!</strong>
+                    <strong><?php esc_html_e( 'Settings saved successfully!', 'ipv-production-system-pro' ); ?></strong>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
                 <?php
@@ -63,9 +63,9 @@ class IPV_Prod_Settings {
                     <div>
                         <h1 class="mb-1">
                             <i class="bi bi-gear-fill text-white me-2"></i>
-                            Impostazioni
+                            <?php esc_html_e( 'Settings', 'ipv-production-system-pro' ); ?>
                         </h1>
-                        <p class="text-muted mb-0">Configura API e parametri del canale</p>
+                        <p class="text-muted mb-0"><?php esc_html_e( 'Configure API keys and channel parameters', 'ipv-production-system-pro' ); ?></p>
                     </div>
                 </div>
             </div>
@@ -73,27 +73,27 @@ class IPV_Prod_Settings {
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production' ) ); ?>">
-                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        <i class="bi bi-speedometer2 me-1"></i><?php esc_html_e( 'Dashboard', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-import' ) ); ?>">
-                        <i class="bi bi-upload me-1"></i>Importa Video
+                        <i class="bi bi-upload me-1"></i><?php esc_html_e( 'Import Video', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-rss' ) ); ?>">
-                        <i class="bi bi-rss me-1"></i>Auto-Import RSS
+                        <i class="bi bi-rss me-1"></i><?php esc_html_e( 'Auto-Import RSS', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-queue' ) ); ?>">
-                        <i class="bi bi-list-task me-1"></i>Coda
+                        <i class="bi bi-list-task me-1"></i><?php esc_html_e( 'Queue', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-settings' ) ); ?>">
-                        <i class="bi bi-gear me-1"></i>Impostazioni
+                        <i class="bi bi-gear me-1"></i><?php esc_html_e( 'Settings', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
             </ul>
@@ -128,30 +128,30 @@ class IPV_Prod_Settings {
                                            placeholder="sk-..." />
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Richiesto per generare le trascrizioni dei video
+                                        <?php esc_html_e( 'Required to generate video transcriptions', 'ipv-production-system-pro' ); ?>
                                     </div>
                                 </div>
 
-                                <!-- Modalità Trascrizione -->
+                                <!-- Transcription Mode -->
                                 <div class="mb-4">
                                     <label class="form-label">
                                         <i class="bi bi-toggles me-1"></i>
-                                        Modalità Trascrizione
+                                        <?php esc_html_e( 'Transcription Mode', 'ipv-production-system-pro' ); ?>
                                     </label>
                                     <select name="ipv_transcript_mode" class="form-select">
                                         <option value="auto" <?php selected( $transcript_mode, 'auto' ); ?>>
-                                            Auto (consigliato)
+                                            <?php esc_html_e( 'Auto (recommended)', 'ipv-production-system-pro' ); ?>
                                         </option>
                                         <option value="native" <?php selected( $transcript_mode, 'native' ); ?>>
-                                            Native
+                                            <?php esc_html_e( 'Native', 'ipv-production-system-pro' ); ?>
                                         </option>
                                         <option value="generate" <?php selected( $transcript_mode, 'generate' ); ?>>
-                                            Generate
+                                            <?php esc_html_e( 'Generate', 'ipv-production-system-pro' ); ?>
                                         </option>
                                     </select>
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Auto usa i sottotitoli se esistono, altrimenti li genera
+                                        <?php esc_html_e( 'Auto uses subtitles if available, otherwise generates them', 'ipv-production-system-pro' ); ?>
                                     </div>
                                 </div>
 
@@ -170,7 +170,7 @@ class IPV_Prod_Settings {
                                            placeholder="sk-..." />
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Richiesto per generare le descrizioni AI
+                                        <?php esc_html_e( 'Required to generate AI descriptions', 'ipv-production-system-pro' ); ?>
                                     </div>
                                 </div>
 
@@ -179,40 +179,40 @@ class IPV_Prod_Settings {
                                     <label class="form-label">
                                         <i class="bi bi-youtube me-1"></i>
                                         YouTube Data API Key
-                                        <span class="badge bg-warning text-dark">Opzionale</span>
+                                        <span class="badge bg-warning text-dark"><?php esc_html_e( 'Optional', 'ipv-production-system-pro' ); ?></span>
                                     </label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="ipv_youtube_api_key" 
-                                           value="<?php echo esc_attr( $youtube_key ); ?>" 
+                                    <input type="text"
+                                           class="form-control"
+                                           name="ipv_youtube_api_key"
+                                           value="<?php echo esc_attr( $youtube_key ); ?>"
                                            placeholder="AIza..." />
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Per recuperare titoli corretti dei video
+                                        <?php esc_html_e( 'For retrieving correct video titles', 'ipv-production-system-pro' ); ?>
                                     </div>
 
-                                <!-- Filtri Import YouTube -->
+                                <!-- YouTube Import Filters -->
                                 <div class="mb-4 mt-4">
                                     <label class="form-label">
                                         <i class="bi bi-clock-history me-1"></i>
-                                        Filtri Import YouTube
+                                        <?php esc_html_e( 'YouTube Import Filters', 'ipv-production-system-pro' ); ?>
                                     </label>
 
                                     <div class="row g-3 align-items-center">
                                         <div class="col-md-4">
                                             <div class="input-group">
-                                                <span class="input-group-text">Durata minima</span>
+                                                <span class="input-group-text"><?php esc_html_e( 'Minimum duration', 'ipv-production-system-pro' ); ?></span>
                                                 <input type="number"
                                                        class="form-control"
                                                        name="ipv_min_duration_minutes"
                                                        value="<?php echo esc_attr( $min_duration ); ?>"
                                                        min="0"
                                                        step="1" />
-                                                <span class="input-group-text">min</span>
+                                                <span class="input-group-text"><?php esc_html_e( 'min', 'ipv-production-system-pro' ); ?></span>
                                             </div>
                                             <div class="form-text">
                                                 <i class="bi bi-info-circle me-1"></i>
-                                                I video con durata inferiore non vengono importati (0 = disattivato).
+                                                <?php esc_html_e( 'Videos shorter than this duration will not be imported (0 = disabled).', 'ipv-production-system-pro' ); ?>
                                             </div>
                                         </div>
 
@@ -225,11 +225,11 @@ class IPV_Prod_Settings {
                                                        value="1"
                                                        <?php checked( $exclude_shorts, '1' ); ?> />
                                                 <label class="form-check-label" for="ipv_exclude_shorts">
-                                                    Escludi automaticamente Shorts / Reel
+                                                    <?php esc_html_e( 'Automatically exclude Shorts / Reels', 'ipv-production-system-pro' ); ?>
                                                 </label>
                                                 <div class="form-text">
                                                     <i class="bi bi-info-circle me-1"></i>
-                                                    Riconosciuti in base alla durata (≤ 90 sec) e agli URL /shorts/.
+                                                    <?php esc_html_e( 'Detected by duration (≤ 90 sec) and /shorts/ URLs.', 'ipv-production-system-pro' ); ?>
                                                 </div>
                                             </div>
                                         </div>
@@ -239,12 +239,12 @@ class IPV_Prod_Settings {
                             </div>
                         </div>
 
-                        <!-- Parametri Canale -->
+                        <!-- Channel Parameters -->
                         <div class="card shadow-sm">
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="bi bi-broadcast-pin text-primary me-2"></i>
-                                    Parametri Canale
+                                    <?php esc_html_e( 'Channel Parameters', 'ipv-production-system-pro' ); ?>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -252,25 +252,25 @@ class IPV_Prod_Settings {
                                 <div class="mb-4">
                                     <label class="form-label">
                                         <i class="bi bi-award me-1"></i>
-                                        Sponsor di Default
+                                        <?php esc_html_e( 'Default Sponsor', 'ipv-production-system-pro' ); ?>
                                     </label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="ipv_default_sponsor" 
-                                           value="<?php echo esc_attr( $default_sponsor ); ?>" 
+                                    <input type="text"
+                                           class="form-control"
+                                           name="ipv_default_sponsor"
+                                           value="<?php echo esc_attr( $default_sponsor ); ?>"
                                            placeholder="Biovital – Progetto Italia" />
                                 </div>
 
-                                <!-- Link Sponsor -->
+                                <!-- Sponsor Link -->
                                 <div class="mb-0">
                                     <label class="form-label">
                                         <i class="bi bi-link-45deg me-1"></i>
-                                        Link Sponsor
+                                        <?php esc_html_e( 'Sponsor Link', 'ipv-production-system-pro' ); ?>
                                     </label>
-                                    <input type="url" 
-                                           class="form-control" 
-                                           name="ipv_sponsor_link" 
-                                           value="<?php echo esc_attr( $sponsor_link ); ?>" 
+                                    <input type="url"
+                                           class="form-control"
+                                           name="ipv_sponsor_link"
+                                           value="<?php echo esc_attr( $sponsor_link ); ?>"
                                            placeholder="https://www.biovital.it" />
                                 </div>
                             </div>
@@ -284,7 +284,7 @@ class IPV_Prod_Settings {
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="bi bi-share-fill text-primary me-2"></i>
-                                    Social Media & Contatti
+                                    <?php esc_html_e( 'Social Media & Contacts', 'ipv-production-system-pro' ); ?>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -293,10 +293,10 @@ class IPV_Prod_Settings {
                                         <i class="bi bi-telegram text-info me-1"></i>
                                         Telegram
                                     </label>
-                                    <input type="url" 
-                                           class="form-control" 
-                                           name="ipv_social_telegram" 
-                                           value="<?php echo esc_attr( $telegram ); ?>" 
+                                    <input type="url"
+                                           class="form-control"
+                                           name="ipv_social_telegram"
+                                           value="<?php echo esc_attr( $telegram ); ?>"
                                            placeholder="https://t.me/ilpuntodivista" />
                                 </div>
 
@@ -305,10 +305,10 @@ class IPV_Prod_Settings {
                                         <i class="bi bi-facebook text-primary me-1"></i>
                                         Facebook
                                     </label>
-                                    <input type="url" 
-                                           class="form-control" 
-                                           name="ipv_social_facebook" 
-                                           value="<?php echo esc_attr( $facebook ); ?>" 
+                                    <input type="url"
+                                           class="form-control"
+                                           name="ipv_social_facebook"
+                                           value="<?php echo esc_attr( $facebook ); ?>"
                                            placeholder="https://facebook.com/ilpuntodivista" />
                                 </div>
 
@@ -317,76 +317,76 @@ class IPV_Prod_Settings {
                                         <i class="bi bi-instagram text-danger me-1"></i>
                                         Instagram
                                     </label>
-                                    <input type="text" 
-                                           class="form-control" 
-                                           name="ipv_social_instagram" 
-                                           value="<?php echo esc_attr( $instagram ); ?>" 
+                                    <input type="text"
+                                           class="form-control"
+                                           name="ipv_social_instagram"
+                                           value="<?php echo esc_attr( $instagram ); ?>"
                                            placeholder="@ilpuntodivista_official" />
                                 </div>
 
                                 <div class="mb-3">
                                     <label class="form-label">
                                         <i class="bi bi-globe2 text-success me-1"></i>
-                                        Sito Web
+                                        <?php esc_html_e( 'Website', 'ipv-production-system-pro' ); ?>
                                     </label>
-                                    <input type="url" 
-                                           class="form-control" 
-                                           name="ipv_social_website" 
-                                           value="<?php echo esc_attr( $website ); ?>" 
+                                    <input type="url"
+                                           class="form-control"
+                                           name="ipv_social_website"
+                                           value="<?php echo esc_attr( $website ); ?>"
                                            placeholder="https://www.ilpuntodivista.it" />
                                 </div>
 
                                 <div class="mb-0">
                                     <label class="form-label">
                                         <i class="bi bi-envelope-fill text-warning me-1"></i>
-                                        Email Contatto
+                                        <?php esc_html_e( 'Contact Email', 'ipv-production-system-pro' ); ?>
                                     </label>
-                                    <input type="email" 
-                                           class="form-control" 
-                                           name="ipv_contact_email" 
-                                           value="<?php echo esc_attr( $email ); ?>" 
+                                    <input type="email"
+                                           class="form-control"
+                                           name="ipv_contact_email"
+                                           value="<?php echo esc_attr( $email ); ?>"
                                            placeholder="info@ilpuntodivista.it" />
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Prompt Personalizzato -->
+                        <!-- Custom AI Prompt -->
                         <div class="card shadow-sm">
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="bi bi-code-square text-primary me-2"></i>
-                                    Prompt AI Personalizzato
+                                    <?php esc_html_e( 'Custom AI Prompt', 'ipv-production-system-pro' ); ?>
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <div class="alert alert-info mb-3">
                                     <i class="bi bi-info-circle-fill me-2"></i>
-                                    Se lasci vuoto questo campo, verrà utilizzato il <strong>GOLDEN PROMPT</strong> integrato nel plugin (350+ righe, ottimizzato per "Il Punto di Vista").
+                                    <?php esc_html_e( 'If you leave this field empty, the built-in GOLDEN PROMPT will be used (350+ lines, optimized for "Il Punto di Vista").', 'ipv-production-system-pro' ); ?>
                                 </div>
-                                <textarea name="ipv_ai_prompt" 
-                                          rows="12" 
-                                          class="form-control font-monospace" 
-                                          placeholder="Lascia vuoto per usare il GOLDEN PROMPT interno..."><?php echo esc_textarea( $custom_prompt ); ?></textarea>
+                                <textarea name="ipv_ai_prompt"
+                                          rows="12"
+                                          class="form-control font-monospace"
+                                          placeholder="<?php esc_attr_e( 'Leave empty to use the internal GOLDEN PROMPT...', 'ipv-production-system-pro' ); ?>"><?php echo esc_textarea( $custom_prompt ); ?></textarea>
                                 <div class="form-text">
                                     <i class="bi bi-lightbulb me-1"></i>
-                                    Puoi sovrascrivere il prompt di default con il tuo personalizzato
+                                    <?php esc_html_e( 'You can override the default prompt with your custom one', 'ipv-production-system-pro' ); ?>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pulsante Salva -->
+                <!-- Save Button -->
                 <div class="card shadow-sm mt-4">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="text-muted">
                                 <i class="bi bi-shield-check me-1"></i>
-                                Tutte le chiavi API vengono salvate in modo sicuro nel database
+                                <?php esc_html_e( 'All API keys are securely saved in the database', 'ipv-production-system-pro' ); ?>
                             </div>
                             <button type="submit" class="btn btn-primary btn-lg">
                                 <i class="bi bi-check-circle me-1"></i>
-                                Salva Impostazioni
+                                <?php esc_html_e( 'Save Settings', 'ipv-production-system-pro' ); ?>
                             </button>
                         </div>
                     </div>
@@ -417,12 +417,12 @@ class IPV_Prod_Settings {
             if ( isset( $_POST[ $field ] ) ) {
                 $value = sanitize_text_field( wp_unslash( $_POST[ $field ] ) );
 
-                // Gestione speciale per textarea
+                // Special handling for textarea
                 if ( $field === 'ipv_ai_prompt' ) {
                     $value = sanitize_textarea_field( wp_unslash( $_POST[ $field ] ) );
                 }
 
-                // Normalizza la durata minima come intero >= 0
+                // Normalize minimum duration as integer >= 0
                 if ( $field === 'ipv_min_duration_minutes' ) {
                     $value = max( 0, (int) $value );
                 }
@@ -431,7 +431,7 @@ class IPV_Prod_Settings {
             }
         }
 
-        // Checkbox "Escludi Shorts/Reel"
+        // Checkbox "Exclude Shorts/Reels"
         $exclude_shorts = isset( $_POST['ipv_exclude_shorts'] ) ? '1' : '0';
         update_option( 'ipv_exclude_shorts', $exclude_shorts );
     }
