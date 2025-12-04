@@ -147,6 +147,15 @@ class IPV_Prod_CPT {
             'show_in_rest'      => true,
         ] );
 
+        // Register standard post_tag taxonomy for ipv_video to show in menu
+        register_taxonomy_for_object_type( 'post_tag', self::POST_TYPE );
+
+        // Override post_tag labels for ipv_video menu
+        $tag_object = get_taxonomy( 'post_tag' );
+        if ( $tag_object ) {
+            $tag_object->show_in_menu = 'edit.php?post_type=' . self::POST_TYPE;
+        }
+
         // Keep video_category for backward compatibility (hidden)
         register_taxonomy( 'video_category', self::POST_TYPE, [
             'labels' => [
@@ -160,8 +169,6 @@ class IPV_Prod_CPT {
             'query_var'         => false,
             'show_in_rest'      => true,
         ] );
-
-        // Standard WordPress tags (post_tag) are already available
     }
 
     /**

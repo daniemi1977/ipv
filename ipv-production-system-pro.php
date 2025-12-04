@@ -76,7 +76,7 @@ require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-list-columns.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-simple-import.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-frontend.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-speaker-rules.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-bulk-tools.php';
+// Bulk Tools - rimosso completamente in v9.0.0
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-duplicate-checker.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-seo.php';
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-analytics.php';
