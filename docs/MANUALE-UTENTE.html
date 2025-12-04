@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPV Production System Pro - Manuale Utente v9.0.0</title>
+    <style>
+        @media print {
+            @page {
+                margin: 2cm;
+                size: A4;
+            }
+            body {
+                font-size: 10pt;
+            }
+            h1 {
+                page-break-before: always;
+                font-size: 24pt;
+            }
+            h1:first-of-type {
+                page-break-before: avoid;
+            }
+            h2 {
+                page-break-after: avoid;
+                font-size: 18pt;
+            }
+            pre, code {
+                page-break-inside: avoid;
+            }
+            a {
+                color: #0066cc;
+                text-decoration: none;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+        }
+
+        h1 {
+            color: #1a1a1a;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            font-size: 32px;
+        }
+
+        h2 {
+            color: #0066cc;
+            margin-top: 30px;
+            font-size: 24px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+
+        h3 {
+            color: #333;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        h4 {
+            color: #555;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        code {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: "Courier New", Consolas, monospace;
+            font-size: 0.9em;
+            color: #c7254e;
+        }
+
+        pre {
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #333;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #0066cc;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ddd;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            color: #000;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .header h1 {
+            color: white;
+            border: none;
+            margin: 0;
+            font-size: 36px;
+        }
+
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: #0052a3;
+        }
+
+        @media print {
+            .print-button {
+                display: none;
+            }
+            .header {
+                background: #0066cc;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ Stampa / Salva PDF</button>
+
+    <div class="header">
+        <h1>IPV Production System Pro</h1>
+        <p>Manuale Utente Completo - Versione 9.0.0</p>
+        <p>Dicembre 2024</p>
+    </div>
+
+    <p><h1>IPV Production System Pro</h1>
+<h2>Manuale Utente Completo</h2></p>
+<p><strong>Versione Plugin</strong>: 9.0.0
+<strong>Data</strong>: Dicembre 2024
+<strong>Autore</strong>: IPV Team</p>
+<p><hr></p>
+<p><h2>Indice</h2></p>
+<p><ol>
+<li><a href="#introduzione">Introduzione</a></li>
+<li><a href="#requisiti-di-sistema">Requisiti di Sistema</a></li>
+<li><a href="#installazione">Installazione</a></li>
+<li><a href="#configurazione-iniziale">Configurazione Iniziale</a></li>
+<li><a href="#funzionalità-principali">Funzionalità Principali</a></li>
+<li><a href="#gestione-multilingua">Gestione Multilingua</a></li>
+<li><a href="#guida-alluso">Guida all'Uso</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#faq">FAQ</a></li>
+<li><a href="#supporto">Supporto</a></li>
+</ol></p>
+<p><hr></p>
+<p><h2>1. Introduzione</h2></p>
+<p><strong>IPV Production System Pro</strong> è un plugin WordPress professionale per l'importazione automatica di video da YouTube con generazione di trascrizioni e descrizioni AI.</p>
+<p><h3>Caratteristiche Principali</h3></p>
+<p><ul>
+<li>✅ <strong>Importazione automatica</strong> da YouTube</li>
+<li>✅ <strong>Trascrizioni automatiche</strong> tramite SupaData API</li>
+<li>✅ <strong>Descrizioni AI</strong> generate con OpenAI (GPT)</li>
+<li>✅ <strong>Sistema di coda</strong> per elaborazione asincrona</li>
+<li>✅ <strong>Auto-import RSS</strong> da canali YouTube</li>
+<li>✅ <strong>Multilingua</strong> (6 lingue: IT, DE, FR, ES, PT, RU + EN)</li>
+<li>✅ <strong>Custom Post Type</strong> dedicato ai video</li>
+<li>✅ <strong>Shortcode</strong> per galleria video</li>
+<li>✅ <strong>Golden Prompt</strong> ottimizzato (350+ righe)</li>
+</ul></p>
+<p><h3>Flusso di Lavoro</h3></p>
+<p>``<code>
+<ol>
+<li>Importa URL YouTube</li>
+</ol>
+   ↓
+<ol>
+<li>Genera Trascrizione (SupaData API)</li>
+</ol>
+   ↓
+<ol>
+<li>Genera Descrizione AI (OpenAI)</li>
+</ol>
+   ↓
+<ol>
+<li>Pubblica Video nel sito</li>
+</ol>
+</code>`<code></p>
+<p><hr></p>
+<p><h2>2. Requisiti di Sistema</h2></p>
+<p><h3>Requisiti Server</h3></p>
+<p><table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versione Minima</th>
+<th>Consigliata</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WordPress</strong></td>
+<td>5.8+</td>
+<td>6.4+</td>
+</tr>
+<tr>
+<td><strong>PHP</strong></td>
+<td>7.4+</td>
+<td>8.1+</td>
+</tr>
+<tr>
+<td><strong>MySQL</strong></td>
+<td>5.7+</td>
+<td>8.0+</td>
+</tr>
+<tr>
+<td><strong>Memoria PHP</strong></td>
+<td>128MB</td>
+<td>256MB+</td>
+</tr>
+<tr>
+<td><strong>Max Execution Time</strong></td>
+<td>60s</td>
+<td>300s</td>
+</tr>
+</tbody>
+</table></p>
+<p><h3>API Keys Necessarie</h3></p>
+<p><ol>
+<li><strong>SupaData API Key</strong> (Obbligatoria)</li>
+<li>Per generare trascrizioni video</li>
+<li>Sito: https://supadata.ai</li>
+</ol></p>
+<p><ol>
+<li><strong>OpenAI API Key</strong> (Obbligatoria)</li>
+<li>Per generare descrizioni AI</li>
+<li>Sito: https://platform.openai.com</li>
+</ol></p>
+<p><ol>
+<li><strong>YouTube Data API v3</strong> (Opzionale)</li>
+<li>Per recuperare metadati video</li>
+<li>Console: https://console.cloud.google.com</li>
+</ol></p>
+<p><h3>Permessi WordPress</h3></p>
+<p><ul>
+<li><strong>Administrator</strong> o <strong>Editor</strong> con capacità </code>manage_options<code></li>
+</ul></p>
+<p><hr></p>
+<p><h2>3. Installazione</h2></p>
+<p><h3>Metodo 1: Upload ZIP</h3></p>
+<p><ol>
+<li>Accedi al pannello WordPress</li>
+<li>Vai su <strong>Plugin</strong> → <strong>Aggiungi Nuovo</strong></li>
+<li>Clicca su <strong>Carica Plugin</strong></li>
+<li>Seleziona il file </code>ipv-production-system-pro.zip<code></li>
+<li>Clicca <strong>Installa Ora</strong></li>
+<li>Clicca <strong>Attiva Plugin</strong></li>
+</ol></p>
+<p><h3>Metodo 2: FTP/SFTP</h3></p>
+<p><ol>
+<li>Decomprimi il file ZIP</li>
+<li>Carica la cartella </code>ipv-production-system-pro/<code> in </code>/wp-content/plugins/<code></li>
+<li>Vai su <strong>Plugin</strong> nel pannello WordPress</li>
+<li>Attiva <strong>IPV Production System Pro</strong></li>
+</ol></p>
+<p><h3>Verifica Installazione</h3></p>
+<p>Dopo l'attivazione, dovresti vedere:
+<ul>
+<li>Nuova voce <strong>IPV Production</strong> nel menu admin</li>
+<li>Custom Post Type <strong>IPV Videos</strong> nel menu</li>
+<li>Menu <strong>Impostazioni</strong> disponibile</li>
+</ul></p>
+<p><hr></p>
+<p><h2>4. Configurazione Iniziale</h2></p>
+<p><h3>4.1 Configurazione API Keys</h3></p>
+<p><ol>
+<li>Vai su <strong>IPV Production</strong> → <strong>Settings</strong></li>
+</ol></p>
+<p><ol>
+<li><strong>Sezione API Keys</strong>:</li>
+</ol></p>
+<p>   <strong>SupaData API Key</strong> (Obbligatoria)
+   </code>`<code>
+   ┌─────────────────────────────────────┐
+   │ sk-supadata-xxxxxxxxxxxxxxxxxxxxx   │
+   └─────────────────────────────────────┘
+   </code>`<code>
+<ul>
+<li>Ottieni la chiave da: https://supadata.ai</li>
+<li>Piano consigliato: Pro ($29/mese)</li>
+</ul></p>
+<p>   <strong>OpenAI API Key</strong> (Obbligatoria)
+   </code>`<code>
+   ┌─────────────────────────────────────┐
+   │ sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx    │
+   └─────────────────────────────────────┘
+   </code>`<code>
+<ul>
+<li>Ottieni la chiave da: https://platform.openai.com</li>
+<li>Modello usato: GPT-4 o GPT-4-turbo</li>
+</ul></p>
+<p>   <strong>YouTube Data API Key</strong> (Opzionale)
+   </code>`<code>
+   ┌─────────────────────────────────────┐
+   │ AIzaSyxxxxxxxxxxxxxxxxxxxxxxxxxxxxx │
+   └─────────────────────────────────────┘
+   </code>`<code>
+<ul>
+<li>Migliora l'accuratezza dei titoli video</li>
+<li>Quota gratuita: 10,000 unità/giorno</li>
+</ul></p>
+<p><ol>
+<li><strong>Modalità Trascrizione</strong>:</li>
+<li><strong>Auto (consigliato)</strong>: Usa sottotitoli YouTube se disponibili, altrimenti genera</li>
+<li><strong>Native</strong>: Usa solo sottotitoli esistenti</li>
+<li><strong>Generate</strong>: Genera sempre nuove trascrizioni</li>
+</ul></p>
+<p><ol>
+<li>Clicca <strong>Salva Impostazioni</strong></li>
+</ol></p>
+<p><h3>4.2 Configurazione Filtri Import</h3></p>
+<p><strong>Durata Minima Video</strong>
+</code>`<code>
+┌─────┬─────┐
+│  15 │ min │  ← Esempio: escludi video sotto 15 minuti
+└─────┴─────┘
+</code>`<code>
+<ul>
+<li>Imposta </code>0<code> per disabilitare il filtro</li>
+<li>Utile per escludere contenuti troppo brevi</li>
+</ul></p>
+<p><strong>Escludi Shorts/Reels</strong>
+</code>`<code>
+☑ Escludi automaticamente Shorts / Reels
+</code>`<code>
+<ul>
+<li>Riconosce video ≤ 90 secondi</li>
+<li>Riconosce URL con </code>/shorts/<code></li>
+</ul></p>
+<p><h3>4.3 Parametri Canale</h3></p>
+<p><strong>Sponsor di Default</strong>
+</code>`<code>
+┌─────────────────────────────────────┐
+│ Biovital – Progetto Italia          │
+└─────────────────────────────────────┘
+</code>`<code></p>
+<p><strong>Link Sponsor</strong>
+</code>`<code>
+┌─────────────────────────────────────┐
+│ https://biovital-italia.com         │
+└─────────────────────────────────────┘
+</code>`<code></p>
+<p><h3>4.4 Social Media</h3></p>
+<p>Compila i link ai tuoi canali social:
+<ul>
+<li>Telegram</li>
+<li>Facebook</li>
+<li>Instagram</li>
+<li>Sito Web</li>
+<li>Email Contatto</li>
+</ul></p>
+<p>Questi dati verranno inclusi nelle descrizioni generate dall'AI.</p>
+<p><h3>4.5 Custom AI Prompt (Avanzato)</h3></p>
+<p>Puoi sovrascrivere il <strong>Golden Prompt</strong> predefinito:
+</code>`<code>
+┌─────────────────────────────────────────────┐
+│ Il tuo prompt personalizzato...             │
+│                                             │
+│ [Lascia vuoto per usare il Golden Prompt]  │
+└─────────────────────────────────────────────┘
+</code>`<code></p>
+<p>⚠️ <strong>Attenzione</strong>: Il Golden Prompt integrato è ottimizzato con 350+ righe. Modificalo solo se sai cosa stai facendo.</p>
+<p><hr></p>
+<p><h2>5. Funzionalità Principali</h2></p>
+<p><h3>5.1 Dashboard</h3></p>
+<p>La <strong>Dashboard</strong> mostra lo stato del sistema:</p>
+<p></code>`<code>
+╔════════════════════════════════════════╗
+║  📊 Statistiche                        ║
+╠════════════════════════════════════════╣
+║  Video Pubblicati:           42        ║
+║  In Coda:                     8        ║
+║  RSS Auto-Import:        ✓ Attivo      ║
+║  CRON:                   ✓ Attivo      ║
+║    Prossima esecuzione: 14:30:00       ║
+╚════════════════════════════════════════╝</p>
+<p>╔════════════════════════════════════════╗
+║  🔑 Stato API                          ║
+╠════════════════════════════════════════╣
+║  SupaData:  ✓ OK                       ║
+║  OpenAI:    ✓ OK                       ║
+║  YouTube:   ✗ Mancante                 ║
+╚════════════════════════════════════════╝
+</code>`<code></p>
+<p><strong>Elaborazione Manuale</strong></p>
+<p>Se il CRON non funziona, puoi elaborare la coda manualmente:
+</code>`<code>
+┌────────────────────────────┐
+│ ⚡ Elabora Coda Adesso     │
+└────────────────────────────┘
+</code>`<code></p>
+<p><h3>5.2 Importa Video</h3></p>
+<p><strong>Importazione Singola</strong></p>
+<p><ol>
+<li>Vai su <strong>IPV Production</strong> → <strong>Import Video</strong></li>
+<li>Incolla l'URL YouTube:</li>
+</ol>
+   </code>`<code>
+   ┌─────────────────────────────────────────┐
+   │ https://www.youtube.com/watch?v=xxxxx   │
+   └─────────────────────────────────────────┘
+   </code>`<code>
+<ol>
+<li>Clicca <strong>Importa e Pubblica</strong></li>
+</ol></p>
+<p><strong>Formati URL Supportati</strong>
+<ul>
+<li></code>https://www.youtube.com/watch?v=VIDEO_ID<code></li>
+<li></code>https://youtu.be/VIDEO_ID<code></li>
+<li></code>https://www.youtube.com/watch?v=VIDEO_ID&t=123s<code></li>
+</ul></p>
+<p><strong>Processo di Importazione</strong></p>
+<p></code>`<code>
+Fase 1: Importazione Video (5-10s)
+  ├─ Creazione Custom Post Type
+  ├─ Download metadati YouTube
+  └─ Salvataggio thumbnail</p>
+<p>Fase 2: Generazione Trascrizione (30-60s)
+  ├─ Richiesta a SupaData API
+  ├─ Processing audio
+  └─ Salvataggio trascrizione</p>
+<p>Fase 3: Generazione AI (60-120s)
+  ├─ Invio trascrizione a OpenAI
+  ├─ Generazione descrizione
+  └─ Formattazione output</p>
+<p>Fase 4: Pubblicazione (5s)
+  ├─ Salvataggio contenuto
+  └─ Pubblicazione post
+</code>`<code></p>
+<p><strong>Tempo Totale</strong>: 2-3 minuti per video</p>
+<p><h3>5.3 Bulk Import</h3></p>
+<p>Per importare più video contemporaneamente:</p>
+<p><ol>
+<li>Vai su <strong>IPV Production</strong> → <strong>Bulk Import</strong></li>
+<li>Incolla gli URL (uno per riga):</li>
+</ol>
+   </code>`<code>
+   https://www.youtube.com/watch?v=xxxxx1
+   https://www.youtube.com/watch?v=xxxxx2
+   https://www.youtube.com/watch?v=xxxxx3
+   </code>`<code>
+<ol>
+<li>Clicca <strong>Importa Tutti</strong></li>
+</ol></p>
+<p>I video verranno aggiunti alla coda ed elaborati automaticamente.</p>
+<p><h3>5.4 RSS Auto-Import</h3></p>
+<p><strong>Configurazione Auto-Import</strong></p>
+<p><ol>
+<li>Vai su <strong>IPV Production</strong> → <strong>RSS Auto-Import</strong></li>
+<li>Incolla l'URL del feed RSS del canale YouTube:</li>
+</ol>
+   </code>`<code>
+   ┌─────────────────────────────────────────────────────┐
+   │ https://www.youtube.com/feeds/videos.xml?channel_id=│
+   │ UCxxxxxxxxxxxxxxxxxxxxxx                            │
+   └─────────────────────────────────────────────────────┘
+   </code>`<code></p>
+<p><ol>
+<li>Imposta la frequenza:</li>
+<li>⏱️ <strong>Ogni 30 minuti</strong> (maggiore frequenza)</li>
+<li>⏱️ <strong>Ogni ora</strong> (consigliato)</li>
+<li>⏱️ <strong>Ogni 6 ore</strong> (bassa frequenza)</li>
+<li>⏱️ <strong>Due volte al giorno</strong> (minima frequenza)</li>
+</ol></p>
+<p><ol>
+<li>Clicca <strong>Attiva Auto-Import</strong></li>
+</ol></p>
+<p><strong>Come Funziona</strong></p>
+<p></code>`<code>
+<ol>
+<li>CRON esegue check periodico</li>
+</ol>
+   ↓
+<ol>
+<li>Controlla nuovi video nel feed RSS</li>
+</ol>
+   ↓
+<ol>
+<li>Confronta con video già importati</li>
+</ol>
+   ↓
+<ol>
+<li>Aggiunge nuovi video alla coda</li>
+</ol>
+   ↓
+<ol>
+<li>Elaborazione automatica</li>
+</ol>
+</code>`<code></p>
+<p><h3>5.5 Gestione Coda</h3></p>
+<p><strong>Visualizza Coda</strong></p>
+<p>Vai su <strong>IPV Production</strong> → <strong>Queue</strong> per vedere:
+</code>`<code>
+╔═══════════════════════════════════════════╗
+║  Video in Coda                             ║
+╠═══════════════════════════════════════════╣
+║  1. Come investire nel 2024      [Pending]║
+║  2. Analisi mercati azionari     [Pending]║
+║  3. Strategie di trading         [Process]║
+║  4. Bitcoin e criptovalute       [Done]   ║
+╚═══════════════════════════════════════════╝
+</code>`<code></p>
+<p><strong>Stati Video</strong>:
+<ul>
+<li>🟡 <strong>Pending</strong>: In attesa di elaborazione</li>
+<li>🔵 <strong>Processing</strong>: In elaborazione</li>
+<li>🟢 <strong>Done</strong>: Completato e pubblicato</li>
+<li>🔴 <strong>Error</strong>: Errore durante l'elaborazione</li>
+</ul></p>
+<p><strong>Azioni Disponibili</strong>:
+<ul>
+<li><strong>Priorità Alta</strong>: Sposta un video in cima alla coda</li>
+<li><strong>Riprova</strong>: Riprova l'elaborazione di un video fallito</li>
+<li><strong>Elimina</strong>: Rimuovi un video dalla coda</li>
+</ul></p>
+<p><h3>5.6 Custom Post Type: IPV Videos</h3></p>
+<p>I video importati vengono salvati come <strong>IPV Videos</strong>, un Custom Post Type dedicato.</p>
+<p><strong>Metadati Salvati</strong>:
+<ul>
+<li>Video ID YouTube</li>
+<li>URL video</li>
+<li>Thumbnail</li>
+<li>Durata</li>
+<li>Data pubblicazione YouTube</li>
+<li>Visualizzazioni</li>
+<li>Like/Dislike</li>
+<li>Trascrizione completa</li>
+<li>Descrizione AI generata</li>
+<li>Statistiche</li>
+</ol></p>
+<p><strong>Tassonomie</strong>:
+<ul>
+<li><strong>Categorie Video</strong> (</code>ipv_categoria<code>)</li>
+<li><strong>Relatori</strong> (</code>ipv_relatore<code>)</li>
+<li><strong>Categorie Legacy</strong> (compatibilità)</li>
+</ul></p>
+<p><strong>Permalink</strong>:
+</code>`<code>
+https://tuosito.it/ipv-video/titolo-video/
+</code>`<code></p>
+<p><h3>5.7 Shortcode Video Wall</h3></p>
+<p>Mostra una galleria di video nel frontend:</p>
+<p><strong>Shortcode Base</strong>:
+</code>`<code>
+[ipv_video_wall]
+</code>`<code></p>
+<p><strong>Con Filtri</strong>:
+</code>`<code>
+[ipv_video_wall show_filters="yes"]
+</code>`<code></p>
+<p><strong>Parametri Disponibili</strong>:
+<ul>
+<li></code>show_filters<code>: Mostra filtri categorie/relatori (</code>yes<code>/</code>no<code>)</li>
+<li></code>posts_per_page<code>: Numero video per pagina (default: 12)</li>
+<li></code>category<code>: ID categoria specifica</li>
+<li></code>speaker<code>: ID relatore specifico</li>
+</ul></p>
+<p><strong>Esempio Output</strong>:
+</code>`<code>
+┌─────────┬─────────┬─────────┐
+│ Video 1 │ Video 2 │ Video 3 │
+│  [img]  │  [img]  │  [img]  │
+│ Titolo  │ Titolo  │ Titolo  │
+└─────────┴─────────┴─────────┘
+</code>`<code></p>
+<p><hr></p>
+<p><h2>6. Gestione Multilingua</h2></p>
+<p>Il plugin supporta il sistema di traduzione WordPress standard.</p>
+<p><h3>6.1 Lingua Base: Inglese</h3></p>
+<p>Il codice è scritto in <strong>inglese</strong>. Tutte le stringhe usano funzioni di traduzione:
+</code>`<code>php
+__( 'Settings', 'ipv-production-system-pro' )
+</code>`<code></p>
+<p><h3>6.2 Lingue Supportate</h3></p>
+<p>Il plugin v9.0.0 include <strong>6 traduzioni complete</strong>:</p>
+<p><table>
+<thead>
+<tr>
+<th>Lingua</th>
+<th>Codice</th>
+<th>File</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🇮🇹 <strong>Italiano</strong></td>
+<td>it_IT</td>
+<td>ipv-production-system-pro-it_IT.mo</td>
+</tr>
+<tr>
+<td>🇩🇪 <strong>Tedesco</strong></td>
+<td>de_DE</td>
+<td>ipv-production-system-pro-de_DE.mo</td>
+</tr>
+<tr>
+<td>🇫🇷 <strong>Francese</strong></td>
+<td>fr_FR</td>
+<td>ipv-production-system-pro-fr_FR.mo</td>
+</tr>
+<tr>
+<td>🇪🇸 <strong>Spagnolo</strong></td>
+<td>es_ES</td>
+<td>ipv-production-system-pro-es_ES.mo</td>
+</tr>
+<tr>
+<td>🇵🇹 <strong>Portoghese</strong></td>
+<td>pt_PT</td>
+<td>ipv-production-system-pro-pt_PT.mo</td>
+</tr>
+<tr>
+<td>🇷🇺 <strong>Russo</strong></td>
+<td>ru_RU</td>
+<td>ipv-production-system-pro-ru_RU.mo</td>
+</tr>
+</tbody>
+</table></p>
+<p>Tutte le traduzioni sono già <strong>compilate e pronte all'uso</strong>!</p>
+<p><h3>6.3 Compilare le Traduzioni</h3></p>
+<p><strong>Metodo 1: Poedit</strong> (Consigliato)</p>
+<p><ol>
+<li>Scarica <a href="https://poedit.net/">Poedit</a></li>
+<li>Apri </code>ipv-production-system-pro-it_IT.po<code></li>
+<li><strong>File</strong> → <strong>Compila in MO</strong></li>
+<li>Salvato automaticamente!</li>
+</ol></p>
+<p><strong>Metodo 2: Terminale</strong></p>
+<p></code>`<code>bash
+cd wp-content/plugins/ipv-production-system-pro
+msgfmt languages/ipv-production-system-pro-it_IT.po \
+       -o languages/ipv-production-system-pro-it_IT.mo
+</code>`<code></p>
+<p><strong>Metodo 3: Plugin Loco Translate</strong></p>
+<p><ol>
+<li>Installa <strong>Loco Translate</strong></li>
+<li>Vai su <strong>Loco Translate</strong> → <strong>Plugins</strong></li>
+<li>Seleziona <strong>IPV Production System Pro</strong></li>
+<li>Compila automaticamente</li>
+</ol></p>
+<p><h3>6.4 Cambiare Lingua</h3></p>
+<p><strong>In WordPress</strong>:
+<ol>
+<li>Vai su <strong>Impostazioni</strong> → <strong>Generali</strong></li>
+<li>Imposta <strong>Lingua del sito</strong>:</li>
+<li></code>Italiano<code> → Plugin in italiano 🇮🇹</li>
+<li></code>Deutsch<code> → Plugin in tedesco 🇩🇪</li>
+<li></code>Français<code> → Plugin in francese 🇫🇷</li>
+<li></code>Español<code> → Plugin in spagnolo 🇪🇸</li>
+<li></code>Português<code> → Plugin in portoghese 🇵🇹</li>
+<li></code>Русский<code> → Plugin in russo 🇷🇺</li>
+<li></code>English (United States)<code> → Plugin in inglese 🇬🇧</li>
+</ol></p>
+<p>Il plugin caricherà <strong>automaticamente</strong> la traduzione corretta!</p>
+<p><h3>6.5 Aggiungere Nuove Lingue</h3></p>
+<p><strong>Esempio: Cinese</strong></p>
+<p></code>`<code>bash
+<h1>1. Crea il file .po dal template</h1>
+msginit -i languages/ipv-production-system-pro.pot \
+        -o languages/ipv-production-system-pro-zh_CN.po \
+        -l zh_CN</p>
+<p><h1>2. Traduci con Poedit o editor di testo</h1></p>
+<p><h1>3. Compila in .mo usando lo script Python incluso</h1>
+python3 tools/compile-translations.py
+</code>`<code></p>
+<p><h3>6.6 Stringhe Tradotte</h3></p>
+<p>Il plugin ha <strong>~155 stringhe tradotte</strong>:
+<ul>
+<li>Menu admin (8)</li>
+<li>Dashboard (35)</li>
+<li>Settings (40)</li>
+<li>Import page (25)</li>
+<li>CPT labels (20)</li>
+<li>Taxonomy labels (27)</li>
+</ul></p>
+<p><hr></p>
+<p><h2>7. Guida all'Uso</h2></p>
+<p><h3>7.1 Scenario 1: Prima Importazione</h3></p>
+<p><strong>Obiettivo</strong>: Importare il primo video e verificare il funzionamento</p>
+<p><strong>Passi</strong>:</p>
+<p><ol>
+<li><strong>Verifica API Keys</strong></li>
+<li>Vai su <strong>Settings</strong></li>
+<li>Controlla che tutte le API siano configurate</li>
+<li>Lo stato deve essere ✓ <strong>OK</strong></li>
+</ol></p>
+<p><ol>
+<li><strong>Importa un Video di Test</strong></li>
+<li>Vai su <strong>Import Video</strong></li>
+<li>Usa un video breve (5-10 minuti) per test</li>
+<li>Incolla l'URL: </code>https://www.youtube.com/watch?v=xxxxx<code></li>
+<li>Clicca <strong>Importa e Pubblica</strong></li>
+</ol></p>
+<p><ol>
+<li><strong>Monitora l'Elaborazione</strong></li>
+<li>Vedrai le fasi di elaborazione in tempo reale</li>
+<li>Attendi 2-3 minuti</li>
+</ol></p>
+<p><ol>
+<li><strong>Verifica Risultato</strong></li>
+<li>Vai su <strong>IPV Videos</strong> → <strong>Tutti i Video</strong></li>
+<li>Apri il video importato</li>
+<li>Controlla:</li>
+<li>✓ Trascrizione presente</li>
+<li>✓ Descrizione AI generata</li>
+<li>✓ Metadati YouTube salvati</li>
+</ol></p>
+<p><h3>7.2 Scenario 2: Import Massivo da Canale</h3></p>
+<p><strong>Obiettivo</strong>: Importare tutti i video di un canale YouTube</p>
+<p><strong>Passi</strong>:</p>
+<p><ol>
+<li><strong>Ottieni URL Feed RSS</strong></li>
+<li>Vai sul canale YouTube</li>
+<li>Copia l'ID canale dall'URL</li>
+<li>Costruisci l'URL feed:</li>
+</ol>
+     </code>`<code>
+     https://www.youtube.com/feeds/videos.xml?channel_id=UC...
+     </code>`<code></p>
+<p><ol>
+<li><strong>Configura Auto-Import</strong></li>
+<li>Vai su <strong>RSS Auto-Import</strong></li>
+<li>Incolla l'URL feed</li>
+<li>Seleziona frequenza: <strong>Ogni ora</strong></li>
+<li>Attiva l'auto-import</li>
+</ol></p>
+<p><ol>
+<li><strong>Import Iniziale (Opzionale)</strong></li>
+<li>Se vuoi importare subito i video esistenti</li>
+<li>Usa <strong>Bulk Import</strong></li>
+<li>Incolla gli URL dei video (massimo 50 per volta)</li>
+</ol></p>
+<p><ol>
+<li><strong>Monitora la Coda</strong></li>
+<li>Vai su <strong>Queue</strong></li>
+<li>Vedrai tutti i video in elaborazione</li>
+<li>Il CRON elabora 1 video ogni 5 minuti (default)</li>
+</ol></p>
+<p><ol>
+<li><strong>Ottimizzazione CRON</strong> (Opzionale)</li>
+</ol>
+   </code>`<code>php
+   // Nel file wp-config.php
+   define('ALTERNATE_WP_CRON', true);</p>
+<p>   // Aggiungi un vero CRON job:
+   <em>/5 </em> <em> </em> * curl https://tuosito.it/wp-cron.php
+   </code>`<code></p>
+<p><h3>7.3 Scenario 3: Personalizzazione Descrizioni AI</h3></p>
+<p><strong>Obiettivo</strong>: Modificare il prompt AI per ottenere descrizioni diverse</p>
+<p><strong>Passi</strong>:</p>
+<p><ol>
+<li><strong>Analizza il Golden Prompt</strong></li>
+<li>Leggi il file </code>includes/golden-prompt.php<code></li>
+<li>Studia la struttura delle istruzioni</li>
+</ol></p>
+<p><ol>
+<li><strong>Crea Prompt Personalizzato</strong></li>
+<li>Vai su <strong>Settings</strong> → <strong>Custom AI Prompt</strong></li>
+<li>Scrivi il tuo prompt seguendo questa struttura:</li>
+</ol>
+   </code>`<code>
+   Tu sei un esperto di [tuo settore].</p>
+<p>   Analizza questa trascrizione e genera:
+<ol>
+<li>[Cosa vuoi nell'output]</li>
+<li>[Altro requisito]</li>
+<li>[Altro requisito]</li>
+</ol></p>
+<p>   Usa questo stile:
+<ul>
+<li>[Indicazione stilistica]</li>
+<li>[Altra indicazione]</li>
+</ul></p>
+<p>   TRASCRIZIONE:
+   [Verrà inserita automaticamente]
+   </code>`<code></p>
+<p><ol>
+<li><strong>Testa il Nuovo Prompt</strong></li>
+<li>Importa un video di prova</li>
+<li>Verifica l'output generato</li>
+<li>Raffina il prompt se necessario</li>
+</ol></p>
+<p><ol>
+<li><strong>Salva e Applica</strong></li>
+<li>Clicca <strong>Salva Impostazioni</strong></li>
+<li>Tutte le nuove importazioni useranno il tuo prompt</li>
+</ol></p>
+<p><h3>7.4 Scenario 4: Troubleshooting Importazione Fallita</h3></p>
+<p><strong>Problema</strong>: Un video non viene elaborato correttamente</p>
+<p><strong>Diagnosi</strong>:</p>
+<p><ol>
+<li><strong>Controlla i Log</strong></li>
+</ol>
+   </code>`<code>php
+   // Abilita debug in wp-config.php
+   define('WP_DEBUG', true);
+   define('WP_DEBUG_LOG', true);</p>
+<p>   // Leggi il log
+   tail -f wp-content/debug.log
+   </code>`<code></p>
+<p><ol>
+<li><strong>Verifica API Status</strong></li>
+<li>Vai su <strong>Dashboard</strong></li>
+<li>Controlla lo stato delle API</li>
+<li>Se ✗ <strong>Mancante</strong>: configura le chiavi</li>
+</ol></p>
+<p><ol>
+<li><strong>Controlla Quote API</strong></li>
+<li>SupaData: Verifica il piano su supadata.ai</li>
+<li>OpenAI: Controlla i limiti su platform.openai.com</li>
+<li>YouTube: Verifica quota su console.cloud.google.com</li>
+</ol></p>
+<p><ol>
+<li><strong>Riprova Manualmente</strong></li>
+<li>Vai su <strong>Queue</strong></li>
+<li>Trova il video fallito</li>
+<li>Clicca <strong>Riprova</strong></li>
+</ol></p>
+<p><strong>Soluzioni Comuni</strong>:</p>
+<p><table>
+<thead>
+<tr>
+<th>Errore</th>
+<th>Causa</th>
+<th>Soluzione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></code>API Key invalid<code></td>
+<td>Chiave errata</td>
+<td>Verifica e ricopia la chiave</td>
+</tr>
+<tr>
+<td></code>Quota exceeded<code></td>
+<td>Limite API superato</td>
+<td>Attendi reset quota o upgrade piano</td>
+</tr>
+<tr>
+<td></code>Video too long<code></td>
+<td>Video > 3 ore</td>
+<td>Spezza il video o usa un altro</td>
+</tr>
+<tr>
+<td></code>No subtitles<code></td>
+<td>Video senza sottotitoli</td>
+<td>Cambia modalità in "Generate"</td>
+</tr>
+<tr>
+<td></code>Timeout<code></td>
+<td>Video troppo lungo</td>
+<td>Aumenta </code>max_execution_time<code> PHP</td>
+</tr>
+</tbody>
+</table></p>
+<p><hr></p>
+<p><h2>8. Troubleshooting</h2></p>
+<p><h3>8.1 CRON Non Funziona</h3></p>
+<p><strong>Sintomi</strong>:
+<ul>
+<li>Video restano in coda indefinitamente</li>
+<li>Auto-import RSS non parte</li>
+<li>Dashboard mostra CRON: <strong>Fermo</strong></li>
+</ul></p>
+<p><strong>Soluzioni</strong>:</p>
+<p><strong>1. Verifica CRON WordPress</strong>
+</code>`<code>bash
+<h1>Testa il CRON</h1>
+wp cron test</p>
+<p><h1>Vedi eventi schedulati</h1>
+wp cron event list
+</code>`<code></p>
+<p><strong>2. Usa Real CRON</strong> (Consigliato per produzione)
+</code>`<code>bash
+<h1>Disabilita WP-CRON in wp-config.php</h1>
+define('DISABLE_WP_CRON', true);</p>
+<p><h1>Aggiungi vero CRON job</h1>
+crontab -e</p>
+<p><h1>Aggiungi questa riga (ogni 5 minuti)</h1>
+<em>/5 </em> <em> </em> * curl https://tuosito.it/wp-cron.php >/dev/null 2>&1
+</code>`<code></p>
+<p><strong>3. Usa Plugin CRON</strong>
+<ul>
+<li>Installa <strong>WP Control</strong> o <strong>Advanced Cron Manager</strong></li>
+<li>Verifica gli eventi del plugin</li>
+</ul></p>
+<p><strong>4. Elaborazione Manuale</strong>
+<ul>
+<li>Usa il pulsante <strong>Elabora Coda Adesso</strong> nella Dashboard</li>
+</ul></p>
+<p><h3>8.2 Errori API</h3></p>
+<p><strong>Error: </code>API Key invalid<code></strong></p>
+<p></code>`<code>
+❌ Chiave API non valida o scaduta
+</code>`<code></p>
+<p><strong>Soluzione</strong>:
+<ol>
+<li>Verifica di aver copiato la chiave completa</li>
+<li>Controlla spazi prima/dopo la chiave</li>
+<li>Rigenera una nuova chiave sul sito del provider</li>
+</ol></p>
+<p><strong>Error: </code>Rate limit exceeded<code></strong></p>
+<p></code>`<code>
+❌ Limite richieste API superato
+</code>`<code></p>
+<p><strong>Soluzione</strong>:
+<ol>
+<li>Attendi il reset della quota (di solito 1 ora)</li>
+<li>Controlla il piano sottoscritto</li>
+<li>Upgrade a un piano superiore se necessario</li>
+</ol></p>
+<p><strong>Error: </code>Insufficient credits<code></strong></p>
+<p></code>`<code>
+❌ Crediti API esauriti
+</code>`<code></p>
+<p><strong>Soluzione</strong>:
+<ol>
+<li>Verifica il saldo su platform.openai.com</li>
+<li>Aggiungi crediti o configura auto-ricarica</li>
+<li>Per SupaData: upgrade il piano</li>
+</ol></p>
+<p><h3>8.3 Timeout PHP</h3></p>
+<p><strong>Sintomi</strong>:
+<ul>
+<li>Video non completano l'elaborazione</li>
+<li>Errore "Maximum execution time exceeded"</li>
+</ul></p>
+<p><strong>Soluzioni</strong>:</p>
+<p><strong>1. Aumenta Timeout in WordPress</strong>
+</code>`<code>php
+// In wp-config.php
+set_time_limit(300); // 5 minuti
+ini_set('max_execution_time', 300);
+</code>`<code></p>
+<p><strong>2. Aumenta Timeout in php.ini</strong>
+</code>`<code>ini
+max_execution_time = 300
+max_input_time = 300
+</code>`<code></p>
+<p><strong>3. Aumenta Timeout in .htaccess</strong>
+</code>`<code>apache
+php_value max_execution_time 300
+</code>`<code></p>
+<p><strong>4. Usa Elaborazione Background</strong>
+<ul>
+<li>Il plugin usa già la coda asincrona</li>
+<li>Aumenta solo il timeout per il CRON</li>
+</ul></p>
+<p><h3>8.4 Memoria PHP Esaurita</h3></p>
+<p><strong>Sintomi</strong>:
+<ul>
+<li>Errore "Allowed memory size exhausted"</li>
+<li>Import si blocca durante l'elaborazione</li>
+</ul></p>
+<p><strong>Soluzioni</strong>:</p>
+<p><strong>1. Aumenta Memory Limit</strong>
+</code>`<code>php
+// In wp-config.php
+define('WP_MEMORY_LIMIT', '256M');
+define('WP_MAX_MEMORY_LIMIT', '512M');
+</code>`<code></p>
+<p><strong>2. In php.ini</strong>
+</code>`<code>ini
+memory_limit = 256M
+</code>`<code></p>
+<p><strong>3. In .htaccess</strong>
+</code>`<code>apache
+php_value memory_limit 256M
+</code>`<code></p>
+<p><h3>8.5 Video Non Appare nel Frontend</h3></p>
+<p><strong>Sintomi</strong>:
+<ul>
+<li>Video importato correttamente</li>
+<li>Non visibile nella galleria o shortcode</li>
+</ul></p>
+<p><strong>Soluzioni</strong>:</p>
+<p><strong>1. Verifica Stato Pubblicazione</strong>
+<ul>
+<li>Vai su <strong>IPV Videos</strong></li>
+<li>Controlla che lo stato sia <strong>Pubblicato</strong> (non Bozza)</li>
+</ul></p>
+<p><strong>2. Flush Rewrite Rules</strong>
+</code>`<code>php
+// Vai su Impostazioni → Permalink
+// Clicca "Salva modifiche" (non cambiare nulla)
+</code>`<code></p>
+<p><strong>3. Verifica Shortcode</strong>
+</code>`<code>
+[ipv_video_wall]  ✓ Corretto
+[ipv_video_wall   ✗ Parentesi mancante
+</code>`<code></p>
+<p><strong>4. Controlla Template</strong>
+<ul>
+<li>Il tema deve supportare </code>single-ipv_video.php<code></li>
+<li>Oppure usa il template fallback di WordPress</li>
+</ul></p>
+<p><h3>8.6 Caratteri Speciali Corrotti</h3></p>
+<p><strong>Sintomi</strong>:
+<ul>
+<li>Caratteri accentati mostrati come </code>�<code> o </code>&eacute;<code></li>
+<li>Titoli corrotti</li>
+</ul></p>
+<p><strong>Soluzioni</strong>:</p>
+<p><strong>1. Verifica Charset Database</strong>
+</code>`<code>sql
+ALTER DATABASE nome_database CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+</code>`<code></p>
+<p><strong>2. Verifica Charset WordPress</strong>
+</code>`<code>php
+// In wp-config.php
+define('DB_CHARSET', 'utf8mb4');
+define('DB_COLLATE', 'utf8mb4_unicode_ci');
+</code>`<code></p>
+<p><strong>3. Reimporta il Video</strong>
+<ul>
+<li>Elimina il video corrotto</li>
+<li>Reimporta da YouTube</li>
+</ul></p>
+<p><hr></p>
+<p><h2>9. FAQ</h2></p>
+<p><h3>Q1: Quanti video posso importare?</h3></p>
+<p><strong>A</strong>: Non c'è un limite tecnico nel plugin, ma considera:
+<ul>
+<li><strong>Limiti API</strong>: SupaData e OpenAI hanno quote mensili</li>
+<li><strong>Spazio Disco</strong>: Ogni video occupa ~5-10 MB (metadati + trascrizione)</li>
+<li><strong>Performance</strong>: Con migliaia di video, ottimizza il database</li>
+</ul></p>
+<p><strong>Consiglio</strong>: Per cataloghi > 1000 video, considera:
+<ul>
+<li>Piano Enterprise delle API</li>
+<li>Server dedicato o VPS</li>
+<li>CDN per i media</li>
+</ul></p>
+<p><hr></p>
+<p><h3>Q2: Posso usare altri modelli AI?</h3></p>
+<p><strong>A</strong>: Il plugin è configurato per OpenAI, ma puoi modificarlo:</p>
+<p></code>`<code>php
+// In includes/class-ai-generator.php
+// Cambia il modello
+'model' => 'gpt-4-turbo', // Predefinito
+'model' => 'gpt-3.5-turbo', // Più economico
+'model' => 'gpt-4', // Più accurato
+</code>`<code></p>
+<p>Per usare altri provider (Claude, Gemini), serve modificare il codice.</p>
+<p><hr></p>
+<p><h3>Q3: Come faccio backup dei video?</h3></p>
+<p><strong>A</strong>: Due approcci:</p>
+<p><strong>1. Backup Database</strong> (Solo metadati)
+</code>`<code>bash
+<h1>Esporta tabelle WordPress</h1>
+mysqldump -u user -p database wp_posts wp_postmeta > backup.sql
+</code>`<code></p>
+<p><strong>2. Backup Completo</strong>
+<ul>
+<li>Usa plugin come <strong>UpdraftPlus</strong> o <strong>BackWPup</strong></li>
+<li>Include database + </code>/wp-content/uploads/<code></li>
+</ul></p>
+<p><strong>3. Export CSV</strong> (Custom)
+</code>`<code>php
+// Puoi creare una funzione export personalizzata
+$videos = get_posts(['post_type' => 'ipv_video', 'posts_per_page' => -1]);
+// Esporta in CSV
+</code>`<code></p>
+<p><hr></p>
+<p><h3>Q4: Il plugin è compatibile con multisite?</h3></p>
+<p><strong>A</strong>: Sì, ma con limitazioni:</p>
+<p><strong>Network Activation</strong>: Non supportata (ancora)
+<strong>Single Site</strong>: Attiva il plugin su ogni singolo sito</p>
+<p><strong>Workaround</strong>:
+</code>`<code>php
+// Per condividere API keys tra siti
+// Usa costanti in wp-config.php
+define('IPV_SUPADATA_KEY', 'sk-xxx');
+define('IPV_OPENAI_KEY', 'sk-xxx');
+</code>`<code></p>
+<p><hr></p>
+<p><h3>Q5: Posso personalizzare il template video?</h3></p>
+<p><strong>A</strong>: Sì! Crea un template nel tuo tema:</p>
+<p></code>`<code>php
+// Nel tema: single-ipv_video.php
+<?php get_header(); ?></p>
+<p><article <?php post_class(); ?>>
+    <h1><?php the_title(); ?></h1></p>
+<p>    <!-- Player YouTube Embed -->
+    <?php
+    $video_id = get_post_meta(get_the_ID(), 'ipv_youtube_id', true);
+    ?>
+    <iframe src="https://www.youtube.com/embed/<?php echo $video_id; ?>"
+            width="100%" height="500"></iframe></p>
+<p>    <!-- Descrizione AI -->
+    <?php the_content(); ?></p>
+<p>    <!-- Trascrizione -->
+    <details>
+        <summary>Trascrizione Completa</summary>
+        <?php echo get_post_meta(get_the_ID(), 'ipv_transcript', true); ?>
+    </details>
+</article></p>
+<p><?php get_footer(); ?>
+</code>`<code></p>
+<p><hr></p>
+<p><h3>Q6: Come cambio lo slug URL dei video?</h3></p>
+<p><strong>A</strong>: Modifica il Custom Post Type:</p>
+<p></code>`<code>php
+// In includes/class-cpt.php, riga ~70
+'rewrite' => [
+    'slug' => 'video',  // Cambia da 'ipv-video' a 'video'
+    'with_front' => false
+],
+</code>`<code></p>
+<p>Dopo la modifica:
+<ol>
+<li>Salva il file</li>
+<li>Vai su <strong>Impostazioni</strong> → <strong>Permalink</strong></li>
+<li>Clicca <strong>Salva modifiche</strong></li>
+</ol></p>
+<p>Nuovo URL: </code>https://tuosito.it/video/titolo/<code></p>
+<p><hr></p>
+<p><h3>Q7: Posso nascondere alcuni video dalla galleria?</h3></p>
+<p><strong>A</strong>: Sì, usa le categorie:</p>
+<p></code>`<code>
+[ipv_video_wall category="5"]
+</code>`<code></p>
+<p>Oppure usa un custom field:
+</code>`<code>php
+// Nascondi video
+update_post_meta($post_id, 'ipv_hide_from_gallery', '1');</p>
+<p>// Modifica lo shortcode per escluderli
+$args['meta_query'] = [
+    [
+        'key' => 'ipv_hide_from_gallery',
+        'compare' => 'NOT EXISTS'
+    ]
+];
+</code>`<code></p>
+<p><hr></p>
+<p><h3>Q8: Il plugin rispetta il GDPR?</h3></p>
+<p><strong>A</strong>: Il plugin in sé non raccoglie dati personali, MA:</p>
+<p><strong>⚠️ Considera</strong>:
+<ul>
+<li>Le trascrizioni video potrebbero contenere dati personali</li>
+<li>OpenAI processa i testi (leggi <a href="https://openai.com/privacy">OpenAI Privacy</a>)</li>
+<li>SupaData processa gli audio</li>
+</ul></p>
+<p><strong>Raccomandazioni</strong>:
+<ol>
+<li>Aggiungi informativa privacy</li>
+<li>Ottieni consenso per video con dati personali</li>
+<li>Configura data retention su OpenAI</li>
+<li>Usa agreement Business Associate (BAA) se necessario</li>
+</ol></p>
+<p><hr></p>
+<p><h3>Q9: Posso vendere accesso ai video?</h3></p>
+<p><strong>A</strong>: Sì! Integrazioni possibili:</p>
+<p><strong>1. WooCommerce + Membership</strong>
+</code>`<code>php
+// Proteggi i video
+if (!wc_memberships_is_user_active_member($user_id, 'premium')) {
+    // Mostra paywall
+}
+</code>`<code></p>
+<p><strong>2. Restrict Content Pro</strong>
+</code>`<code>php
+// Shortcode condizionale
+[rcp_access level="premium"]
+    [ipv_video_wall]
+[/rcp_access]
+</code>`<code></p>
+<p><strong>3. MemberPress, Paid Memberships Pro, etc.</strong>
+<ul>
+<li>Tutti compatibili con protezione contenuti</li>
+</ul></p>
+<p><hr></p>
+<p><h3>Q10: Come ottimizzare le performance?</h3></p>
+<p><strong>A</strong>: Consigli per siti con molti video:</p>
+<p><strong>1. Caching</strong>
+</code>`<code>php
+// Usa plugin cache
+// W3 Total Cache, WP Rocket, LiteSpeed Cache
+</code>`<code></p>
+<p><strong>2. Lazy Loading</strong>
+</code>`<code>php
+// Per embed YouTube
+<iframe loading="lazy" src="..."></iframe>
+</code>`<code></p>
+<p><strong>3. CDN</strong>
+<ul>
+<li>CloudFlare</li>
+<li>BunnyCDN</li>
+<li>StackPath</li>
+</ul></p>
+<p><strong>4. Database</strong>
+</code>`<code>sql
+-- Indici sulle meta_key usate
+ALTER TABLE wp_postmeta ADD INDEX idx_youtube_id (meta_key(50), meta_value(50));
+</code>`<code></p>
+<p><strong>5. Limit Query</strong>
+</code>`<code>php
+// Nello shortcode
+[ipv_video_wall posts_per_page="12"]
+</code>`<code></p>
+<p><hr></p>
+<p><h2>10. Supporto</h2></p>
+<p><h3>Documentazione</h3></p>
+<p><ul>
+<li><strong>Repository GitHub</strong>: https://github.com/daniemi1977/ipv</li>
+<li><strong>Wiki</strong>: https://github.com/daniemi1977/ipv/wiki</li>
+<li><strong>Changelog</strong>: Vedi </code>CHANGELOG.md<code></li>
+</ul></p>
+<p><h3>Bug Report</h3></p>
+<p>Per segnalare bug:
+<ol>
+<li>Vai su https://github.com/daniemi1977/ipv/issues</li>
+<li>Clicca <strong>New Issue</strong></li>
+<li>Usa il template "Bug Report"</li>
+<li>Includi:</li>
+<li>Versione plugin</li>
+<li>Versione WordPress</li>
+<li>Versione PHP</li>
+<li>Log di errore (se disponibile)</li>
+<li>Passaggi per riprodurre</li>
+</ol></p>
+<p><h3>Feature Request</h3></p>
+<p>Per richiedere nuove funzionalità:
+<ol>
+<li>Vai su https://github.com/daniemi1977/ipv/issues</li>
+<li>Usa il template "Feature Request"</li>
+<li>Descrivi dettagliatamente la funzionalità</li>
+</ol></p>
+<p><h3>Supporto Commerciale</h3></p>
+<p>Per supporto personalizzato o sviluppo custom:
+<ul>
+<li>Email: support@ipv-production.com</li>
+<li>Piano Enterprise disponibile su richiesta</li>
+</ul></p>
+<p><hr></p>
+<p><h2>Appendice A: Riferimento API</h2></p>
+<p><h3>SupaData API</h3></p>
+<p><strong>Endpoint</strong>: </code>https://api.supadata.ai/v1/transcribe<code></p>
+<p><strong>Metodo</strong>: POST</p>
+<p><strong>Parametri</strong>:
+</code>`<code>json
+{
+    "url": "https://www.youtube.com/watch?v=xxxxx",
+    "mode": "auto",
+    "language": "it"
+}
+</code>`<code></p>
+<p><strong>Risposta</strong>:
+</code>`<code>json
+{
+    "transcription": "Testo trascritto...",
+    "duration": 1234,
+    "language": "it",
+    "confidence": 0.95
+}
+</code>`<code></p>
+<p><strong>Rate Limits</strong>:
+<ul>
+<li>Free: 10 richieste/giorno</li>
+<li>Pro: 1000 richieste/mese</li>
+<li>Enterprise: Illimitate</li>
+</ul></p>
+<p><hr></p>
+<p><h3>OpenAI API</h3></p>
+<p><strong>Endpoint</strong>: </code>https://api.openai.com/v1/chat/completions<code></p>
+<p><strong>Metodo</strong>: POST</p>
+<p><strong>Parametri</strong>:
+</code>`<code>json
+{
+    "model": "gpt-4-turbo",
+    "messages": [
+        {"role": "system", "content": "GOLDEN_PROMPT"},
+        {"role": "user", "content": "TRASCRIZIONE"}
+    ],
+    "temperature": 0.7,
+    "max_tokens": 4000
+}
+</code>`<code></p>
+<p><strong>Costi Stimati</strong> (gpt-4-turbo):
+<ul>
+<li>Input: $0.01 / 1K tokens</li>
+<li>Output: $0.03 / 1K tokens</li>
+<li><strong>Costo medio per video</strong>: $0.15 - $0.50</li>
+</ul></p>
+<p><strong>Rate Limits</strong>:
+<ul>
+<li>Tier 1: 3 RPM, 200 RPD</li>
+<li>Tier 2: 60 RPM, 10,000 RPD</li>
+<li>Tier 5: 10,000 RPM, 10,000,000 RPD</li>
+</ul></p>
+<p><hr></p>
+<p><h3>YouTube Data API v3</h3></p>
+<p><strong>Endpoint</strong>: </code>https://www.googleapis.com/youtube/v3/videos<code></p>
+<p><strong>Metodo</strong>: GET</p>
+<p><strong>Parametri</strong>:
+</code>`<code>
+?part=snippet,contentDetails,statistics
+&id=VIDEO_ID
+&key=YOUR_API_KEY
+</code>`<code></p>
+<p><strong>Quota</strong>:
+<ul>
+<li>10,000 unità/giorno (gratis)</li>
+<li>1 request = 3 unità</li>
+<li>~3,333 richieste/giorno</li>
+</ul></p>
+<p><hr></p>
+<p><h2>Appendice B: Shortcode Parametri Completi</h2></p>
+<p><h3>[ipv_video_wall]</h3></p>
+<p></code>`<code>
+[ipv_video_wall
+    posts_per_page="12"          # Numero video per pagina
+    show_filters="yes"           # Mostra filtri (yes/no)
+    category="5"                 # ID categoria (singola)
+    speaker="8"                  # ID relatore (singolo)
+    orderby="date"               # Ordinamento (date/title/rand)
+    order="DESC"                 # Ordine (DESC/ASC)
+    columns="3"                  # Colonne griglia (2/3/4)
+    show_excerpt="yes"           # Mostra excerpt (yes/no)
+    excerpt_length="150"         # Lunghezza excerpt (caratteri)
+    show_meta="yes"              # Mostra metadati (yes/no)
+    show_categories="yes"        # Mostra badge categorie
+    show_duration="yes"          # Mostra durata video
+    lightbox="yes"               # Apri in lightbox (yes/no)
+    class="custom-class"         # Classe CSS personalizzata
+]
+</code>`<code></p>
+<p><h3>Esempi Pratici</h3></p>
+<p><strong>Galleria Base</strong>:
+</code>`<code>
+[ipv_video_wall]
+</code>`<code></p>
+<p><strong>Solo Video Categoria "Trading"</strong>:
+</code>`<code>
+[ipv_video_wall category="5" posts_per_page="20"]
+</code>`<code></p>
+<p><strong>Video Random Sidebar</strong>:
+</code>`<code>
+[ipv_video_wall posts_per_page="4" orderby="rand" columns="1" show_excerpt="no"]
+</code>`<code></p>
+<p><strong>Archivio Relatore</strong>:
+</code>`<code>
+[ipv_video_wall speaker="8" orderby="date" show_filters="no"]
+</code>`<code></p>
+<p><hr></p>
+<p><h2>Appendice C: Hook e Filtri</h2></p>
+<p>Per sviluppatori che vogliono estendere il plugin.</p>
+<p><h3>Action Hooks</h3></p>
+<p></code>`<code>php
+// Prima dell'importazione
+do_action('ipv_before_import', $youtube_url);</p>
+<p>// Dopo l'importazione (prima elaborazione)
+do_action('ipv_after_import', $post_id, $video_data);</p>
+<p>// Dopo generazione trascrizione
+do_action('ipv_after_transcription', $post_id, $transcription);</p>
+<p>// Dopo generazione descrizione AI
+do_action('ipv_after_ai_generation', $post_id, $description);</p>
+<p>// Dopo pubblicazione completa
+do_action('ipv_after_publish', $post_id);</p>
+<p>// Prima eliminazione video
+do_action('ipv_before_delete', $post_id);
+</code>`<code></p>
+<p><h3>Filter Hooks</h3></p>
+<p></code>`<code>php
+// Modifica dati video prima del salvataggio
+apply_filters('ipv_video_data', $data, $youtube_url);</p>
+<p>// Modifica trascrizione generata
+apply_filters('ipv_transcription', $text, $post_id);</p>
+<p>// Modifica prompt AI
+apply_filters('ipv_ai_prompt', $prompt, $post_id);</p>
+<p>// Modifica descrizione AI generata
+apply_filters('ipv_ai_description', $description, $post_id);</p>
+<p>// Modifica query shortcode
+apply_filters('ipv_shortcode_query', $args);</p>
+<p>// Modifica template video wall
+apply_filters('ipv_wall_template', $template, $video_id);
+</code>`<code></p>
+<p><h3>Esempi Uso</h3></p>
+<p><strong>Aggiungi campo custom dopo import</strong>:
+</code>`<code>php
+add_action('ipv_after_import', function($post_id, $video_data) {
+    // Estrai keyword dal titolo
+    $keywords = extract_keywords(get_the_title($post_id));
+    update_post_meta($post_id, 'ipv_keywords', $keywords);
+}, 10, 2);
+</code>`<code></p>
+<p><strong>Modifica prompt AI dinamicamente</strong>:
+</code>`<code>php
+add_filter('ipv_ai_prompt', function($prompt, $post_id) {
+    $category = get_the_category($post_id);</p>
+<p>    if ($category[0]->slug === 'trading') {
+        return "Analizza questo video di trading e...";
+    }</p>
+<p>    return $prompt;
+}, 10, 2);
+</code>`<code></p>
+<p><strong>Invia notifica dopo pubblicazione</strong>:
+</code>`<code>php
+add_action('ipv_after_publish', function($post_id) {
+    $title = get_the_title($post_id);
+    $url = get_permalink($post_id);</p>
+<p>    // Invia email
+    wp_mail(
+        'admin@tuosito.it',
+        "Nuovo video pubblicato: $title",
+        "Vedi qui: $url"
+    );
+});
+</code>`<code></p>
+<p><hr></p>
+<p><h2>Appendice D: Comandi WP-CLI</h2></p>
+<p>Il plugin supporta WP-CLI per operazioni da terminale.</p>
+<p><h3>Installazione WP-CLI</h3></p>
+<p></code>`<code>bash
+curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+chmod +x wp-cli.phar
+sudo mv wp-cli.phar /usr/local/bin/wp
+</code>`<code></p>
+<p><h3>Comandi Disponibili</h3></p>
+<p><strong>Import singolo</strong>:
+</code>`<code>bash
+wp ipv import "https://www.youtube.com/watch?v=xxxxx"
+</code>`<code></p>
+<p><strong>Import multiplo</strong>:
+</code>`<code>bash
+wp ipv import \
+    "https://www.youtube.com/watch?v=xxxxx1" \
+    "https://www.youtube.com/watch?v=xxxxx2" \
+    "https://www.youtube.com/watch?v=xxxxx3"
+</code>`<code></p>
+<p><strong>Processa coda</strong>:
+</code>`<code>bash
+wp ipv process-queue
+</code>`<code></p>
+<p><strong>Statistiche</strong>:
+</code>`<code>bash
+wp ipv stats</p>
+<p><h1>Output:</h1>
+<h1>Total videos: 156</h1>
+<h1>Published: 142</h1>
+<h1>In queue: 14</h1>
+<h1>Failed: 0</h1>
+</code>`<code></p>
+<p><strong>Rigenera descrizione AI</strong>:
+</code>`<code>bash
+wp ipv regenerate --post_id=123
+</code>`<code></p>
+<p><strong>Reset coda</strong>:
+</code>`<code>bash
+wp ipv reset-queue
+</code>`<code></p>
+<p><strong>Export CSV</strong>:
+</code>`<code>bash
+wp ipv export --file=videos.csv
+</code>``</p>
+<p><hr></p>
+<p><h2>Conclusione</h2></p>
+<p>Questo manuale copre tutte le funzionalità principali del plugin <strong>IPV Production System Pro</strong>.</p>
+<p>Per ulteriori informazioni:
+<ul>
+<li>Repository: https://github.com/daniemi1977/ipv</li>
+<li>Issues: https://github.com/daniemi1977/ipv/issues</li>
+<li>Wiki: https://github.com/daniemi1977/ipv/wiki</li>
+</ul></p>
+<p><strong>Buon lavoro con IPV Production System Pro!</strong> 🚀</p>
+<p><hr></p>
+<p><em>Documento generato automaticamente per IPV Production System Pro v9.0.0</em>
+<em>Copyright © 2024 IPV Team. Tutti i diritti riservati.</em>
+</p>
+</body>
+</html>

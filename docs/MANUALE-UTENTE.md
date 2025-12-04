@@ -33,7 +33,7 @@
 ✅ **Descrizioni AI** generate con OpenAI (GPT)
 ✅ **Sistema di coda** per elaborazione asincrona
 ✅ **Auto-import RSS** da canali YouTube
-✅ **Multilingua** (Inglese/Italiano + altre lingue)
+✅ **Multilingua** (6 lingue: IT, DE, FR, ES, PT, RU + EN)
 ✅ **Custom Post Type** dedicato ai video
 ✅ **Shortcode** per galleria video
 ✅ **Golden Prompt** ottimizzato (350+ righe)
@@ -436,11 +436,20 @@ Il codice è scritto in **inglese**. Tutte le stringhe usano funzioni di traduzi
 __( 'Settings', 'ipv-production-system-pro' )
 ```
 
-### 6.2 Lingua Italiana
+### 6.2 Lingue Supportate
 
-**File di Traduzione**:
-- `languages/ipv-production-system-pro-it_IT.po` (sorgente)
-- `languages/ipv-production-system-pro-it_IT.mo` (compilato)
+Il plugin v9.0.0 include **6 traduzioni complete**:
+
+| Lingua | Codice | File |
+|--------|--------|------|
+| 🇮🇹 **Italiano** | it_IT | ipv-production-system-pro-it_IT.mo |
+| 🇩🇪 **Tedesco** | de_DE | ipv-production-system-pro-de_DE.mo |
+| 🇫🇷 **Francese** | fr_FR | ipv-production-system-pro-fr_FR.mo |
+| 🇪🇸 **Spagnolo** | es_ES | ipv-production-system-pro-es_ES.mo |
+| 🇵🇹 **Portoghese** | pt_PT | ipv-production-system-pro-pt_PT.mo |
+| 🇷🇺 **Russo** | ru_RU | ipv-production-system-pro-ru_RU.mo |
+
+Tutte le traduzioni sono già **compilate e pronte all'uso**!
 
 ### 6.3 Compilare le Traduzioni
 
@@ -471,24 +480,30 @@ msgfmt languages/ipv-production-system-pro-it_IT.po \
 **In WordPress**:
 1. Vai su **Impostazioni** → **Generali**
 2. Imposta **Lingua del sito**:
-   - `Italiano` → Plugin in italiano
-   - `English (United States)` → Plugin in inglese
+   - `Italiano` → Plugin in italiano 🇮🇹
+   - `Deutsch` → Plugin in tedesco 🇩🇪
+   - `Français` → Plugin in francese 🇫🇷
+   - `Español` → Plugin in spagnolo 🇪🇸
+   - `Português` → Plugin in portoghese 🇵🇹
+   - `Русский` → Plugin in russo 🇷🇺
+   - `English (United States)` → Plugin in inglese 🇬🇧
+
+Il plugin caricherà **automaticamente** la traduzione corretta!
 
 ### 6.5 Aggiungere Nuove Lingue
 
-**Esempio: Spagnolo**
+**Esempio: Cinese**
 
 ```bash
-# 1. Crea il file .po
+# 1. Crea il file .po dal template
 msginit -i languages/ipv-production-system-pro.pot \
-        -o languages/ipv-production-system-pro-es_ES.po \
-        -l es_ES
+        -o languages/ipv-production-system-pro-zh_CN.po \
+        -l zh_CN
 
 # 2. Traduci con Poedit o editor di testo
 
-# 3. Compila in .mo
-msgfmt languages/ipv-production-system-pro-es_ES.po \
-       -o languages/ipv-production-system-pro-es_ES.mo
+# 3. Compila in .mo usando lo script Python incluso
+python3 tools/compile-translations.py
 ```
 
 ### 6.6 Stringhe Tradotte
