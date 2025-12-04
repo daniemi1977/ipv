@@ -26,6 +26,14 @@ Questa directory contiene i file di traduzione per il plugin IPV Production Syst
   - ipv-production-system-pro-fr_FR.po (sorgente)
   - ipv-production-system-pro-fr_FR.mo (compilato) ✅
 
+- 🇪🇸 **Spagnolo (es_ES)** - 126 stringhe
+  - ipv-production-system-pro-es_ES.po (sorgente)
+  - ipv-production-system-pro-es_ES.mo (compilato) ✅
+
+- 🇵🇹 **Portoghese (pt_PT)** - 127 stringhe
+  - ipv-production-system-pro-pt_PT.po (sorgente)
+  - ipv-production-system-pro-pt_PT.mo (compilato) ✅
+
 - 🇷🇺 **Russo (ru_RU)** - 131 stringhe
   - ipv-production-system-pro-ru_RU.po (sorgente)
   - ipv-production-system-pro-ru_RU.mo (compilato) ✅
@@ -39,6 +47,8 @@ Questa directory contiene i file di traduzione per il plugin IPV Production Syst
    - `Italiano` → Plugin in italiano 🇮🇹
    - `Deutsch` → Plugin in tedesco 🇩🇪
    - `Français` → Plugin in francese 🇫🇷
+   - `Español` → Plugin in spagnolo 🇪🇸
+   - `Português` → Plugin in portoghese 🇵🇹
    - `Русский` → Plugin in russo 🇷🇺
    - `English (United States)` → Plugin in inglese 🇬🇧
 
@@ -107,16 +117,15 @@ msginit -i languages/ipv-production-system-pro.pot \
         -o languages/ipv-production-system-pro-LOCALE.po \
         -l LOCALE
 
-# Esempio per spagnolo:
+# Esempio per cinese:
 msginit -i languages/ipv-production-system-pro.pot \
-        -o languages/ipv-production-system-pro-es_ES.po \
-        -l es_ES
+        -o languages/ipv-production-system-pro-zh_CN.po \
+        -l zh_CN
 
 # 2. Traduci il file .po con Poedit o un editor di testo
 
-# 3. Compila in .mo
-msgfmt languages/ipv-production-system-pro-es_ES.po \
-       -o languages/ipv-production-system-pro-es_ES.mo
+# 3. Compila in .mo usando il tool Python incluso
+python3 tools/compile-translations.py
 ```
 
 ## Formato dei File
@@ -126,10 +135,12 @@ msgfmt languages/ipv-production-system-pro-es_ES.po \
 I file di traduzione seguono il formato WordPress standard:
 
 - **it_IT** - Italiano (Italia)
-- **en_US** - English (United States)
-- **es_ES** - Español (España)
-- **fr_FR** - Français (France)
 - **de_DE** - Deutsch (Deutschland)
+- **fr_FR** - Français (France)
+- **es_ES** - Español (España)
+- **pt_PT** - Português (Portugal)
+- **ru_RU** - Русский (Russia)
+- **en_US** - English (United States)
 
 ### Naming Convention
 
@@ -141,6 +152,8 @@ Esempi:
 - ipv-production-system-pro-it_IT.mo
 - ipv-production-system-pro-es_ES.po
 - ipv-production-system-pro-es_ES.mo
+- ipv-production-system-pro-pt_PT.po
+- ipv-production-system-pro-pt_PT.mo
 ```
 
 ## Aggiornare le Traduzioni
