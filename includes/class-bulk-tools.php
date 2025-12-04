@@ -1000,4 +1000,5 @@ class IPV_Prod_Bulk_Tools {
     }
 }
 
-IPV_Prod_Bulk_Tools::init();
+// Disabilitato - non necessario per v9.0.0
+// IPV_Prod_Bulk_Tools::init();

@@ -120,15 +120,24 @@ class IPV_Prod_Settings {
                                         SupaData API Key
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" 
-                                           class="form-control ipv-validate" 
-                                           name="ipv_supadata_api_key" 
-                                           value="<?php echo esc_attr( $supadata_key ); ?>" 
+                                    <textarea
+                                           class="form-control ipv-validate font-monospace"
+                                           name="ipv_supadata_api_key"
                                            data-validate-type="required"
-                                           placeholder="sk-..." />
+                                           rows="3"
+                                           placeholder="sk-..."
+                                           style="font-size: 13px;"><?php echo esc_textarea( $supadata_key ); ?></textarea>
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
                                         <?php esc_html_e( 'Required to generate video transcriptions', 'ipv-production-system-pro' ); ?>
+                                    </div>
+                                    <div class="form-text mt-1">
+                                        <i class="bi bi-arrow-repeat me-1"></i>
+                                        <strong>Rotazione automatica:</strong> Inserisci più chiavi API (una per riga) per abilitare la rotazione automatica. Il sistema userà la chiave successiva se una è esaurita o limitata.
+                                    </div>
+                                    <div class="form-text text-muted" style="font-size: 11px;">
+                                        Esempio:<br>
+                                        <code style="font-size: 11px;">sk-abc123...<br>sk-def456...<br>sk-ghi789...</code>
                                     </div>
                                 </div>
 

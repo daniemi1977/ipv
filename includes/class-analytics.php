@@ -704,4 +704,5 @@ class IPV_Prod_Analytics {
     }
 }
 
-IPV_Prod_Analytics::init();
+// Disabilitato - ripetizione di Dashboard, non necessario per v9.0.0
+// IPV_Prod_Analytics::init();
