@@ -16,15 +16,15 @@ class IPV_Prod_YouTube_Importer {
             $edit_link = $post_id ? get_edit_post_link( $post_id, 'raw' ) : '';
             $notice = '<div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill me-2"></i>
-                <strong>Video importato e pubblicato!</strong> 
-                ' . ( $edit_link ? '<a href="' . esc_url( $edit_link ) . '" class="alert-link">Modifica video</a>' : '' ) . '
+                <strong>' . esc_html__( 'Video imported and published!', 'ipv-production-system-pro' ) . '</strong>
+                ' . ( $edit_link ? '<a href="' . esc_url( $edit_link ) . '" class="alert-link">' . esc_html__( 'Edit video', 'ipv-production-system-pro' ) . '</a>' : '' ) . '
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>';
         } elseif ( isset( $_GET['error'] ) ) {
             $msg = sanitize_text_field( wp_unslash( $_GET['error'] ) );
             $notice = '<div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                <strong>Errore:</strong> ' . esc_html( $msg ) . '
+                <strong>' . esc_html__( 'Error:', 'ipv-production-system-pro' ) . '</strong> ' . esc_html( $msg ) . '
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>';
         }
@@ -36,9 +36,9 @@ class IPV_Prod_YouTube_Importer {
                     <div>
                         <h1 class="mb-1">
                             <i class="bi bi-upload text-white me-2"></i>
-                            Importa Video YouTube
+                            <?php esc_html_e( 'Import YouTube Video', 'ipv-production-system-pro' ); ?>
                         </h1>
-                        <p class="text-muted mb-0">Aggiungi video alla coda di produzione</p>
+                        <p class="text-muted mb-0"><?php esc_html_e( 'Add videos to the production queue', 'ipv-production-system-pro' ); ?></p>
                     </div>
                 </div>
             </div>
@@ -46,27 +46,27 @@ class IPV_Prod_YouTube_Importer {
             <ul class="nav nav-tabs mb-4" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production' ) ); ?>">
-                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        <i class="bi bi-speedometer2 me-1"></i><?php esc_html_e( 'Dashboard', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-import' ) ); ?>">
-                        <i class="bi bi-upload me-1"></i>Importa Video
+                        <i class="bi bi-upload me-1"></i><?php esc_html_e( 'Import Video', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-rss' ) ); ?>">
-                        <i class="bi bi-rss me-1"></i>Auto-Import RSS
+                        <i class="bi bi-rss me-1"></i><?php esc_html_e( 'Auto-Import RSS', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-queue' ) ); ?>">
-                        <i class="bi bi-list-task me-1"></i>Coda
+                        <i class="bi bi-list-task me-1"></i><?php esc_html_e( 'Queue', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-settings' ) ); ?>">
-                        <i class="bi bi-gear me-1"></i>Impostazioni
+                        <i class="bi bi-gear me-1"></i><?php esc_html_e( 'Settings', 'ipv-production-system-pro' ); ?>
                     </a>
                 </li>
             </ul>
@@ -74,13 +74,13 @@ class IPV_Prod_YouTube_Importer {
             <?php echo $notice; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
             <div class="row g-4">
-                <!-- Form Importazione -->
+                <!-- Import Form -->
                 <div class="col-lg-7">
                     <div class="card shadow-sm">
                         <div class="card-header bg-white">
                             <h5 class="mb-0">
                                 <i class="bi bi-plus-circle-fill text-primary me-2"></i>
-                                Aggiungi Nuovo Video
+                                <?php esc_html_e( 'Add New Video', 'ipv-production-system-pro' ); ?>
                             </h5>
                         </div>
                         <div class="card-body">
@@ -91,25 +91,25 @@ class IPV_Prod_YouTube_Importer {
                                 <div class="mb-4">
                                     <label for="youtube_url" class="form-label">
                                         <i class="bi bi-youtube text-danger me-1"></i>
-                                        URL YouTube
+                                        <?php esc_html_e( 'YouTube URL', 'ipv-production-system-pro' ); ?>
                                         <span class="text-danger">*</span>
                                     </label>
-                                    <input type="url" 
-                                           id="youtube_url" 
-                                           name="youtube_url" 
-                                           class="form-control form-control-lg" 
-                                           placeholder="https://www.youtube.com/watch?v=..." 
+                                    <input type="url"
+                                           id="youtube_url"
+                                           name="youtube_url"
+                                           class="form-control form-control-lg"
+                                           placeholder="https://www.youtube.com/watch?v=..."
                                            required />
                                     <div class="form-text">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        Incolla l'URL del video - verrà importato e pubblicato subito!
+                                        <?php esc_html_e( 'Paste the video URL - it will be imported and published immediately!', 'ipv-production-system-pro' ); ?>
                                     </div>
                                 </div>
 
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-primary btn-lg">
                                         <i class="bi bi-lightning me-1"></i>
-                                        Importa e Pubblica
+                                        <?php esc_html_e( 'Import and Publish', 'ipv-production-system-pro' ); ?>
                                     </button>
                                 </div>
                             </form>
@@ -121,7 +121,7 @@ class IPV_Prod_YouTube_Importer {
                         <div class="card-body">
                             <h6 class="mb-3">
                                 <i class="bi bi-lightbulb-fill text-warning me-2"></i>
-                                Formati URL supportati
+                                <?php esc_html_e( 'Supported URL formats', 'ipv-production-system-pro' ); ?>
                             </h6>
                             <ul class="list-unstyled mb-0">
                                 <li class="mb-2">
@@ -147,7 +147,7 @@ class IPV_Prod_YouTube_Importer {
                         <div class="card-header bg-white">
                             <h5 class="mb-0">
                                 <i class="bi bi-info-circle-fill text-info me-2"></i>
-                                Come Funziona
+                                <?php esc_html_e( 'How It Works', 'ipv-production-system-pro' ); ?>
                             </h5>
                         </div>
                         <div class="card-body">
@@ -159,9 +159,9 @@ class IPV_Prod_YouTube_Importer {
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1">Importazione Video</h6>
+                                        <h6 class="mb-1"><?php esc_html_e( 'Video Import', 'ipv-production-system-pro' ); ?></h6>
                                         <p class="text-muted mb-0 small">
-                                            Il video viene aggiunto alla coda e il CPT viene creato
+                                            <?php esc_html_e( 'The video is added to the queue and the CPT is created', 'ipv-production-system-pro' ); ?>
                                         </p>
                                     </div>
                                 </div>
@@ -175,9 +175,9 @@ class IPV_Prod_YouTube_Importer {
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1">Generazione Trascrizione</h6>
+                                        <h6 class="mb-1"><?php esc_html_e( 'Transcription Generation', 'ipv-production-system-pro' ); ?></h6>
                                         <p class="text-muted mb-0 small">
-                                            SupaData API estrae la trascrizione del video
+                                            <?php esc_html_e( 'SupaData API extracts the video transcription', 'ipv-production-system-pro' ); ?>
                                         </p>
                                     </div>
                                 </div>
@@ -191,9 +191,9 @@ class IPV_Prod_YouTube_Importer {
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1">AI Generation</h6>
+                                        <h6 class="mb-1"><?php esc_html_e( 'AI Generation', 'ipv-production-system-pro' ); ?></h6>
                                         <p class="text-muted mb-0 small">
-                                            OpenAI genera la descrizione usando il Golden Prompt
+                                            <?php esc_html_e( 'OpenAI generates the description using the Golden Prompt', 'ipv-production-system-pro' ); ?>
                                         </p>
                                     </div>
                                 </div>
@@ -207,9 +207,9 @@ class IPV_Prod_YouTube_Importer {
                                         </div>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1">Pubblicazione</h6>
+                                        <h6 class="mb-1"><?php esc_html_e( 'Publication', 'ipv-production-system-pro' ); ?></h6>
                                         <p class="text-muted mb-0 small">
-                                            La descrizione viene salvata nel post pronta all'uso
+                                            <?php esc_html_e( 'The description is saved in the post ready to use', 'ipv-production-system-pro' ); ?>
                                         </p>
                                     </div>
                                 </div>
@@ -222,7 +222,7 @@ class IPV_Prod_YouTube_Importer {
                         <div class="card-header bg-white">
                             <h5 class="mb-0">
                                 <i class="bi bi-graph-up text-success me-2"></i>
-                                Statistiche Veloci
+                                <?php esc_html_e( 'Quick Statistics', 'ipv-production-system-pro' ); ?>
                             </h5>
                         </div>
                         <div class="card-body">
@@ -231,22 +231,22 @@ class IPV_Prod_YouTube_Importer {
                             $total = array_sum( $stats );
                             ?>
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-muted">Video Totali</span>
+                                <span class="text-muted"><?php esc_html_e( 'Total Videos', 'ipv-production-system-pro' ); ?></span>
                                 <span class="badge bg-primary fs-6"><?php echo intval( $total ); ?></span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="text-muted">In Coda</span>
+                                <span class="text-muted"><?php esc_html_e( 'In Queue', 'ipv-production-system-pro' ); ?></span>
                                 <span class="badge bg-warning text-dark fs-6"><?php echo intval( $stats['pending'] ); ?></span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted">Completati</span>
+                                <span class="text-muted"><?php esc_html_e( 'Completed', 'ipv-production-system-pro' ); ?></span>
                                 <span class="badge bg-success fs-6"><?php echo intval( $stats['done'] ); ?></span>
                             </div>
                         </div>
                         <div class="card-footer bg-light text-center">
                             <a href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-queue' ) ); ?>" class="btn btn-sm btn-outline-secondary">
                                 <i class="bi bi-eye me-1"></i>
-                                Vedi Coda Completa
+                                <?php esc_html_e( 'View Full Queue', 'ipv-production-system-pro' ); ?>
                             </a>
                         </div>
                     </div>
