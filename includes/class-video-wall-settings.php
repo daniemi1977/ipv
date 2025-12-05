@@ -264,4 +264,7 @@ class IPV_Prod_Video_Wall_Settings {
     }
 }
 
-IPV_Prod_Video_Wall_Settings::init();
+// v9.0.0: Disabled - settings unified in IPV_Prod_Video_Wall_Admin
+// All Video Wall settings are now registered in class-video-wall-admin.php
+// This avoids duplication and keeps a single source of truth
+// IPV_Prod_Video_Wall_Settings::init();

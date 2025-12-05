@@ -147,6 +147,13 @@ class IPV_Prod_Video_Wall_Admin {
             'default' => 'DESC',
         ]);
 
+        // Filter Configuration (v9.0.0 - unified from class-video-wall-settings.php)
+        register_setting( 'ipv_wall_settings', 'ipv_wall_enabled_filters', [
+            'type'              => 'array',
+            'default'           => [ 'categories', 'speakers', 'tags', 'search', 'sort' ],
+            'sanitize_callback' => [ __CLASS__, 'sanitize_enabled_filters' ],
+        ]);
+
         // Animation Settings
         register_setting( 'ipv_wall_settings', 'ipv_wall_hover_effect', [
             'type'    => 'string',
@@ -505,5 +512,17 @@ class IPV_Prod_Video_Wall_Admin {
         wp_send_json_success( [
             'html' => 'Preview HTML here',
         ]);
+    }
+
+    /**
+     * Sanitize enabled filters array
+     * Migrated from class-video-wall-settings.php in v9.0.0
+     */
+    public static function sanitize_enabled_filters( $value ) {
+        if ( ! is_array( $value ) ) {
+            return [ 'categories', 'speakers', 'tags', 'search', 'sort' ];
+        }
+        $valid_filters = [ 'categories', 'speakers', 'tags', 'search', 'sort' ];
+        return array_values( array_intersect( $value, $valid_filters ) );
     }
 }

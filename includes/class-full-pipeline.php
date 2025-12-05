@@ -26,7 +26,7 @@ class IPV_Full_Pipeline {
             if(!is_wp_error($ai)) update_post_meta($post_id,'_ipv_ai_description',$ai);
         }
 
-        // Notify
-        IPV_Telegram::send("Pipeline completata per video: ".get_the_title($post_id));
+        // Notify - Telegram notification removed in v9.0.0 (feature not used)
+        // IPV_Telegram::send("Pipeline completata per video: ".get_the_title($post_id));
     }
 }

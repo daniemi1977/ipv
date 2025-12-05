@@ -42,65 +42,47 @@ add_action( 'plugins_loaded', 'ipv_prod_load_textdomain' );
 // ============================================
 
 spl_autoload_register( function( $class ) {
-    $prefix = 'IPV_Prod_';
-    if ( strpos( $class, $prefix ) !== 0 ) {
-        return;
-    }
-    
-    $class_file = str_replace( $prefix, '', $class );
-    $class_file = strtolower( str_replace( '_', '-', $class_file ) );
-    $file = IPV_PROD_PLUGIN_DIR . 'includes/class-' . $class_file . '.php';
-    
-    if ( file_exists( $file ) ) {
-        require_once $file;
+    // Support multiple prefixes for different class naming conventions
+    $prefixes = [
+        'IPV_Prod_',  // Main plugin classes
+        'IPV_',       // Legacy/utility classes
+    ];
+
+    foreach ( $prefixes as $prefix ) {
+        if ( strpos( $class, $prefix ) === 0 ) {
+            $class_file = str_replace( $prefix, '', $class );
+            $class_file = strtolower( str_replace( '_', '-', $class_file ) );
+
+            // Try standard naming: class-*.php
+            $file = IPV_PROD_PLUGIN_DIR . 'includes/class-' . $class_file . '.php';
+            if ( file_exists( $file ) ) {
+                require_once $file;
+                return;
+            }
+
+            // Try alternative naming for IPV_ prefix: class-ipv-*.php
+            if ( $prefix === 'IPV_' ) {
+                $file = IPV_PROD_PLUGIN_DIR . 'includes/class-ipv-' . $class_file . '.php';
+                if ( file_exists( $file ) ) {
+                    require_once $file;
+                    return;
+                }
+            }
+        }
     }
 } );
 
 // ============================================
-// CORE INCLUDES
+// CORE INCLUDES - Now using AUTOLOADER (Lazy Loading)
 // ============================================
-
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-logger.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-settings.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-cpt.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-cpt-bulk-actions.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-supadata.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-ai-generator.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-queue.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-importer.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-rss-importer.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-api.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-chapters.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-bulk-import.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-list-columns.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-simple-import.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-frontend.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-speaker-rules.php';
-// Bulk Tools - rimosso completamente in v9.0.0
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-duplicate-checker.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-seo.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-analytics.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-performance.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-ai-enhancements.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-vimeo-api.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-dailymotion-api.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-unified-importer.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-rest-api.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-gutenberg-blocks.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-wp-cli.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-sitemap.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-bulk-operations.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-qr-generator.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-wall.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-wall-settings.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-video-wall-admin.php';
-
-// v8.0.0: Golden Prompt, Elementor, Shortcodes, Theme Compatibility
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-golden-prompt-manager.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-elementor-widgets.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-elementor-templates.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-shortcodes.php';
-require_once IPV_PROD_PLUGIN_DIR . 'includes/class-theme-compatibility.php';
+// All IPV_Prod_* and IPV_* classes are automatically loaded on-demand via spl_autoload_register()
+// This improves performance by only loading classes when they're actually used.
+//
+// Exception: Files with immediate execution (self-init) must be loaded manually:
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-admin-info.php';  // Has IPV_Admin_Info::init() at EOF
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-ai-queue.php';    // Has IPV_AI_Queue::init() at EOF
+//
+// v9.0.0: Migrated to lazy loading - reduced from 39 manual requires to 2!
 
 // ============================================
 // HELPER FUNCTIONS
@@ -173,7 +155,8 @@ class IPV_Production_System_Pro {
 
         // Settings
         add_action( 'admin_init', [ 'IPV_Prod_Settings', 'register_settings' ] );
-        add_action( 'admin_init', [ 'IPV_Prod_Video_Wall_Settings', 'register_settings' ] );
+        // v9.0.0: Video Wall settings unified in IPV_Prod_Video_Wall_Admin
+        // add_action( 'admin_init', [ 'IPV_Prod_Video_Wall_Settings', 'register_settings' ] );
 
         // Video Wall
         IPV_Prod_Video_Wall::init();
@@ -275,6 +258,9 @@ class IPV_Production_System_Pro {
         );
 
         // Video Wall
+        // v9.0.0: Video Wall menu unified in IPV Videos → Video Wall (IPV_Prod_Video_Wall_Admin)
+        // Duplicate menu removed to avoid confusion
+        /*
         add_submenu_page(
             'ipv-production',
             __( 'Video Wall', 'ipv-production-system-pro' ),
@@ -283,6 +269,7 @@ class IPV_Production_System_Pro {
             'ipv-production-video-wall',
             [ 'IPV_Prod_Video_Wall_Settings', 'render_settings_page' ]
         );
+        */
 
         // Settings
         add_submenu_page(
