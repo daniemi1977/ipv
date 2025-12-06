@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IPV Pro - Prezzi e Piani</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --dark-color: #1e293b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 60px 0;
+        }
+
+        .pricing-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+        }
+
+        .pricing-header h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .pricing-header p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .pricing-card.popular {
+            border: 3px solid var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card.popular::before {
+            content: "PIÙ POPOLARE";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 8px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .plan-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+        }
+
+        .plan-icon.free {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .plan-icon.basic {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+
+        .plan-icon.pro {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+        }
+
+        .plan-icon.premium {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+        }
+
+        .plan-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+        }
+
+        .plan-price small {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #64748b;
+        }
+
+        .plan-description {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .plan-features li {
+            padding: 12px 0;
+            color: #475569;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .plan-features li i {
+            color: var(--success-color);
+            margin-right: 12px;
+            font-size: 1.25rem;
+        }
+
+        .btn-plan {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-plan.free {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-plan.basic {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-plan.pro {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .btn-plan.premium {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: white;
+        }
+
+        .btn-plan:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .features-comparison {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-top: 80px;
+        }
+
+        .faq-section {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-top: 40px;
+        }
+
+        .badge-discount {
+            background: #ef4444;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="pricing-header">
+            <h1>🚀 Scegli il Tuo Piano</h1>
+            <p>Automatizza la creazione di contenuti YouTube con AI. Nessun setup, nessuna API key da gestire.</p>
+            <div class="mt-4">
+                <span class="badge bg-success fs-6 px-4 py-2">
+                    <i class="bi bi-shield-check me-2"></i>Pagamento sicuro • Cancella quando vuoi
+                </span>
+            </div>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="row g-4 mb-5">
+            <!-- FREE -->
+            <div class="col-lg-3 col-md-6">
+                <div class="pricing-card">
+                    <div class="plan-icon free">
+                        <i class="bi bi-gift text-white"></i>
+                    </div>
+                    <h3 class="plan-name text-center">Free</h3>
+                    <div class="text-center">
+                        <div class="plan-price">€0</div>
+                        <div class="plan-description">Perfetto per testare</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>10 video/mese</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Trascrizioni AI</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Descrizioni SEO</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 1 sito</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Support email</li>
+                    </ul>
+                    <a href="/carrello/?add-to-cart=XXX" class="btn btn-plan free">
+                        Inizia Gratis
+                    </a>
+                </div>
+            </div>
+
+            <!-- BASIC -->
+            <div class="col-lg-3 col-md-6">
+                <div class="pricing-card">
+                    <div class="plan-icon basic">
+                        <i class="bi bi-star-fill text-white"></i>
+                    </div>
+                    <h3 class="plan-name text-center">Basic</h3>
+                    <div class="text-center">
+                        <div class="plan-price">
+                            €9,99
+                            <small>/mese</small>
+                        </div>
+                        <div class="plan-description">Per blogger individuali</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>100 video/mese</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Trascrizioni illimitate</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Descrizioni SEO GPT-4o</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Golden Prompt</li>
+                        <li><i class="bi bi-check-circle-fill"></i> 1 sito</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Support prioritario</li>
+                    </ul>
+                    <a href="/carrello/?add-to-cart=YYY" class="btn btn-plan basic">
+                        Inizia 7 Giorni Gratis
+                    </a>
+                </div>
+            </div>
+
+            <!-- PRO (Popular) -->
+            <div class="col-lg-3 col-md-6">
+                <div class="pricing-card popular">
+                    <div class="plan-icon pro">
+                        <i class="bi bi-rocket-takeoff-fill text-white"></i>
+                    </div>
+                    <h3 class="plan-name text-center">Pro</h3>
+                    <div class="text-center">
+                        <div class="plan-price">
+                            €19,99
+                            <small>/mese</small>
+                        </div>
+                        <div class="plan-description">Massima produttività</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>200 video/mese</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Tutto di Basic +</li>
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>3 siti</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Analytics avanzata</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Priority support</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Onboarding call</li>
+                    </ul>
+                    <a href="/carrello/?add-to-cart=ZZZ" class="btn btn-plan pro">
+                        Inizia 7 Giorni Gratis
+                    </a>
+                </div>
+            </div>
+
+            <!-- PREMIUM -->
+            <div class="col-lg-3 col-md-6">
+                <div class="pricing-card">
+                    <div class="plan-icon premium">
+                        <i class="bi bi-lightning-charge-fill text-white"></i>
+                    </div>
+                    <h3 class="plan-name text-center">Premium</h3>
+                    <div class="text-center">
+                        <div class="plan-price">
+                            €39,99
+                            <small>/mese</small>
+                        </div>
+                        <div class="plan-description">Per agenzie e team</div>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>500 video/mese</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Tutto di Pro +</li>
+                        <li><i class="bi bi-check-circle-fill"></i> <strong>5 siti</strong></li>
+                        <li><i class="bi bi-check-circle-fill"></i> Golden Prompt custom</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Chat support dedicata</li>
+                        <li><i class="bi bi-check-circle-fill"></i> White label</li>
+                    </ul>
+                    <a href="/carrello/?add-to-cart=WWW" class="btn btn-plan premium">
+                        Contattaci
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Comparison -->
+        <div class="features-comparison">
+            <h2 class="text-center mb-5">📊 Confronto Completo</h2>
+            <div class="table-responsive">
+                <table class="table table-borderless">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%">Feature</th>
+                            <th class="text-center">Free</th>
+                            <th class="text-center">Basic</th>
+                            <th class="text-center">Pro</th>
+                            <th class="text-center">Premium</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Video importabili/mese</strong></td>
+                            <td class="text-center">10</td>
+                            <td class="text-center">100</td>
+                            <td class="text-center"><strong>200</strong></td>
+                            <td class="text-center"><strong>500</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Siti attivabili</strong></td>
+                            <td class="text-center">1</td>
+                            <td class="text-center">1</td>
+                            <td class="text-center"><strong>3</strong></td>
+                            <td class="text-center"><strong>5</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Trascrizioni AI (SupaData)</td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Descrizioni SEO (GPT-4o)</td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Golden Prompt</td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>Analytics Dashboard</td>
+                            <td class="text-center">Basic</td>
+                            <td class="text-center">Basic</td>
+                            <td class="text-center"><strong>Avanzata</strong></td>
+                            <td class="text-center"><strong>Completa</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Support</td>
+                            <td class="text-center">Email</td>
+                            <td class="text-center">Prioritario</td>
+                            <td class="text-center">Prioritario</td>
+                            <td class="text-center"><strong>Chat dedicata</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Onboarding personalizzato</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                        </tr>
+                        <tr>
+                            <td>White label</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center"><i class="bi bi-check-lg text-success"></i></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 class="text-center mb-5">❓ Domande Frequenti</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="bi bi-question-circle text-primary me-2"></i>Cosa succede se finisco i crediti?</h5>
+                    <p class="text-muted">I crediti si resettano automaticamente il 1° di ogni mese. Se finisci prima, puoi fare upgrade al piano superiore in qualsiasi momento.</p>
+
+                    <h5 class="mt-4"><i class="bi bi-question-circle text-primary me-2"></i>Posso cancellare in qualsiasi momento?</h5>
+                    <p class="text-muted">Sì! Nessun vincolo. Cancelli quando vuoi dal tuo account. Nessuna penale.</p>
+
+                    <h5 class="mt-4"><i class="bi bi-question-circle text-primary me-2"></i>Le API keys sono al sicuro?</h5>
+                    <p class="text-muted">Assolutamente! Tutte le API keys (SupaData, OpenAI) sono gestite sul nostro server. Tu non vedi mai nessuna chiave.</p>
+                </div>
+                <div class="col-md-6">
+                    <h5><i class="bi bi-question-circle text-primary me-2"></i>Posso usare il piano su più siti?</h5>
+                    <p class="text-muted">Dipende dal piano! Free e Basic = 1 sito, Pro = 3 siti, Premium = 5 siti.</p>
+
+                    <h5 class="mt-4"><i class="bi bi-question-circle text-primary me-2"></i>Come funziona il trial gratuito?</h5>
+                    <p class="text-muted">Tutti i piani a pagamento hanno 7 giorni di prova gratuita. Nessuna carta richiesta per il piano Free.</p>
+
+                    <h5 class="mt-4"><i class="bi bi-question-circle text-primary me-2"></i>Offrite sconti per annuali?</h5>
+                    <p class="text-muted">Sì! Pagando annualmente risparmi il 20%. Contattaci per attivare il piano annuale.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Final -->
+        <div class="text-center mt-5 mb-5">
+            <h3 class="text-white mb-4">Pronto a Automatizzare i Tuoi Contenuti?</h3>
+            <a href="/registrati/" class="btn btn-light btn-lg px-5 py-3">
+                <i class="bi bi-rocket-takeoff me-2"></i>Inizia Gratis Ora
+            </a>
+            <p class="text-white mt-3 opacity-75">Nessuna carta richiesta • Setup in 2 minuti</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
