@@ -28,6 +28,8 @@ class IPV_Prod_AI_Generator {
     /**
      * Genera descrizione completa per un video
      *
+     * v10.0.0 CLOUD EDITION: Usa API Client che proxy al server vendor
+     *
      * @param string $video_title Titolo del video
      * @param string $transcript Trascrizione
      * @param string $duration_formatted Durata formattata (es: "1:47:45")
@@ -35,9 +37,9 @@ class IPV_Prod_AI_Generator {
      * @param string $native_chapters Capitoli nativi YouTube (opzionale)
      */
     public static function generate_description( $video_title, $transcript, $duration_formatted = '', $duration_seconds = 0, $native_chapters = '' ) {
-        $api_key = get_option( 'ipv_openai_api_key', '' );
-        if ( empty( $api_key ) ) {
-            return new WP_Error( 'ipv_openai_no_key', 'OpenAI API Key non configurata.' );
+        // v10.0: Verifica che API Client sia disponibile
+        if ( ! class_exists( 'IPV_Prod_API_Client' ) ) {
+            return new WP_Error( 'ipv_api_client_missing', 'API Client non disponibile. Aggiorna il plugin alla v10.0+' );
         }
 
         // v8.0: Usa Golden Prompt Manager per il sistema prompt
@@ -57,73 +59,21 @@ class IPV_Prod_AI_Generator {
             $system_prompt = ! empty( $custom_prompt ) ? $custom_prompt : self::get_default_prompt( $duration_formatted, $duration_seconds, ! empty( $native_chapters ) );
         }
 
-        $user_content  = "TITOLO VIDEO: " . $video_title . "\n\n";
+        // v10.0: Usa API Client per chiamare server vendor (che gestisce OpenAI)
+        IPV_Prod_Logger::log( 'OpenAI: Chiamata via API Client (Cloud Edition)', [ 'title' => $video_title ] );
 
-        // Aggiungi info durata
-        if ( ! empty( $duration_formatted ) ) {
-            $user_content .= "DURATA VIDEO: " . $duration_formatted . " (" . $duration_seconds . " secondi)\n\n";
+        // Costruisci prompt personalizzato (il server lo userà con OpenAI)
+        $custom_prompt = $system_prompt;
+
+        $api_client = IPV_Prod_API_Client::instance();
+        $description = $api_client->generate_description( $transcript, $video_title, $custom_prompt );
+
+        if ( is_wp_error( $description ) ) {
+            IPV_Prod_Logger::log( 'OpenAI: Errore da server vendor', [ 'error' => $description->get_error_message() ] );
+            return $description;
         }
 
-        // Se ci sono capitoli nativi, includili
-        if ( ! empty( $native_chapters ) ) {
-            $user_content .= "⚠️ CAPITOLI NATIVI YOUTUBE (USA QUESTI):\n";
-            $user_content .= $native_chapters . "\n\n";
-            $user_content .= "➡️ IMPORTANTE: Usa ESATTAMENTE questi timestamp nella sezione ⏱️ CAPITOLI.\n\n";
-        }
-
-        $user_content .= "TRASCRIZIONE:\n";
-        // Aumentato limite trascrizione per video lunghi: 14k → 30k caratteri
-        $user_content .= mb_substr( $transcript, 0, 30000 );
-
-        $body = [
-            'model'    => 'gpt-4o',
-            'messages' => [
-                [
-                    'role'    => 'system',
-                    'content' => $system_prompt,
-                ],
-                [
-                    'role'    => 'user',
-                    'content' => $user_content,
-                ],
-            ],
-            'temperature' => 0.7,
-            'max_tokens'  => 3000,
-        ];
-
-        $args = [
-            'headers' => [
-                'Content-Type'  => 'application/json',
-                'Authorization' => 'Bearer ' . $api_key,
-            ],
-            'body'    => wp_json_encode( $body ),
-            'timeout' => 120,
-        ];
-
-        IPV_Prod_Logger::log( 'OpenAI: Richiesta generazione', [ 'title' => $video_title ] );
-
-        $response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', $args );
-        
-        if ( is_wp_error( $response ) ) {
-            IPV_Prod_Logger::log( 'OpenAI: Errore', [ 'error' => $response->get_error_message() ] );
-            return $response;
-        }
-
-        $code = wp_remote_retrieve_response_code( $response );
-        $data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-        if ( $code < 200 || $code >= 300 ) {
-            $error_msg = isset( $data['error']['message'] ) ? $data['error']['message'] : 'HTTP ' . $code;
-            return new WP_Error( 'ipv_openai_http_error', 'Errore OpenAI: ' . $error_msg );
-        }
-
-        if ( empty( $data['choices'][0]['message']['content'] ) ) {
-            return new WP_Error( 'ipv_openai_no_content', 'Risposta OpenAI senza contenuto.' );
-        }
-
-        $description = trim( $data['choices'][0]['message']['content'] );
-        
-        IPV_Prod_Logger::log( 'OpenAI: Descrizione generata', [ 'length' => strlen( $description ) ] );
+        IPV_Prod_Logger::log( 'OpenAI: Descrizione generata da vendor', [ 'length' => strlen( $description ) ] );
 
         return $description;
     }
@@ -511,8 +461,8 @@ class IPV_Prod_AI_Generator {
      * @return string Descrizione aggiornata con timestamp completi
      */
     protected static function continue_timestamps( $video_title, $transcript, $current_description, $duration_formatted, $duration_seconds ) {
-        $api_key = get_option( 'ipv_openai_api_key', '' );
-        if ( empty( $api_key ) ) {
+        // v10.0: Usa API Client
+        if ( ! class_exists( 'IPV_Prod_API_Client' ) ) {
             // Fallback: restituisci descrizione originale
             return $current_description;
         }
@@ -555,47 +505,21 @@ PROMPT;
 
         $user_content = $continuation_prompt . "\n\n" . mb_substr( $transcript, 15000, 25000 );
 
-        $body = [
-            'model'    => 'gpt-4o',
-            'messages' => [
-                [
-                    'role'    => 'user',
-                    'content' => $user_content,
-                ],
-            ],
-            'temperature' => 0.5,
-            'max_tokens'  => 1500,
-        ];
-
-        $args = [
-            'headers' => [
-                'Content-Type'  => 'application/json',
-                'Authorization' => 'Bearer ' . $api_key,
-            ],
-            'body'    => wp_json_encode( $body ),
-            'timeout' => 60,
-        ];
-
-        IPV_Prod_Logger::log( 'AI: Richiesta continuazione timestamp', [
+        IPV_Prod_Logger::log( 'AI: Richiesta continuazione timestamp via API Client', [
             'last_timestamp'   => $last_timestamp,
             'target_duration'  => $duration_formatted,
         ] );
 
-        $response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', $args );
+        // v10.0: Usa API Client
+        $api_client = IPV_Prod_API_Client::instance();
+        $additional_timestamps = $api_client->generate_description( $user_content, $video_title, '' );
 
-        if ( is_wp_error( $response ) ) {
-            IPV_Prod_Logger::log( 'AI: Errore continuazione', [ 'error' => $response->get_error_message() ] );
+        if ( is_wp_error( $additional_timestamps ) ) {
+            IPV_Prod_Logger::log( 'AI: Errore continuazione', [ 'error' => $additional_timestamps->get_error_message() ] );
             return $current_description; // Fallback
         }
 
-        $code = wp_remote_retrieve_response_code( $response );
-        $data = json_decode( wp_remote_retrieve_body( $response ), true );
-
-        if ( $code < 200 || $code >= 300 ) {
-            return $current_description; // Fallback
-        }
-
-        $additional_timestamps = trim( $data['choices'][0]['message']['content'] );
+        $additional_timestamps = trim( $additional_timestamps );
 
         // Merge timestamp nella descrizione
         $updated_description = preg_replace(

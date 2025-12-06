@@ -105,44 +105,40 @@ class IPV_Prod_Settings {
                 <div class="row g-4">
                     <!-- Colonna API Keys -->
                     <div class="col-lg-6">
-                        <div class="card shadow-sm mb-4">
-                            <div class="card-header bg-white">
+                        <div class="card shadow-sm mb-4 border-success">
+                            <div class="card-header bg-success text-white">
                                 <h5 class="mb-0">
-                                    <i class="bi bi-key-fill text-primary me-2"></i>
-                                    API Keys
+                                    <i class="bi bi-shield-check me-2"></i>
+                                    🔒 CLOUD EDITION v10.0
                                 </h5>
                             </div>
                             <div class="card-body">
-                                <!-- SupaData API Key -->
-                                <div class="mb-4">
-                                    <label class="form-label">
-                                        <i class="bi bi-cloud me-1"></i>
-                                        SupaData API Key
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <textarea
-                                           class="form-control ipv-validate font-monospace"
-                                           name="ipv_supadata_api_key"
-                                           data-validate-type="required"
-                                           rows="3"
-                                           placeholder="sk-..."
-                                           style="font-size: 13px;"><?php echo esc_textarea( $supadata_key ); ?></textarea>
-                                    <div class="form-text">
+                                <div class="alert alert-success mb-0">
+                                    <h6 class="alert-heading">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        API Keys Protette Server-Side!
+                                    </h6>
+                                    <hr>
+                                    <p class="mb-2">
+                                        <strong>Questa è la Cloud Edition.</strong> Tutte le API keys (SupaData, OpenAI) sono ora gestite in sicurezza sul server vendor.
+                                    </p>
+                                    <p class="mb-2">
+                                        <i class="bi bi-lock-fill text-success me-1"></i>
+                                        <strong>Sicurezza garantita:</strong> Le tue API keys non sono mai esposte o distribuite nel plugin client.
+                                    </p>
+                                    <p class="mb-2">
+                                        <i class="bi bi-cloud-check-fill text-success me-1"></i>
+                                        <strong>Come funziona:</strong> Tutte le chiamate API passano attraverso il server vendor che protegge le chiavi e gestisce i crediti mensili.
+                                    </p>
+                                    <hr>
+                                    <p class="mb-0 small">
                                         <i class="bi bi-info-circle me-1"></i>
-                                        <?php esc_html_e( 'Required to generate video transcriptions', 'ipv-production-system-pro' ); ?>
-                                    </div>
-                                    <div class="form-text mt-1">
-                                        <i class="bi bi-arrow-repeat me-1"></i>
-                                        <strong>Rotazione automatica:</strong> Inserisci più chiavi API (una per riga) per abilitare la rotazione automatica. Il sistema userà la chiave successiva se una è esaurita o limitata.
-                                    </div>
-                                    <div class="form-text text-muted" style="font-size: 11px;">
-                                        Esempio:<br>
-                                        <code style="font-size: 11px;">sk-abc123...<br>sk-def456...<br>sk-ghi789...</code>
-                                    </div>
+                                        Per controllare crediti e licenza vai su: <strong>Video IPV → 🔑 Licenza</strong>
+                                    </p>
                                 </div>
 
                                 <!-- Transcription Mode -->
-                                <div class="mb-4">
+                                <div class="mb-0 mt-4">
                                     <label class="form-label">
                                         <i class="bi bi-toggles me-1"></i>
                                         <?php esc_html_e( 'Transcription Mode', 'ipv-production-system-pro' ); ?>
@@ -163,42 +159,6 @@ class IPV_Prod_Settings {
                                         <?php esc_html_e( 'Auto uses subtitles if available, otherwise generates them', 'ipv-production-system-pro' ); ?>
                                     </div>
                                 </div>
-
-                                <!-- OpenAI API Key -->
-                                <div class="mb-4">
-                                    <label class="form-label">
-                                        <i class="bi bi-robot me-1"></i>
-                                        OpenAI API Key
-                                        <span class="text-danger">*</span>
-                                    </label>
-                                    <input type="text" 
-                                           class="form-control ipv-validate" 
-                                           name="ipv_openai_api_key" 
-                                           value="<?php echo esc_attr( $openai_key ); ?>" 
-                                           data-validate-type="required"
-                                           placeholder="sk-..." />
-                                    <div class="form-text">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        <?php esc_html_e( 'Required to generate AI descriptions', 'ipv-production-system-pro' ); ?>
-                                    </div>
-                                </div>
-
-                                <!-- YouTube API Key -->
-                                <div class="mb-0">
-                                    <label class="form-label">
-                                        <i class="bi bi-youtube me-1"></i>
-                                        YouTube Data API Key
-                                        <span class="badge bg-warning text-dark"><?php esc_html_e( 'Optional', 'ipv-production-system-pro' ); ?></span>
-                                    </label>
-                                    <input type="text"
-                                           class="form-control"
-                                           name="ipv_youtube_api_key"
-                                           value="<?php echo esc_attr( $youtube_key ); ?>"
-                                           placeholder="AIza..." />
-                                    <div class="form-text">
-                                        <i class="bi bi-info-circle me-1"></i>
-                                        <?php esc_html_e( 'For retrieving correct video titles', 'ipv-production-system-pro' ); ?>
-                                    </div>
 
                                 <!-- YouTube Import Filters -->
                                 <div class="mb-4 mt-4">

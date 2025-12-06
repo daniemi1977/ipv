@@ -191,12 +191,13 @@ class IPV_Prod_AI_Enhancements {
 
     /**
      * Generate SEO summary from transcript
+     *
+     * v10.0.0 CLOUD EDITION: Usa API Client
      */
     public static function generate_summary( $post_id ) {
-        $api_key = get_option( 'ipv_openai_api_key', '' );
-
-        if ( empty( $api_key ) ) {
-            return new WP_Error( 'no_api_key', 'OpenAI API Key non configurata' );
+        // v10.0: Usa API Client
+        if ( ! class_exists( 'IPV_Prod_API_Client' ) ) {
+            return new WP_Error( 'no_api_client', 'API Client non disponibile. Aggiorna il plugin alla v10.0+' );
         }
 
         $transcript = get_post_meta( $post_id, '_ipv_transcript', true );
@@ -205,48 +206,31 @@ class IPV_Prod_AI_Enhancements {
             return new WP_Error( 'no_transcript', 'Trascrizione non disponibile' );
         }
 
+        $video_title = get_the_title( $post_id );
+
         // Truncate transcript for API limits (max 4000 chars)
-        $transcript = substr( $transcript, 0, 4000 );
+        $transcript_excerpt = substr( $transcript, 0, 4000 );
 
-        $prompt = "Genera un summary SEO-friendly di massimo 160 caratteri per questo video. Deve essere coinvolgente e contenere keywords rilevanti.\n\nTrascrizione:\n{$transcript}\n\nSummary:";
+        $prompt = "Genera un summary SEO-friendly di massimo 160 caratteri per questo video. Deve essere coinvolgente e contenere keywords rilevanti.\n\nTrascrizione:\n{$transcript_excerpt}\n\nSummary:";
 
-        $response = wp_remote_post( 'https://api.openai.com/v1/chat/completions', [
-            'timeout' => 30,
-            'headers' => [
-                'Authorization' => 'Bearer ' . $api_key,
-                'Content-Type' => 'application/json',
-            ],
-            'body' => wp_json_encode( [
-                'model' => 'gpt-4o-mini',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $prompt,
-                    ],
-                ],
-                'max_tokens' => 100,
-                'temperature' => 0.7,
-            ] ),
-        ] );
+        IPV_Prod_Logger::log( 'AI Summary: Chiamata via API Client', [ 'post_id' => $post_id ] );
 
-        if ( is_wp_error( $response ) ) {
-            return $response;
+        $api_client = IPV_Prod_API_Client::instance();
+        $summary = $api_client->generate_description( $prompt, $video_title, '' );
+
+        if ( is_wp_error( $summary ) ) {
+            IPV_Prod_Logger::log( 'AI Summary: Errore', [ 'error' => $summary->get_error_message() ] );
+            return $summary;
         }
 
-        $body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-        if ( empty( $body['choices'][0]['message']['content'] ) ) {
-            return new WP_Error( 'no_response', 'OpenAI non ha restituito una risposta' );
-        }
-
-        $summary = trim( $body['choices'][0]['message']['content'] );
+        $summary = trim( $summary );
 
         // Ensure max 160 chars
         if ( strlen( $summary ) > 160 ) {
             $summary = substr( $summary, 0, 157 ) . '...';
         }
 
-        IPV_Prod_Logger::log( 'AI Summary generated', [ 'post_id' => $post_id, 'length' => strlen( $summary ) ] );
+        IPV_Prod_Logger::log( 'AI Summary generated via vendor', [ 'post_id' => $post_id, 'length' => strlen( $summary ) ] );
 
         return $summary;
     }

@@ -2,8 +2,8 @@
 /**
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://aiedintorni.it
- * Description: Professional video production system for YouTube content creators: multi-source imports (YouTube/Vimeo/Dailymotion), AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration.
- * Version: 9.0.0
+ * Description: Professional video production system for YouTube content creators: multi-source imports (YouTube/Vimeo/Dailymotion), AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration. CLOUD EDITION - All API keys secured server-side!
+ * Version: 10.0.0
  * Author: Daniele / IPV
  * Text Domain: ipv-production-system-pro
  * Domain Path: /languages
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '9.0.0' );
+define( 'IPV_PROD_VERSION', '10.0.0' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -161,6 +161,10 @@ class IPV_Production_System_Pro {
         // Video Wall
         IPV_Prod_Video_Wall::init();
         IPV_Prod_Video_Wall_Admin::init();
+
+        // Cloud Edition - License & Remote Updates
+        IPV_Prod_License_Manager_Client::instance();
+        IPV_Prod_Remote_Updater::instance();
 
         // Admin menu
         add_action( 'admin_menu', [ $this, 'register_menu' ] );

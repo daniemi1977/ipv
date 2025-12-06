@@ -41,55 +41,44 @@ class IPV_Prod_Supadata {
     /**
      * Ottiene la trascrizione di un video
      *
+     * v10.0.0 CLOUD EDITION: Usa API Client che proxy al server vendor
+     * Le API keys sono protette server-side!
+     *
      * @param string $video_id YouTube Video ID
      * @param string $mode Modalità: 'auto', 'native', 'generate'
      * @param string $lang Lingua preferita (ISO 639-1)
      * @return string|WP_Error Trascrizione o errore
      */
     public static function get_transcript( $video_id, $mode = 'auto', $lang = 'it' ) {
-        $api_keys = self::get_api_keys();
-
-        if ( empty( $api_keys ) ) {
+        // v10.0: Usa API Client (chiama server vendor)
+        if ( ! class_exists( 'IPV_Prod_API_Client' ) ) {
             return new WP_Error(
-                'ipv_supadata_no_key',
-                'SupaData API Key non configurata. Vai in Impostazioni per configurarla.'
+                'ipv_api_client_missing',
+                'API Client non disponibile. Aggiorna il plugin alla v10.0+'
             );
         }
 
-        $video_url = 'https://www.youtube.com/watch?v=' . $video_id;
-        $last_error = null;
+        IPV_Prod_Logger::log( 'SupaData: Chiamata via API Client (Cloud Edition)', [
+            'video_id' => $video_id,
+            'mode'     => $mode,
+            'lang'     => $lang,
+        ] );
 
-        // Prova ogni API key disponibile (rotazione automatica)
-        foreach ( $api_keys as $index => $api_key ) {
-            IPV_Prod_Logger::log( 'SupaData: Tentativo con API key #' . ( $index + 1 ), [
-                'video_id' => $video_id,
-                'mode'     => $mode,
+        $api_client = IPV_Prod_API_Client::instance();
+        $result = $api_client->get_transcript( $video_id, $mode, $lang );
+
+        if ( is_wp_error( $result ) ) {
+            IPV_Prod_Logger::log( 'SupaData: Errore da server vendor', [
+                'error' => $result->get_error_message(),
             ] );
-
-            $result = self::make_transcript_request( $video_url, $api_key, $mode, $lang );
-
-            if ( ! is_wp_error( $result ) ) {
-                // Successo!
-                return $result;
-            }
-
-            $error_code = $result->get_error_code();
-            $last_error = $result;
-
-            // Se errore 402 o 429, prova la prossima key
-            if ( in_array( $error_code, [ 'ipv_supadata_quota', 'ipv_supadata_rate_limit' ], true ) ) {
-                IPV_Prod_Logger::log( 'SupaData: Key #' . ( $index + 1 ) . ' esaurita/rate limited, provo la successiva', [
-                    'error' => $result->get_error_message(),
-                ] );
-                continue;
-            }
-
-            // Per altri errori, non provare altre key
-            break;
+            return $result;
         }
 
-        // Tutte le key hanno fallito
-        return $last_error ?? new WP_Error( 'ipv_supadata_error', 'Errore SupaData sconosciuto.' );
+        IPV_Prod_Logger::log( 'SupaData: Trascrizione ricevuta da vendor', [
+            'length' => strlen( $result ),
+        ] );
+
+        return $result;
     }
 
     /**
