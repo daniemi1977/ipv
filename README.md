@@ -1,172 +1,381 @@
-# IPV Production System Pro v4.5
+# 🚀 IPV Production System Pro v10.0.0 - Cloud Edition
 
-**Sistema di produzione avanzato per il canale YouTube "Il Punto di Vista"**
+**Il sistema WordPress più avanzato per importare, ottimizzare e monetizzare i tuoi video YouTube con AI.**
 
-![Version](https://img.shields.io/badge/version-4.2.0-blue.svg)
-![WordPress](https://img.shields.io/badge/WordPress-5.8%2B-green.svg)
-![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)
-
----
-
-## Novita v4.5 - BULK IMPORT + YOUTUBE API COMPLETA!
-
-### Bulk Import
-Importazione massiva di video precedenti dal canale:
-- Lista ultimi N video dal canale (10, 25, 50, 100)
-- Selezione multipla con checkbox
-- Preview dati prima dell'importazione
-- Controllo duplicati automatico
-- Risoluzione automatica Channel ID da URL
-
-### YouTube Data API v4.5 Completa
-Estrazione di TUTTI i metadati video:
-- Title, Description, Tags, Category
-- Duration, Definition, Caption status
-- View Count, Like Count, Comment Count
-- Thumbnail URLs (multiple risoluzioni)
-- Published date, Channel info
-- Salvataggio automatico nei meta del post
-- Aggiornamento dati on-demand
-
-### CPT Migliorato
-- Tassonomie: Categorie Video e Tag Video
-- Meta boxes per dati YouTube e trascrizione
-- Colonne admin: thumbnail, durata, views, stato
-- Ordinamento per views e durata
-- Azioni rapide: aggiorna dati, rigenera trascrizione/AI
-
-### SupaData Fixes
-- Correzione campo risposta (`content` invece di `transcript`)
-- Rotazione automatica API key (una per riga)
-- Gestione errori 402 (quota) e 429 (rate limit)
-- Supporto job asincroni con polling automatico
+[![Version](https://img.shields.io/badge/version-10.0.0-blue.svg)](https://github.com/daniemi1977/ipv)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
+[![WordPress](https://img.shields.io/badge/WordPress-6.0+-green.svg)](https://wordpress.org)
+[![PHP](https://img.shields.io/badge/PHP-7.4+-purple.svg)](https://php.net)
 
 ---
 
-## Architettura del Sistema
+## 🎯 Cosa Fa
 
-Il plugin opera su un ciclo di automazione basato su Cron Jobs e una tabella database personalizzata.
+IPV Pro automatizza completamente l'importazione di video YouTube nel tuo WordPress, generando:
 
-### Flusso dei Dati (Pipeline)
+- ✅ **Trascrizioni AI** complete (SupaData)
+- ✅ **Descrizioni SEO** ottimizzate (GPT-4o)
+- ✅ **Post WordPress** pronti alla pubblicazione
+- ✅ **Video Wall** responsive con shortcodes
+- ✅ **Sistema licenze** SaaS con WooCommerce
 
-1. **Feed Atom / Bulk Import**: Scansiona il canale per nuovi video
-2. **YouTube Data API**: Estrae tutti i metadati strutturali
-3. **Filtro Duplicati**: Verifica aggressiva (DB + Post Meta + any status)
-4. **Trascrizione (SupaData)**: Scarica il testo parlato con rotazione API key
-5. **AI Processing (OpenAI)**: Genera descrizione usando il Golden Prompt
-6. **Media Sideload**: Scarica thumbnail dalla libreria YouTube
-7. **Pubblicazione**: Aggiorna il post con contenuto, excerpt, featured image
+**Nuovo in v10.0**: Architettura SaaS con API Gateway centralizzato, credits system e remote updates.
 
 ---
 
-## Struttura dei File
+## 📦 Download Plugin
+
+### Plugin VENDOR (Server-Side)
+Per installare su **bissolomarket.com** (server di vendita):
 
 ```
-ipv-production-system-pro/
-├── ipv-production-system-pro.php    # Bootstrap principale
-├── README.md                         # Questa documentazione
-├── assets/
-│   ├── css/admin.css                # Stili admin Bootstrap 5
-│   └── js/admin.js                  # JavaScript admin
-└── includes/
-    ├── class-ai-generator.php       # OpenAI + Golden Prompt
-    ├── class-bulk-import.php        # Importazione massiva
-    ├── class-cpt.php                # Custom Post Type + Meta Boxes
-    ├── class-logger.php             # Logging utility
-    ├── class-queue.php              # Coda elaborazione + Cron
-    ├── class-rss-importer.php       # Auto-import RSS
-    ├── class-settings.php           # Pagina impostazioni
-    ├── class-supadata.php           # SupaData API + Rotazione key
-    ├── class-youtube-api.php        # YouTube Data API v4.5
-    ├── class-youtube-importer.php   # Importazione singola
-    └── views/
-        └── rss-settings.php         # UI Auto-Import RSS
+https://github.com/daniemi1977/ipv/raw/claude/ipv-production-plugin-dev-01LkCUv348tpRLhXPtqTpGqo/ipv-pro-vendor-v1.0.0.zip
 ```
 
----
+**Dimensione**: 41 KB
+**Requisiti**: WordPress 6.0+, WooCommerce 8.0+, WooCommerce Subscriptions
 
-## Configurazione API
+### Plugin CLIENT (Client-Side)
+Per **distribuire ai clienti**:
 
-### YouTube Data API v4.5
-1. Vai su Google Cloud Console
-2. Crea un nuovo progetto
-3. Abilita "YouTube Data API v4.5"
-4. Crea credenziali API Key
-5. Inserisci la key nelle Impostazioni del plugin
+```
+https://github.com/daniemi1977/ipv/raw/claude/ipv-production-plugin-dev-01LkCUv348tpRLhXPtqTpGqo/ipv-production-system-pro-v10.0.0.zip
+```
 
-### SupaData API
-1. Registrati su supadata.ai
-2. Ottieni la tua API key
-3. Inseriscila nelle Impostazioni
-4. **Per rotazione**: inserisci piu key, una per riga
-
-### OpenAI API
-1. Vai su platform.openai.com
-2. Crea una API key
-3. Inseriscila nelle Impostazioni
+**Dimensione**: 253 KB
+**Requisiti**: WordPress 6.0+, PHP 7.4+, License key valida
 
 ---
 
-## Metadati Salvati
+## ⚡ Quick Start (30 minuti)
 
-Ogni video importato salva i seguenti meta:
+### 1. Installa Plugin VENDOR
 
-| Meta Key | Descrizione |
-|----------|-------------|
-| `_ipv_video_id` | YouTube Video ID |
-| `_ipv_youtube_url` | URL completo video |
-| `_ipv_yt_title` | Titolo originale YouTube |
-| `_ipv_yt_description` | Descrizione originale |
-| `_ipv_yt_published_at` | Data pubblicazione |
-| `_ipv_yt_channel_title` | Nome canale |
-| `_ipv_yt_tags` | Array tag YouTube |
-| `_ipv_yt_category_id` | ID categoria YouTube |
-| `_ipv_yt_thumbnail_url` | URL thumbnail migliore |
-| `_ipv_yt_duration` | Durata ISO 8601 |
-| `_ipv_yt_duration_seconds` | Durata in secondi |
-| `_ipv_yt_duration_formatted` | Durata formattata (1:30:45) |
-| `_ipv_yt_definition` | HD/SD |
-| `_ipv_yt_view_count` | Visualizzazioni |
-| `_ipv_yt_like_count` | Like |
-| `_ipv_yt_comment_count` | Commenti |
-| `_ipv_transcript` | Trascrizione completa |
-| `_ipv_ai_description` | Descrizione generata AI |
-| `_ipv_source` | Fonte (manual/rss/bulk) |
+```bash
+# WordPress Admin → Plugin → Aggiungi nuovo → Carica
+# Seleziona: ipv-pro-vendor-v1.0.0.zip
+# Attiva plugin
+```
 
----
+### 2. Configura API Keys
 
-## Changelog
+```bash
+# Edita: wp-content/plugins/ipv-pro-vendor/includes/class-api-gateway.php
 
-### v4.5 (Nov 2024)
-- Bulk Import: importazione massiva video precedenti
-- YouTube Data API v4.5 completa con tutti i metadati
-- CPT migliorato con tassonomie e meta boxes
-- SupaData: rotazione API key e gestione errori 402/429
-- Colonne admin: thumbnail, durata, views, stato
-- Download automatico thumbnail come featured image
-- Importazione tag YouTube come tassonomie
+const SUPADATA_API_KEY_1 = 'sd_YOUR_KEY_HERE';
+const SUPADATA_API_KEY_2 = 'sd_YOUR_KEY_HERE';
+const SUPADATA_API_KEY_3 = 'sd_YOUR_KEY_HERE';
+const OPENAI_API_KEY = 'sk-proj-YOUR_KEY_HERE';
+const YOUTUBE_API_KEY = 'YOUR_YOUTUBE_KEY_HERE';
+```
 
-### v4.5 (Nov 2024)
-- RSS Auto-Import completamente automatico
-- UI moderna con Bootstrap 5
-- Dashboard con grafici interattivi
-- Sistema coda migliorato
+### 3. Crea Prodotti WooCommerce
 
-### v4.5
-- Rilascio iniziale con Golden Prompt 350+ righe
+4 piani disponibili:
 
----
+| Piano | Prezzo | Video/Mese |
+|-------|--------|------------|
+| Free | €0 | 10 |
+| Basic | €9,99/mese | 100 |
+| Pro | €19,99/mese | 200 |
+| Premium | €39,99/mese | 500 |
 
-## Requisiti
+Vedi guida: [NUOVI-PIANI-SETUP.md](NUOVI-PIANI-SETUP.md)
 
-- WordPress 5.8+
-- PHP 7.4+
-- API Keys: SupaData, OpenAI, YouTube Data API v4.5
+### 4. Testa Acquisto
+
+```bash
+# Compra piano Free (€0)
+# Controlla email → ricevi license key
+# Verifica: Video IPV → Licenze
+```
+
+### 5. Distribuisci Plugin CLIENT
+
+```bash
+# Il cliente scarica da email (link auto-generato)
+# Oppure: fornisci link download manuale
+# Cliente attiva licenza in: Video IPV → Licenza
+```
+
+**Documentazione completa**: [QUICK-START.md](QUICK-START.md)
 
 ---
 
-**Il Punto di Vista** - Made with love by Daniele
+## 🌟 Caratteristiche Principali
 
+### 🤖 AI-Powered Content
 
-## Version 4.5
-See CHANGELOG.md for full details.
+- **Trascrizioni automatiche** con SupaData (50+ lingue)
+- **Descrizioni SEO** generate da GPT-4o
+- **Tags e categorie** automatici
+- **Golden Prompt** ottimizzato per ranking YouTube
+
+### 🔒 SaaS Licensing System (v10.0)
+
+- **API Gateway** centralizzato (API keys mai esposte)
+- **License Manager** con WooCommerce Subscriptions
+- **Credits system** con reset mensile automatico
+- **Remote updates** distribuiti da vendor server
+- **Multi-sito** (1, 3, 5 attivazioni per piano)
+
+### 📊 Business Intelligence
+
+- **Dashboard MRR** (Monthly Recurring Revenue)
+- **Analytics utilizzo** per cliente
+- **Churn rate** monitoring
+- **Export CSV/PDF** reports
+
+### 📺 Video Management
+
+- Import **canale YouTube completo** in un click
+- Import **playlist** pubbliche
+- Import **singolo video** via URL
+- **Video Wall** responsive con shortcodes
+- **Widget WordPress** per sidebar
+
+---
+
+## 🏗️ Architettura Sistema
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    VENDOR SERVER                            │
+│                 (bissolomarket.com)                         │
+│                                                             │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ Plugin VENDOR v1.0.0                                 │  │
+│  │                                                      │  │
+│  │ • License Manager                                   │  │
+│  │ • API Gateway (SupaData, OpenAI, YouTube)          │  │
+│  │ • Credits System                                    │  │
+│  │ • WooCommerce Integration                           │  │
+│  │ • Remote Updates Server                             │  │
+│  │ • Admin Dashboard                                    │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                          ▲                                  │
+│                          │ REST API                         │
+│                          │ (Bearer Token)                   │
+└──────────────────────────┼──────────────────────────────────┘
+                           │
+         ┌─────────────────┼─────────────────┐
+         │                 │                 │
+         ▼                 ▼                 ▼
+┌────────────────┐ ┌────────────────┐ ┌────────────────┐
+│ CLIENTE 1      │ │ CLIENTE 2      │ │ CLIENTE N      │
+│                │ │                │ │                │
+│ Plugin CLIENT  │ │ Plugin CLIENT  │ │ Plugin CLIENT  │
+│ v10.0.0        │ │ v10.0.0        │ │ v10.0.0        │
+│                │ │                │ │                │
+│ License:       │ │ License:       │ │ License:       │
+│ ABCD-1234-...  │ │ EFGH-5678-...  │ │ IJKL-9012-...  │
+│                │ │                │ │                │
+│ Piano: Basic   │ │ Piano: Pro     │ │ Piano: Premium │
+│ Credits: 100   │ │ Credits: 200   │ │ Credits: 500   │
+└────────────────┘ └────────────────┘ └────────────────┘
+```
+
+**Flusso Chiamata API**:
+1. Cliente importa video YouTube
+2. Plugin CLIENT invia richiesta a VENDOR (con license key)
+3. VENDOR valida licenza + check credits
+4. VENDOR chiama API esterne (SupaData/OpenAI) con proprie keys
+5. VENDOR decrementa credits cliente
+6. VENDOR restituisce risultato a CLIENT
+7. CLIENT crea post WordPress
+
+**Vantaggi**:
+- ✅ API keys MAI esposte ai clienti
+- ✅ Controllo completo costi API
+- ✅ Rate limiting server-side (impossibile bypassare)
+- ✅ Updates centralizzati
+
+---
+
+## 📋 Requisiti
+
+### VENDOR Server
+
+| Componente | Requisito |
+|------------|-----------|
+| WordPress | ≥ 6.0 |
+| PHP | ≥ 7.4 (consigliato 8.0+) |
+| MySQL | ≥ 5.7 / MariaDB ≥ 10.3 |
+| WooCommerce | ≥ 8.0 |
+| WC Subscriptions | Required |
+| SSL | HTTPS required |
+| RAM | ≥ 2GB |
+| Storage | ≥ 10GB SSD |
+
+### CLIENT
+
+| Componente | Requisito |
+|------------|-----------|
+| WordPress | ≥ 6.0 |
+| PHP | ≥ 7.4 |
+| MySQL | ≥ 5.7 |
+| cURL | Enabled |
+| License | Valida e attiva |
+
+### API Keys (solo VENDOR)
+
+- **SupaData** (3 keys): https://supadata.ai
+- **OpenAI** (GPT-4o): https://platform.openai.com
+- **YouTube Data API v3**: https://console.cloud.google.com
+
+---
+
+## 💰 Pricing Plans
+
+| Piano | Prezzo | Video/Mese | Siti | Target |
+|-------|--------|------------|------|--------|
+| **Free** | €0 | 10 | 1 | Test & Hobby |
+| **Basic** | €9,99/mese | 100 | 1 | Blogger |
+| **Pro** ⭐ | €19,99/mese | 200 | 3 | Creator |
+| **Premium** | €39,99/mese | 500 | 5 | Agenzie |
+
+**Calcolo Revenue (scenario 200 clienti)**:
+```
+100x Free (€0)         = €0/mese
+60x Basic (€9,99)      = €599,40/mese
+30x Pro (€19,99)       = €599,70/mese
+10x Premium (€39,99)   = €399,90/mese
+───────────────────────────────────────
+MRR:                   = €1.599/mese
+ARR:                   = €19.188/anno
+
+Costi API:             = ~€350/mese
+PROFITTO NETTO:        = €1.249/mese
+Margine:               = 78% 🚀
+```
+
+Dettagli: [PRICING-PLANS.md](PRICING-PLANS.md)
+
+---
+
+## 📚 Documentazione
+
+| File | Descrizione |
+|------|-------------|
+| [FEATURES.md](FEATURES.md) | **Elenco completo caratteristiche** |
+| [QUICK-START.md](QUICK-START.md) | Setup rapido in 30 minuti |
+| [DEPLOY-GUIDE-FINAL.md](DEPLOY-GUIDE-FINAL.md) | Deployment completo (5 step) |
+| [NUOVI-PIANI-SETUP.md](NUOVI-PIANI-SETUP.md) | Creazione prodotti WooCommerce |
+| [PRICING-PLANS.md](PRICING-PLANS.md) | Strategia pricing + revenue |
+| [ELEMENTOR-IMPORT-GUIDE.md](ELEMENTOR-IMPORT-GUIDE.md) | Pagina pricing Elementor |
+| [DOWNLOAD-PLUGINS.md](DOWNLOAD-PLUGINS.md) | Link download diretti |
+| [DOWNLOAD-HOSTING.md](DOWNLOAD-HOSTING.md) | Hosting pagina download |
+
+---
+
+## 🚀 Roadmap
+
+### v10.1.0 (Q1 2026)
+- [ ] Gutenberg blocks nativi
+- [ ] Video playlists frontend
+- [ ] Advanced analytics
+- [ ] A/B testing descriptions
+
+### v11.0.0 (Q2 2026)
+- [ ] Mobile app (iOS/Android)
+- [ ] AI thumbnail generator
+- [ ] Auto-posting social media
+- [ ] Multi-language admin
+
+### v12.0.0 (Q3 2026)
+- [ ] Video hosting proprietario
+- [ ] Live streaming integration
+- [ ] Monetization features
+- [ ] Affiliate program
+
+---
+
+## 🆘 Support
+
+### Community Support (Free/Basic)
+- 📖 [Documentation](https://github.com/daniemi1977/ipv/wiki)
+- 🐛 [Bug Reports](https://github.com/daniemi1977/ipv/issues)
+- 💡 [Feature Requests](https://github.com/daniemi1977/ipv/discussions)
+
+### Priority Support (Pro/Premium)
+- 📧 Email: support@ipvpro.com (4-12h response)
+- 💬 Discord: community.ipvpro.com
+- 📞 Video call 1-to-1 (Premium only)
+
+---
+
+## 📜 Changelog
+
+### v10.0.0 - 2025-12-06 (Cloud Edition)
+
+**Nuove Features**:
+- ✨ API Gateway centralizzato (API keys server-side)
+- ✨ License Manager con WooCommerce integration
+- ✨ Credits system con reset mensile
+- ✨ Remote updates automatici
+- ✨ 4 piani pricing (Free/Basic/Pro/Premium)
+- ✨ Admin dashboard con MRR tracking
+- ✨ Customer portal per gestione licenze
+
+**Miglioramenti**:
+- 🔒 Sicurezza massima (no API keys esposte)
+- 📊 Analytics e reporting completi
+- 🚀 Performance ottimizzate
+- 📱 UI/UX migliorata
+
+**Breaking Changes**:
+- ⚠️ v9.0 non compatibile con v10.0 (architettura diversa)
+- ⚠️ Richiede migrazione manuale da v9.0
+
+Vedi changelog completo nelle versioni precedenti.
+
+---
+
+## 🔐 Sicurezza
+
+Scoperto una vulnerabilità? Per favore **NON** aprire issue pubblico.
+
+Invia email a: security@ipvpro.com
+
+Rispondiamo entro 48 ore e rilasciamo patch prioritaria.
+
+---
+
+## 📄 License
+
+**Proprietaria** - Tutti i diritti riservati
+
+© 2025 IPV Production Team. Questo software è fornito "as is" senza garanzie.
+
+La distribuzione, modifica o vendita non autorizzata è vietata.
+
+---
+
+## 🙏 Credits
+
+**Developed by**: IPV Production Team
+**Lead Developer**: Daniele Missori
+**Version**: 10.0.0 Cloud Edition
+**Released**: 6 Dicembre 2025
+
+**Powered by**:
+- [SupaData.ai](https://supadata.ai) - AI Transcriptions
+- [OpenAI GPT-4o](https://openai.com) - AI Descriptions
+- [WordPress](https://wordpress.org) - CMS Platform
+- [WooCommerce](https://woocommerce.com) - E-Commerce
+
+---
+
+## 🌐 Links
+
+- 🐙 **GitHub**: https://github.com/daniemi1977/ipv
+- 📖 **Documentazione**: Vedi file .md nella repository
+- 🐛 **Bug Reports**: GitHub Issues
+- 💡 **Feature Requests**: GitHub Discussions
+
+---
+
+<p align="center">
+  <strong>Made with ❤️ in Italy</strong><br>
+  IPV Production System Pro v10.0.0 - Cloud Edition
+</p>
