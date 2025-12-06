@@ -1,0 +1,723 @@
+{
+  "content": [
+    {
+      "id": "pricing-hero",
+      "elType": "section",
+      "settings": {
+        "background_background": "gradient",
+        "background_color": "#667eea",
+        "background_color_b": "#764ba2",
+        "background_gradient_angle": {
+          "unit": "deg",
+          "size": 135
+        },
+        "padding": {
+          "unit": "px",
+          "top": "100",
+          "right": "0",
+          "bottom": "100",
+          "left": "0"
+        }
+      },
+      "elements": [
+        {
+          "id": "hero-heading",
+          "elType": "widget",
+          "widgetType": "heading",
+          "settings": {
+            "title": "🚀 Scegli il Tuo Piano",
+            "align": "center",
+            "title_color": "#ffffff",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 56
+            },
+            "typography_font_weight": "800"
+          }
+        },
+        {
+          "id": "hero-description",
+          "elType": "widget",
+          "widgetType": "text-editor",
+          "settings": {
+            "editor": "Automatizza la creazione di contenuti YouTube con AI. Nessun setup, nessuna API key da gestire.",
+            "align": "center",
+            "text_color": "#ffffff",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 20
+            }
+          }
+        },
+        {
+          "id": "hero-badge",
+          "elType": "widget",
+          "widgetType": "button",
+          "settings": {
+            "text": "🛡️ Pagamento sicuro • Cancella quando vuoi",
+            "align": "center",
+            "button_type": "success",
+            "size": "lg"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pricing-cards",
+      "elType": "section",
+      "settings": {
+        "layout": "boxed",
+        "gap": "wide",
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "bottom": "80"
+        }
+      },
+      "elements": [
+        {
+          "id": "pricing-row",
+          "elType": "column",
+          "settings": {
+            "_column_size": 100
+          },
+          "elements": [
+            {
+              "id": "free-plan",
+              "elType": "widget",
+              "widgetType": "price-table",
+              "settings": {
+                "heading": "Free",
+                "sub_heading": "Perfetto per testare",
+                "price": "0",
+                "currency_symbol": "€",
+                "period": "",
+                "features_list": [
+                  {
+                    "item_text": "10 video/mese",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Trascrizioni AI",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Descrizioni SEO",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "1 sito",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Support email",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  }
+                ],
+                "button_text": "Inizia Gratis",
+                "link": {
+                  "url": "/carrello/?add-to-cart=XXX"
+                },
+                "heading_color": "#1e293b",
+                "price_color": "#667eea",
+                "button_background_color": "#667eea",
+                "button_hover_background_color": "#5568d3"
+              }
+            },
+            {
+              "id": "basic-plan",
+              "elType": "widget",
+              "widgetType": "price-table",
+              "settings": {
+                "heading": "Basic",
+                "sub_heading": "Per blogger individuali",
+                "price": "9,99",
+                "currency_symbol": "€",
+                "period": "/mese",
+                "features_list": [
+                  {
+                    "item_text": "100 video/mese",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Trascrizioni illimitate",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Descrizioni SEO GPT-4o",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Golden Prompt",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "1 sito",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Support prioritario",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  }
+                ],
+                "button_text": "Inizia 7 Giorni Gratis",
+                "link": {
+                  "url": "/carrello/?add-to-cart=YYY"
+                },
+                "heading_color": "#1e293b",
+                "price_color": "#f5576c",
+                "button_background_color": "#f5576c",
+                "button_hover_background_color": "#e0475a"
+              }
+            },
+            {
+              "id": "pro-plan",
+              "elType": "widget",
+              "widgetType": "price-table",
+              "settings": {
+                "heading": "Pro",
+                "sub_heading": "Massima produttività",
+                "price": "19,99",
+                "currency_symbol": "€",
+                "period": "/mese",
+                "ribbon_title": "PIÙ POPOLARE",
+                "show_ribbon": "yes",
+                "ribbon_horizontal_position": "center",
+                "features_list": [
+                  {
+                    "item_text": "200 video/mese",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Tutto di Basic +",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "3 siti",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Analytics avanzata",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Priority support",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Onboarding call",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  }
+                ],
+                "button_text": "Inizia 7 Giorni Gratis",
+                "link": {
+                  "url": "/carrello/?add-to-cart=ZZZ"
+                },
+                "heading_color": "#1e293b",
+                "price_color": "#4facfe",
+                "button_background_color": "#4facfe",
+                "button_hover_background_color": "#3d9be8",
+                "ribbon_bg_color": "#6366f1",
+                "border_border": "solid",
+                "border_width": {
+                  "unit": "px",
+                  "top": "3",
+                  "right": "3",
+                  "bottom": "3",
+                  "left": "3"
+                },
+                "border_color": "#6366f1"
+              }
+            },
+            {
+              "id": "premium-plan",
+              "elType": "widget",
+              "widgetType": "price-table",
+              "settings": {
+                "heading": "Premium",
+                "sub_heading": "Per agenzie e team",
+                "price": "39,99",
+                "currency_symbol": "€",
+                "period": "/mese",
+                "features_list": [
+                  {
+                    "item_text": "500 video/mese",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Tutto di Pro +",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "5 siti",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Golden Prompt custom",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "Chat support dedicata",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  },
+                  {
+                    "item_text": "White label",
+                    "item_icon": {
+                      "value": "fas fa-check-circle",
+                      "library": "fa-solid"
+                    }
+                  }
+                ],
+                "button_text": "Contattaci",
+                "link": {
+                  "url": "/contatti/"
+                },
+                "heading_color": "#1e293b",
+                "price_color": "#43e97b",
+                "button_background_color": "#43e97b",
+                "button_hover_background_color": "#38d36a"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "comparison-table",
+      "elType": "section",
+      "settings": {
+        "background_background": "classic",
+        "background_color": "#f8fafc",
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "bottom": "80"
+        }
+      },
+      "elements": [
+        {
+          "id": "comparison-heading",
+          "elType": "widget",
+          "widgetType": "heading",
+          "settings": {
+            "title": "📊 Confronto Completo",
+            "align": "center",
+            "title_color": "#1e293b",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 42
+            },
+            "typography_font_weight": "700"
+          }
+        },
+        {
+          "id": "comparison-table-widget",
+          "elType": "widget",
+          "widgetType": "table",
+          "settings": {
+            "header_row": [
+              {
+                "cell_text": "Feature"
+              },
+              {
+                "cell_text": "Free"
+              },
+              {
+                "cell_text": "Basic"
+              },
+              {
+                "cell_text": "Pro"
+              },
+              {
+                "cell_text": "Premium"
+              }
+            ],
+            "rows": [
+              {
+                "cells": [
+                  {
+                    "cell_text": "Video importabili/mese"
+                  },
+                  {
+                    "cell_text": "10"
+                  },
+                  {
+                    "cell_text": "100"
+                  },
+                  {
+                    "cell_text": "200"
+                  },
+                  {
+                    "cell_text": "500"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Siti attivabili"
+                  },
+                  {
+                    "cell_text": "1"
+                  },
+                  {
+                    "cell_text": "1"
+                  },
+                  {
+                    "cell_text": "3"
+                  },
+                  {
+                    "cell_text": "5"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Trascrizioni AI (SupaData)"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Descrizioni SEO (GPT-4o)"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Golden Prompt"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅ Custom"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Analytics Dashboard"
+                  },
+                  {
+                    "cell_text": "Basic"
+                  },
+                  {
+                    "cell_text": "Basic"
+                  },
+                  {
+                    "cell_text": "Avanzata"
+                  },
+                  {
+                    "cell_text": "Completa"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Support"
+                  },
+                  {
+                    "cell_text": "Email"
+                  },
+                  {
+                    "cell_text": "Prioritario"
+                  },
+                  {
+                    "cell_text": "Prioritario"
+                  },
+                  {
+                    "cell_text": "Chat dedicata"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "Onboarding"
+                  },
+                  {
+                    "cell_text": "-"
+                  },
+                  {
+                    "cell_text": "-"
+                  },
+                  {
+                    "cell_text": "✅"
+                  },
+                  {
+                    "cell_text": "✅"
+                  }
+                ]
+              },
+              {
+                "cells": [
+                  {
+                    "cell_text": "White label"
+                  },
+                  {
+                    "cell_text": "-"
+                  },
+                  {
+                    "cell_text": "-"
+                  },
+                  {
+                    "cell_text": "-"
+                  },
+                  {
+                    "cell_text": "✅"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "faq-section",
+      "elType": "section",
+      "settings": {
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "bottom": "80"
+        }
+      },
+      "elements": [
+        {
+          "id": "faq-heading",
+          "elType": "widget",
+          "widgetType": "heading",
+          "settings": {
+            "title": "❓ Domande Frequenti",
+            "align": "center",
+            "title_color": "#1e293b",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 42
+            }
+          }
+        },
+        {
+          "id": "faq-accordion",
+          "elType": "widget",
+          "widgetType": "accordion",
+          "settings": {
+            "tabs": [
+              {
+                "tab_title": "Cosa succede se finisco i crediti?",
+                "tab_content": "I crediti si resettano automaticamente il 1° di ogni mese. Se finisci prima, puoi fare upgrade al piano superiore in qualsiasi momento."
+              },
+              {
+                "tab_title": "Posso cancellare in qualsiasi momento?",
+                "tab_content": "Sì! Nessun vincolo. Cancelli quando vuoi dal tuo account. Nessuna penale."
+              },
+              {
+                "tab_title": "Le API keys sono al sicuro?",
+                "tab_content": "Assolutamente! Tutte le API keys (SupaData, OpenAI) sono gestite sul nostro server. Tu non vedi mai nessuna chiave."
+              },
+              {
+                "tab_title": "Posso usare il piano su più siti?",
+                "tab_content": "Dipende dal piano! Free e Basic = 1 sito, Pro = 3 siti, Premium = 5 siti."
+              },
+              {
+                "tab_title": "Come funziona il trial gratuito?",
+                "tab_content": "Tutti i piani a pagamento hanno 7 giorni di prova gratuita. Nessuna carta richiesta per il piano Free."
+              },
+              {
+                "tab_title": "Offrite sconti per annuali?",
+                "tab_content": "Sì! Pagando annualmente risparmi il 20%. Contattaci per attivare il piano annuale."
+              }
+            ],
+            "title_color": "#1e293b",
+            "content_color": "#64748b",
+            "border_color": "#e2e8f0"
+          }
+        }
+      ]
+    },
+    {
+      "id": "cta-final",
+      "elType": "section",
+      "settings": {
+        "background_background": "gradient",
+        "background_color": "#667eea",
+        "background_color_b": "#764ba2",
+        "background_gradient_angle": {
+          "unit": "deg",
+          "size": 135
+        },
+        "padding": {
+          "unit": "px",
+          "top": "80",
+          "bottom": "80"
+        }
+      },
+      "elements": [
+        {
+          "id": "cta-heading",
+          "elType": "widget",
+          "widgetType": "heading",
+          "settings": {
+            "title": "Pronto a Automatizzare i Tuoi Contenuti?",
+            "align": "center",
+            "title_color": "#ffffff",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 38
+            }
+          }
+        },
+        {
+          "id": "cta-button",
+          "elType": "widget",
+          "widgetType": "button",
+          "settings": {
+            "text": "🚀 Inizia Gratis Ora",
+            "align": "center",
+            "size": "xl",
+            "button_background_color": "#ffffff",
+            "button_text_color": "#667eea",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 20
+            },
+            "button_border_radius": {
+              "unit": "px",
+              "top": "50",
+              "right": "50",
+              "bottom": "50",
+              "left": "50"
+            },
+            "link": {
+              "url": "/registrati/"
+            }
+          }
+        },
+        {
+          "id": "cta-subtext",
+          "elType": "widget",
+          "widgetType": "text-editor",
+          "settings": {
+            "editor": "Nessuna carta richiesta • Setup in 2 minuti",
+            "align": "center",
+            "text_color": "#ffffff",
+            "typography_font_size": {
+              "unit": "px",
+              "size": 16
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "page_settings": {
+    "post_status": "publish",
+    "template": "elementor_canvas"
+  },
+  "version": "3.18.0",
+  "title": "IPV Pro - Pricing",
+  "type": "page"
+}
