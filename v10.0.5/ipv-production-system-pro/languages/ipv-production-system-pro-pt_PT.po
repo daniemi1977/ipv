@@ -1,0 +1,425 @@
+# Portuguese translation for IPV Production System Pro
+# Copyright (C) 2024 IPV Production System Pro
+# This file is distributed under the same license as the IPV Production System Pro package.
+msgid ""
+msgstr ""
+"Project-Id-Version: IPV Production System Pro 9.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/daniemi1977/ipv\n"
+"POT-Creation-Date: 2024-12-04 12:00+0000\n"
+"PO-Revision-Date: 2024-12-04 12:00+0000\n"
+"Last-Translator: IPV Team\n"
+"Language-Team: Portuguese\n"
+"Language: pt_PT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "IPV Production System"
+msgstr "Sistema de Produção IPV"
+
+msgid "IPV Production"
+msgstr "Produção IPV"
+
+msgid "Dashboard"
+msgstr "Painel de Controle"
+
+msgid "Import Video"
+msgstr "Importar Vídeo"
+
+msgid "Bulk Import"
+msgstr "Importação em Massa"
+
+msgid "RSS Auto-Import"
+msgstr "Auto-Importação RSS"
+
+msgid "Queue"
+msgstr "Fila"
+
+msgid "Video Wall"
+msgstr "Mural de Vídeos"
+
+msgid "Settings"
+msgstr "Configurações"
+
+msgid "Published Videos"
+msgstr "Vídeos Publicados"
+
+msgid "In Queue"
+msgstr "Na Fila"
+
+msgid "Active"
+msgstr "Ativo"
+
+msgid "Inactive"
+msgstr "Inativo"
+
+msgid "Next:"
+msgstr "Próximo:"
+
+msgid "Stopped"
+msgstr "Parado"
+
+msgid "Start CRON"
+msgstr "Iniciar CRON"
+
+msgid "Manual Processing"
+msgstr "Processamento Manual"
+
+msgid "If CRON is not working, you can process the queue manually:"
+msgstr "Se o CRON não estiver funcionando, você pode processar a fila manualmente:"
+
+msgid "Process Queue Now"
+msgstr "Processar Fila Agora"
+
+msgid "Starting..."
+msgstr "Iniciando..."
+
+msgid "CRON started! Next execution:"
+msgstr "CRON iniciado! Próxima execução:"
+
+msgid "Error:"
+msgstr "Erro:"
+
+msgid "Connection error"
+msgstr "Erro de conexão"
+
+msgid "Processing..."
+msgstr "Processando..."
+
+msgid "Error"
+msgstr "Erro"
+
+msgid "API Status"
+msgstr "Estado da API"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Missing"
+msgstr "Em Falta"
+
+msgid "Quick Actions"
+msgstr "Ações Rápidas"
+
+msgid "Manage Videos"
+msgstr "Gerir Vídeos"
+
+msgid "Shortcode:"
+msgstr "Shortcode:"
+
+msgid "or"
+msgstr "ou"
+
+msgid "Settings saved successfully!"
+msgstr "Configurações guardadas com sucesso!"
+
+msgid "Configure API keys and channel parameters"
+msgstr "Configurar chaves API e parâmetros do canal"
+
+msgid "Auto-Import RSS"
+msgstr "Auto-Importação RSS"
+
+msgid "Required to generate video transcriptions"
+msgstr "Necessário para gerar transcrições de vídeo"
+
+msgid "Transcription Mode"
+msgstr "Modo de Transcrição"
+
+msgid "Auto (recommended)"
+msgstr "Auto (recomendado)"
+
+msgid "Native"
+msgstr "Nativo"
+
+msgid "Generate"
+msgstr "Gerar"
+
+msgid "Auto uses subtitles if available, otherwise generates them"
+msgstr "Auto usa legendas se disponíveis, caso contrário gera-as"
+
+msgid "Required to generate AI descriptions"
+msgstr "Necessário para gerar descrições com IA"
+
+msgid "Optional"
+msgstr "Opcional"
+
+msgid "For retrieving correct video titles"
+msgstr "Para recuperar títulos de vídeo corretos"
+
+msgid "YouTube Import Filters"
+msgstr "Filtros de Importação do YouTube"
+
+msgid "Minimum duration"
+msgstr "Duração mínima"
+
+msgid "min"
+msgstr "min"
+
+msgid "Videos shorter than this duration will not be imported (0 = disabled)."
+msgstr "Vídeos mais curtos que esta duração não serão importados (0 = desativado)."
+
+msgid "Automatically exclude Shorts / Reels"
+msgstr "Excluir automaticamente Shorts / Reels"
+
+msgid "Detected by duration (≤ 90 sec) and /shorts/ URLs."
+msgstr "Detetado por duração (≤ 90 seg) e URLs /shorts/."
+
+msgid "Channel Parameters"
+msgstr "Parâmetros do Canal"
+
+msgid "Default Sponsor"
+msgstr "Patrocinador Padrão"
+
+msgid "Sponsor Link"
+msgstr "Link do Patrocinador"
+
+msgid "Social Media & Contacts"
+msgstr "Redes Sociais e Contactos"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Contact Email"
+msgstr "Email de Contacto"
+
+msgid "Custom AI Prompt"
+msgstr "Prompt IA Personalizado"
+
+msgid "If you leave this field empty, the built-in GOLDEN PROMPT will be used (350+ lines, optimized for \"Il Punto di Vista\")."
+msgstr "Se deixar este campo vazio, será utilizado o GOLDEN PROMPT integrado (350+ linhas, otimizado para \"Il Punto di Vista\")."
+
+msgid "Leave empty to use the internal GOLDEN PROMPT..."
+msgstr "Deixar vazio para usar o GOLDEN PROMPT interno..."
+
+msgid "You can override the default prompt with your custom one"
+msgstr "Pode substituir o prompt padrão pelo seu prompt personalizado"
+
+msgid "All API keys are securely saved in the database"
+msgstr "Todas as chaves API são guardadas com segurança na base de dados"
+
+msgid "Save Settings"
+msgstr "Guardar Configurações"
+
+msgid "Video imported and published!"
+msgstr "Vídeo importado e publicado!"
+
+msgid "Edit video"
+msgstr "Editar vídeo"
+
+msgid "Import YouTube Video"
+msgstr "Importar Vídeo do YouTube"
+
+msgid "Add videos to the production queue"
+msgstr "Adicionar vídeos à fila de produção"
+
+msgid "Add New Video"
+msgstr "Adicionar Novo Vídeo"
+
+msgid "YouTube URL"
+msgstr "URL do YouTube"
+
+msgid "Paste the video URL - it will be imported and published immediately!"
+msgstr "Cole o URL do vídeo - será importado e publicado imediatamente!"
+
+msgid "Import and Publish"
+msgstr "Importar e Publicar"
+
+msgid "Supported URL formats"
+msgstr "Formatos de URL suportados"
+
+msgid "How It Works"
+msgstr "Como Funciona"
+
+msgid "Video Import"
+msgstr "Importação de Vídeo"
+
+msgid "The video is added to the queue and the CPT is created"
+msgstr "O vídeo é adicionado à fila e o CPT é criado"
+
+msgid "Transcription Generation"
+msgstr "Geração de Transcrição"
+
+msgid "SupaData API extracts the video transcription"
+msgstr "A API SupaData extrai a transcrição do vídeo"
+
+msgid "AI Generation"
+msgstr "Geração IA"
+
+msgid "OpenAI generates the description using the Golden Prompt"
+msgstr "OpenAI gera a descrição usando o Golden Prompt"
+
+msgid "Publication"
+msgstr "Publicação"
+
+msgid "The description is saved in the post ready to use"
+msgstr "A descrição é guardada no post pronta a usar"
+
+msgid "Quick Statistics"
+msgstr "Estatísticas Rápidas"
+
+msgid "Total Videos"
+msgstr "Total de Vídeos"
+
+msgid "Completed"
+msgstr "Concluídos"
+
+msgid "View Full Queue"
+msgstr "Ver Fila Completa"
+
+msgid "AI Queue Status"
+msgstr "Estado da Fila IA"
+
+msgid "Queued videos:"
+msgstr "Vídeos na fila:"
+
+msgctxt "post type general name"
+msgid "IPV Videos"
+msgstr "Vídeos IPV"
+
+msgctxt "post type singular name"
+msgid "IPV Video"
+msgstr "Vídeo IPV"
+
+msgctxt "admin menu"
+msgid "IPV Videos"
+msgstr "Vídeos IPV"
+
+msgid "Add New"
+msgstr "Adicionar Novo"
+
+msgid "Add New Video"
+msgstr "Adicionar Novo Vídeo"
+
+msgid "Edit Video"
+msgstr "Editar Vídeo"
+
+msgid "New Video"
+msgstr "Novo Vídeo"
+
+msgid "View Video"
+msgstr "Ver Vídeo"
+
+msgid "View Videos"
+msgstr "Ver Vídeos"
+
+msgid "Search Videos"
+msgstr "Pesquisar Vídeos"
+
+msgid "No videos found"
+msgstr "Nenhum vídeo encontrado"
+
+msgid "No videos found in Trash"
+msgstr "Nenhum vídeo encontrado no lixo"
+
+msgid "All Videos"
+msgstr "Todos os Vídeos"
+
+msgid "Video Archives"
+msgstr "Arquivo de Vídeos"
+
+msgid "Video Attributes"
+msgstr "Atributos do Vídeo"
+
+msgid "Insert into video"
+msgstr "Inserir no vídeo"
+
+msgid "Uploaded to this video"
+msgstr "Carregado para este vídeo"
+
+msgid "Filter videos list"
+msgstr "Filtrar lista de vídeos"
+
+msgid "Videos list navigation"
+msgstr "Navegação da lista de vídeos"
+
+msgid "Videos list"
+msgstr "Lista de vídeos"
+
+msgid "Videos imported from YouTube with transcription and AI description."
+msgstr "Vídeos importados do YouTube com transcrição e descrição IA."
+
+msgctxt "taxonomy general name"
+msgid "Video Categories"
+msgstr "Categorias de Vídeo"
+
+msgctxt "taxonomy singular name"
+msgid "Video Category"
+msgstr "Categoria de Vídeo"
+
+msgid "Search Categories"
+msgstr "Pesquisar Categorias"
+
+msgid "All Categories"
+msgstr "Todas as Categorias"
+
+msgid "Parent Category"
+msgstr "Categoria Principal"
+
+msgid "Parent Category:"
+msgstr "Categoria Principal:"
+
+msgid "Edit Category"
+msgstr "Editar Categoria"
+
+msgid "Update Category"
+msgstr "Atualizar Categoria"
+
+msgid "Add New Category"
+msgstr "Adicionar Nova Categoria"
+
+msgid "New Category Name"
+msgstr "Nome da Nova Categoria"
+
+msgid "Categories"
+msgstr "Categorias"
+
+msgctxt "taxonomy general name"
+msgid "Speakers"
+msgstr "Oradores"
+
+msgctxt "taxonomy singular name"
+msgid "Speaker"
+msgstr "Orador"
+
+msgid "Search Speakers"
+msgstr "Pesquisar Oradores"
+
+msgid "All Speakers"
+msgstr "Todos os Oradores"
+
+msgid "Edit Speaker"
+msgstr "Editar Orador"
+
+msgid "Update Speaker"
+msgstr "Atualizar Orador"
+
+msgid "Add New Speaker"
+msgstr "Adicionar Novo Orador"
+
+msgid "New Speaker Name"
+msgstr "Nome do Novo Orador"
+
+msgid "Speakers"
+msgstr "Oradores"
+
+msgid "Legacy Categories"
+msgstr "Categorias Legadas"
+
+msgid "Legacy Category"
+msgstr "Categoria Legada"
+
+msgid "Legacy"
+msgstr "Legado"
+
+msgid "YouTube Data"
+msgstr "Dados do YouTube"
+
+msgid "Transcription"
+msgstr "Transcrição"
+
+msgid "YouTube Statistics"
+msgstr "Estatísticas do YouTube"
+
+msgid "Actions"
+msgstr "Ações"

@@ -1,0 +1,591 @@
+# Italian translation for IPV Production System Pro
+# Copyright (C) 2024 IPV Production System Pro
+# This file is distributed under the same license as the IPV Production System Pro package.
+msgid ""
+msgstr ""
+"Project-Id-Version: IPV Production System Pro 9.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/daniemi1977/ipv\n"
+"POT-Creation-Date: 2024-12-04 12:00+0000\n"
+"PO-Revision-Date: 2024-12-04 12:00+0000\n"
+"Last-Translator: IPV Team\n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ipv-production-system-pro.php:218
+#: ipv-production-system-pro.php:219
+msgid "IPV Production System"
+msgstr "Sistema di Produzione IPV"
+
+#: ipv-production-system-pro.php:219
+msgid "IPV Production"
+msgstr "Produzione IPV"
+
+#: ipv-production-system-pro.php:230
+#: ipv-production-system-pro.php:231
+#: includes/class-settings.php:76
+#: includes/class-youtube-importer.php:49
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: ipv-production-system-pro.php:240
+#: ipv-production-system-pro.php:241
+#: ipv-production-system-pro.php:534
+#: includes/class-settings.php:81
+#: includes/class-youtube-importer.php:54
+msgid "Import Video"
+msgstr "Importa Video"
+
+#: ipv-production-system-pro.php:250
+#: ipv-production-system-pro.php:251
+msgid "Bulk Import"
+msgstr "Importazione Multipla"
+
+#: ipv-production-system-pro.php:260
+#: ipv-production-system-pro.php:261
+#: includes/class-settings.php:86
+#: includes/class-youtube-importer.php:59
+msgid "RSS Auto-Import"
+msgstr "Auto-Import RSS"
+
+#: ipv-production-system-pro.php:270
+#: ipv-production-system-pro.php:271
+#: includes/class-settings.php:91
+#: includes/class-youtube-importer.php:64
+msgid "Queue"
+msgstr "Coda"
+
+#: ipv-production-system-pro.php:280
+#: ipv-production-system-pro.php:281
+msgid "Video Wall"
+msgstr "Galleria Video"
+
+#: ipv-production-system-pro.php:290
+#: ipv-production-system-pro.php:291
+#: ipv-production-system-pro.php:540
+#: includes/class-settings.php:66
+#: includes/class-settings.php:96
+#: includes/class-youtube-importer.php:69
+msgid "Settings"
+msgstr "Impostazioni"
+
+#: ipv-production-system-pro.php:375
+msgid "Published Videos"
+msgstr "Video Pubblicati"
+
+#: ipv-production-system-pro.php:383
+#: includes/class-youtube-importer.php:238
+msgid "In Queue"
+msgstr "In Coda"
+
+#: ipv-production-system-pro.php:391
+#: ipv-production-system-pro.php:403
+msgid "Active"
+msgstr "Attivo"
+
+#: ipv-production-system-pro.php:393
+msgid "Inactive"
+msgstr "Disattivo"
+
+#: ipv-production-system-pro.php:405
+msgid "Next:"
+msgstr "Prossima:"
+
+#: ipv-production-system-pro.php:407
+msgid "Stopped"
+msgstr "Fermo"
+
+#: ipv-production-system-pro.php:410
+#: ipv-production-system-pro.php:452
+#: ipv-production-system-pro.php:457
+msgid "Start CRON"
+msgstr "Avvia CRON"
+
+#: ipv-production-system-pro.php:421
+msgid "Manual Processing"
+msgstr "Elaborazione Manuale"
+
+#: ipv-production-system-pro.php:424
+msgid "If CRON is not working, you can process the queue manually:"
+msgstr "Se il CRON non funziona, puoi elaborare la coda manualmente:"
+
+#: ipv-production-system-pro.php:426
+#: ipv-production-system-pro.php:488
+msgid "Process Queue Now"
+msgstr "Elabora Coda Adesso"
+
+#: ipv-production-system-pro.php:437
+msgid "Starting..."
+msgstr "Avvio..."
+
+#: ipv-production-system-pro.php:448
+msgid "CRON started! Next execution:"
+msgstr "CRON avviato! Prossima esecuzione:"
+
+#: ipv-production-system-pro.php:451
+#: includes/class-youtube-importer.php:27
+msgid "Error:"
+msgstr "Errore:"
+
+#: ipv-production-system-pro.php:456
+#: ipv-production-system-pro.php:485
+msgid "Connection error"
+msgstr "Errore di connessione"
+
+#: ipv-production-system-pro.php:467
+msgid "Processing..."
+msgstr "Elaborazione..."
+
+#: ipv-production-system-pro.php:481
+msgid "Error"
+msgstr "Errore"
+
+#: ipv-production-system-pro.php:498
+msgid "API Status"
+msgstr "Stato API"
+
+#: ipv-production-system-pro.php:504
+#: ipv-production-system-pro.php:511
+#: ipv-production-system-pro.php:518
+msgid "OK"
+msgstr "OK"
+
+#: ipv-production-system-pro.php:506
+#: ipv-production-system-pro.php:513
+#: ipv-production-system-pro.php:520
+msgid "Missing"
+msgstr "Mancante"
+
+#: ipv-production-system-pro.php:530
+msgid "Quick Actions"
+msgstr "Azioni Rapide"
+
+#: ipv-production-system-pro.php:537
+msgid "Manage Videos"
+msgstr "Gestisci Video"
+
+#: ipv-production-system-pro.php:546
+msgid "Shortcode:"
+msgstr "Shortcode:"
+
+#: ipv-production-system-pro.php:546
+msgid "or"
+msgstr "oppure"
+
+#: includes/class-settings.php:37
+msgid "Settings saved successfully!"
+msgstr "Impostazioni salvate con successo!"
+
+#: includes/class-settings.php:68
+msgid "Configure API keys and channel parameters"
+msgstr "Configura API e parametri del canale"
+
+#: includes/class-settings.php:86
+msgid "Auto-Import RSS"
+msgstr "Auto-Import RSS"
+
+#: includes/class-settings.php:131
+msgid "Required to generate video transcriptions"
+msgstr "Richiesto per generare le trascrizioni dei video"
+
+#: includes/class-settings.php:139
+msgid "Transcription Mode"
+msgstr "Modalità Trascrizione"
+
+#: includes/class-settings.php:143
+msgid "Auto (recommended)"
+msgstr "Auto (consigliato)"
+
+#: includes/class-settings.php:146
+msgid "Native"
+msgstr "Native"
+
+#: includes/class-settings.php:149
+msgid "Generate"
+msgstr "Generate"
+
+#: includes/class-settings.php:154
+msgid "Auto uses subtitles if available, otherwise generates them"
+msgstr "Auto usa i sottotitoli se esistono, altrimenti li genera"
+
+#: includes/class-settings.php:173
+msgid "Required to generate AI descriptions"
+msgstr "Richiesto per generare le descrizioni AI"
+
+#: includes/class-settings.php:182
+msgid "Optional"
+msgstr "Opzionale"
+
+#: includes/class-settings.php:191
+msgid "For retrieving correct video titles"
+msgstr "Per recuperare titoli corretti dei video"
+
+#: includes/class-settings.php:198
+msgid "YouTube Import Filters"
+msgstr "Filtri Import YouTube"
+
+#: includes/class-settings.php:204
+msgid "Minimum duration"
+msgstr "Durata minima"
+
+#: includes/class-settings.php:211
+msgid "min"
+msgstr "min"
+
+#: includes/class-settings.php:215
+msgid "Videos shorter than this duration will not be imported (0 = disabled)."
+msgstr "I video con durata inferiore non vengono importati (0 = disattivato)."
+
+#: includes/class-settings.php:228
+msgid "Automatically exclude Shorts / Reels"
+msgstr "Escludi automaticamente Shorts / Reel"
+
+#: includes/class-settings.php:232
+msgid "Detected by duration (≤ 90 sec) and /shorts/ URLs."
+msgstr "Riconosciuti in base alla durata (≤ 90 sec) e agli URL /shorts/."
+
+#: includes/class-settings.php:247
+msgid "Channel Parameters"
+msgstr "Parametri Canale"
+
+#: includes/class-settings.php:255
+msgid "Default Sponsor"
+msgstr "Sponsor di Default"
+
+#: includes/class-settings.php:268
+msgid "Sponsor Link"
+msgstr "Link Sponsor"
+
+#: includes/class-settings.php:287
+msgid "Social Media & Contacts"
+msgstr "Social Media & Contatti"
+
+#: includes/class-settings.php:330
+msgid "Website"
+msgstr "Sito Web"
+
+#: includes/class-settings.php:342
+msgid "Contact Email"
+msgstr "Email Contatto"
+
+#: includes/class-settings.php:358
+msgid "Custom AI Prompt"
+msgstr "Prompt AI Personalizzato"
+
+#: includes/class-settings.php:364
+msgid "If you leave this field empty, the built-in GOLDEN PROMPT will be used (350+ lines, optimized for \"Il Punto di Vista\")."
+msgstr "Se lasci vuoto questo campo, verrà utilizzato il GOLDEN PROMPT integrato nel plugin (350+ righe, ottimizzato per \"Il Punto di Vista\")."
+
+#: includes/class-settings.php:369
+msgid "Leave empty to use the internal GOLDEN PROMPT..."
+msgstr "Lascia vuoto per usare il GOLDEN PROMPT interno..."
+
+#: includes/class-settings.php:372
+msgid "You can override the default prompt with your custom one"
+msgstr "Puoi sovrascrivere il prompt di default con il tuo personalizzato"
+
+#: includes/class-settings.php:385
+msgid "All API keys are securely saved in the database"
+msgstr "Tutte le chiavi API vengono salvate in modo sicuro nel database"
+
+#: includes/class-settings.php:389
+msgid "Save Settings"
+msgstr "Salva Impostazioni"
+
+#: includes/class-youtube-importer.php:19
+msgid "Video imported and published!"
+msgstr "Video importato e pubblicato!"
+
+#: includes/class-youtube-importer.php:20
+msgid "Edit video"
+msgstr "Modifica video"
+
+#: includes/class-youtube-importer.php:39
+msgid "Import YouTube Video"
+msgstr "Importa Video YouTube"
+
+#: includes/class-youtube-importer.php:41
+msgid "Add videos to the production queue"
+msgstr "Aggiungi video alla coda di produzione"
+
+#: includes/class-youtube-importer.php:83
+msgid "Add New Video"
+msgstr "Aggiungi Nuovo Video"
+
+#: includes/class-youtube-importer.php:94
+msgid "YouTube URL"
+msgstr "URL YouTube"
+
+#: includes/class-youtube-importer.php:105
+msgid "Paste the video URL - it will be imported and published immediately!"
+msgstr "Incolla l'URL del video - verrà importato e pubblicato subito!"
+
+#: includes/class-youtube-importer.php:112
+msgid "Import and Publish"
+msgstr "Importa e Pubblica"
+
+#: includes/class-youtube-importer.php:124
+msgid "Supported URL formats"
+msgstr "Formati URL supportati"
+
+#: includes/class-youtube-importer.php:150
+msgid "How It Works"
+msgstr "Come Funziona"
+
+#: includes/class-youtube-importer.php:162
+msgid "Video Import"
+msgstr "Importazione Video"
+
+#: includes/class-youtube-importer.php:164
+msgid "The video is added to the queue and the CPT is created"
+msgstr "Il video viene aggiunto alla coda e il CPT viene creato"
+
+#: includes/class-youtube-importer.php:178
+msgid "Transcription Generation"
+msgstr "Generazione Trascrizione"
+
+#: includes/class-youtube-importer.php:180
+msgid "SupaData API extracts the video transcription"
+msgstr "SupaData API estrae la trascrizione del video"
+
+#: includes/class-youtube-importer.php:194
+msgid "AI Generation"
+msgstr "AI Generation"
+
+#: includes/class-youtube-importer.php:196
+msgid "OpenAI generates the description using the Golden Prompt"
+msgstr "OpenAI genera la descrizione usando il Golden Prompt"
+
+#: includes/class-youtube-importer.php:210
+msgid "Publication"
+msgstr "Pubblicazione"
+
+#: includes/class-youtube-importer.php:212
+msgid "The description is saved in the post ready to use"
+msgstr "La descrizione viene salvata nel post pronta all'uso"
+
+#: includes/class-youtube-importer.php:225
+msgid "Quick Statistics"
+msgstr "Statistiche Veloci"
+
+#: includes/class-youtube-importer.php:234
+msgid "Total Videos"
+msgstr "Video Totali"
+
+#: includes/class-youtube-importer.php:242
+msgid "Completed"
+msgstr "Completati"
+
+#: includes/class-youtube-importer.php:249
+msgid "View Full Queue"
+msgstr "Vedi Coda Completa"
+
+#: includes/class-queue-dashboard.php:18
+msgid "AI Queue Status"
+msgstr "Stato Coda AI"
+
+#: includes/class-queue-dashboard.php:19
+msgid "Queued videos:"
+msgstr "Video in coda:"
+
+#: includes/class-cpt.php:43
+msgctxt "post type general name"
+msgid "IPV Videos"
+msgstr "Video IPV"
+
+#: includes/class-cpt.php:44
+msgctxt "post type singular name"
+msgid "IPV Video"
+msgstr "Video IPV"
+
+#: includes/class-cpt.php:45
+msgctxt "admin menu"
+msgid "IPV Videos"
+msgstr "Video IPV"
+
+#: includes/class-cpt.php:46
+msgid "Add New"
+msgstr "Aggiungi Nuovo"
+
+#: includes/class-cpt.php:47
+msgid "Add New Video"
+msgstr "Aggiungi Nuovo Video"
+
+#: includes/class-cpt.php:48
+msgid "Edit Video"
+msgstr "Modifica Video"
+
+#: includes/class-cpt.php:49
+msgid "New Video"
+msgstr "Nuovo Video"
+
+#: includes/class-cpt.php:50
+msgid "View Video"
+msgstr "Visualizza Video"
+
+#: includes/class-cpt.php:51
+msgid "View Videos"
+msgstr "Visualizza Video"
+
+#: includes/class-cpt.php:52
+msgid "Search Videos"
+msgstr "Cerca Video"
+
+#: includes/class-cpt.php:53
+msgid "No videos found"
+msgstr "Nessun video trovato"
+
+#: includes/class-cpt.php:54
+msgid "No videos found in Trash"
+msgstr "Nessun video trovato nel Cestino"
+
+#: includes/class-cpt.php:55
+msgid "All Videos"
+msgstr "Tutti i Video"
+
+#: includes/class-cpt.php:56
+msgid "Video Archives"
+msgstr "Archivio Video"
+
+#: includes/class-cpt.php:57
+msgid "Video Attributes"
+msgstr "Attributi Video"
+
+#: includes/class-cpt.php:58
+msgid "Insert into video"
+msgstr "Inserisci nel video"
+
+#: includes/class-cpt.php:59
+msgid "Uploaded to this video"
+msgstr "Caricato per questo video"
+
+#: includes/class-cpt.php:60
+msgid "Filter videos list"
+msgstr "Filtra lista video"
+
+#: includes/class-cpt.php:61
+msgid "Videos list navigation"
+msgstr "Navigazione lista video"
+
+#: includes/class-cpt.php:62
+msgid "Videos list"
+msgstr "Lista video"
+
+#: includes/class-cpt.php:67
+msgid "Videos imported from YouTube with transcription and AI description."
+msgstr "Video importati da YouTube con trascrizione e descrizione AI."
+
+#: includes/class-cpt.php:107
+msgctxt "taxonomy general name"
+msgid "Video Categories"
+msgstr "Categorie Video"
+
+#: includes/class-cpt.php:108
+msgctxt "taxonomy singular name"
+msgid "Video Category"
+msgstr "Categoria Video"
+
+#: includes/class-cpt.php:109
+msgid "Search Categories"
+msgstr "Cerca Categorie"
+
+#: includes/class-cpt.php:110
+msgid "All Categories"
+msgstr "Tutte le Categorie"
+
+#: includes/class-cpt.php:111
+msgid "Parent Category"
+msgstr "Categoria Genitore"
+
+#: includes/class-cpt.php:112
+msgid "Parent Category:"
+msgstr "Categoria Genitore:"
+
+#: includes/class-cpt.php:113
+msgid "Edit Category"
+msgstr "Modifica Categoria"
+
+#: includes/class-cpt.php:114
+msgid "Update Category"
+msgstr "Aggiorna Categoria"
+
+#: includes/class-cpt.php:115
+msgid "Add New Category"
+msgstr "Aggiungi Nuova Categoria"
+
+#: includes/class-cpt.php:116
+msgid "New Category Name"
+msgstr "Nome Nuova Categoria"
+
+#: includes/class-cpt.php:117
+msgid "Categories"
+msgstr "Categorie"
+
+#: includes/class-cpt.php:131
+msgctxt "taxonomy general name"
+msgid "Speakers"
+msgstr "Relatori"
+
+#: includes/class-cpt.php:132
+msgctxt "taxonomy singular name"
+msgid "Speaker"
+msgstr "Relatore"
+
+#: includes/class-cpt.php:133
+msgid "Search Speakers"
+msgstr "Cerca Relatori"
+
+#: includes/class-cpt.php:134
+msgid "All Speakers"
+msgstr "Tutti i Relatori"
+
+#: includes/class-cpt.php:135
+msgid "Edit Speaker"
+msgstr "Modifica Relatore"
+
+#: includes/class-cpt.php:136
+msgid "Update Speaker"
+msgstr "Aggiorna Relatore"
+
+#: includes/class-cpt.php:137
+msgid "Add New Speaker"
+msgstr "Aggiungi Nuovo Relatore"
+
+#: includes/class-cpt.php:138
+msgid "New Speaker Name"
+msgstr "Nome Nuovo Relatore"
+
+#: includes/class-cpt.php:139
+msgid "Speakers"
+msgstr "Relatori"
+
+#: includes/class-cpt.php:153
+msgid "Legacy Categories"
+msgstr "Categorie Legacy"
+
+#: includes/class-cpt.php:154
+msgid "Legacy Category"
+msgstr "Categoria Legacy"
+
+#: includes/class-cpt.php:155
+msgid "Legacy"
+msgstr "Legacy"
+
+#: includes/class-cpt.php:174
+msgid "YouTube Data"
+msgstr "Dati YouTube"
+
+#: includes/class-cpt.php:184
+msgid "Transcription"
+msgstr "Trascrizione"
+
+#: includes/class-cpt.php:194
+msgid "YouTube Statistics"
+msgstr "Statistiche YouTube"
+
+#: includes/class-cpt.php:204
+msgid "Actions"
+msgstr "Azioni"
