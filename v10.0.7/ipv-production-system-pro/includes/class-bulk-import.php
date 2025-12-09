@@ -111,11 +111,17 @@ class IPV_Prod_Bulk_Import {
 
             <?php echo $notice; ?>
 
-            <?php if ( empty( $youtube_key ) ) : ?>
+            <?php if ( empty( $youtube_key ) && ! IPV_Prod_API_Client::is_license_active() ) : ?>
                 <div class="alert alert-warning">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <strong>YouTube API Key non configurata.</strong>
-                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-settings' ) ); ?>">Vai alle Impostazioni</a> per configurarla.
+                    <strong>Licenza non attiva.</strong>
+                    <a href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-license' ) ); ?>">Attiva la licenza</a> per usare questa funzionalità.
+                </div>
+            <?php elseif ( empty( $youtube_key ) ) : ?>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Funzionalità opzionale:</strong>
+                    Import canale disponibile configurando una YouTube API key in <a href="<?php echo esc_url( admin_url( 'admin.php?page=ipv-production-settings' ) ); ?>">Impostazioni → Server</a>.
                 </div>
             <?php else : ?>
 

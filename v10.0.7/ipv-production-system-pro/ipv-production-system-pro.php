@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://github.com/daniemi1977/ipv
  * Description: Professional video production system for YouTube content creators: multi-source imports, AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration.
- * Version: 10.0.6
+ * Version: 10.0.7
  * Author: IPV Team
  * Author URI: https://github.com/daniemi1977/ipv
  * Text Domain: ipv-production-system-pro
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '10.0.6' );
+define( 'IPV_PROD_VERSION', '10.0.7' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -193,6 +193,9 @@ class IPV_Production_System_Pro {
         IPV_Prod_License_Manager_Client::init();
         IPV_Prod_CPT::init();
 
+        // v10.0.7 - Queue Menu
+        add_action( 'admin_menu', [ $this, 'register_queue_menu' ] );
+
         // Video Wall
         if ( class_exists( 'IPV_Prod_Video_Wall' ) ) {
             IPV_Prod_Video_Wall::init();
@@ -251,6 +254,20 @@ class IPV_Production_System_Pro {
             'display'  => __( 'Every 15 Minutes', 'ipv-production-system-pro' ),
         ];
         return $schedules;
+    }
+
+    /**
+     * Register Queue submenu (v10.0.7)
+     */
+    public function register_queue_menu() {
+        add_submenu_page(
+            'edit.php?post_type=ipv_video',
+            __( 'Coda Elaborazione', 'ipv-production-system-pro' ),
+            __( 'Coda', 'ipv-production-system-pro' ),
+            'manage_options',
+            'ipv-production-queue',
+            [ $this, 'render_queue_page' ]
+        );
     }
 
     /**

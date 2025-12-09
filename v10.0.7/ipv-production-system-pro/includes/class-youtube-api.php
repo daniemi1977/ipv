@@ -37,10 +37,20 @@ class IPV_Prod_YouTube_API {
     public static function get_video_data( $video_id ) {
         $api_key = get_option( 'ipv_youtube_api_key', '' );
 
+        // v10.0.7 - SaaS Mode: YouTube API key is optional if license is active
         if ( empty( $api_key ) ) {
+            // Check if license is active (SaaS mode)
+            if ( ! IPV_Prod_API_Client::is_license_active() ) {
+                return new WP_Error(
+                    'ipv_license_required',
+                    'Licenza non attiva. Attiva la licenza per usare questa funzionalità.'
+                );
+            }
+
+            // License active but no local API key: feature is optional
             return new WP_Error(
-                'ipv_youtube_no_key',
-                'YouTube Data API Key non configurata. Vai in Impostazioni per configurarla.'
+                'ipv_youtube_optional',
+                'Aggiornamento dati YouTube opzionale. Per abilitarlo, configura una YouTube API key in Impostazioni → Server.'
             );
         }
 
@@ -112,10 +122,18 @@ class IPV_Prod_YouTube_API {
     public static function get_channel_videos( $channel_id, $max_results = 50, $page_token = '' ) {
         $api_key = get_option( 'ipv_youtube_api_key', '' );
 
+        // v10.0.7 - SaaS Mode: YouTube API key is optional if license is active
         if ( empty( $api_key ) ) {
+            if ( ! IPV_Prod_API_Client::is_license_active() ) {
+                return new WP_Error(
+                    'ipv_license_required',
+                    'Licenza non attiva. Attiva la licenza per usare questa funzionalità.'
+                );
+            }
+
             return new WP_Error(
-                'ipv_youtube_no_key',
-                'YouTube Data API Key non configurata.'
+                'ipv_youtube_optional',
+                'Import canale opzionale. Per abilitarlo, configura una YouTube API key in Impostazioni → Server.'
             );
         }
 
@@ -380,8 +398,19 @@ class IPV_Prod_YouTube_API {
     public static function search_videos( $query, $channel_id = '', $max_results = 25 ) {
         $api_key = get_option( 'ipv_youtube_api_key', '' );
 
+        // v10.0.7 - SaaS Mode: YouTube API key is optional if license is active
         if ( empty( $api_key ) ) {
-            return new WP_Error( 'ipv_youtube_no_key', 'YouTube Data API Key non configurata.' );
+            if ( ! IPV_Prod_API_Client::is_license_active() ) {
+                return new WP_Error(
+                    'ipv_license_required',
+                    'Licenza non attiva. Attiva la licenza per usare questa funzionalità.'
+                );
+            }
+
+            return new WP_Error(
+                'ipv_youtube_optional',
+                'Ricerca video opzionale. Per abilitarla, configura una YouTube API key in Impostazioni → Server.'
+            );
         }
 
         $args = [
@@ -545,8 +574,19 @@ class IPV_Prod_YouTube_API {
     public static function get_channel_info( $channel_id ) {
         $api_key = get_option( 'ipv_youtube_api_key', '' );
 
+        // v10.0.7 - SaaS Mode: YouTube API key is optional if license is active
         if ( empty( $api_key ) ) {
-            return new WP_Error( 'ipv_youtube_no_key', 'YouTube API Key non configurata.' );
+            if ( ! IPV_Prod_API_Client::is_license_active() ) {
+                return new WP_Error(
+                    'ipv_license_required',
+                    'Licenza non attiva. Attiva la licenza per usare questa funzionalità.'
+                );
+            }
+
+            return new WP_Error(
+                'ipv_youtube_optional',
+                'Info canale opzionali. Per abilitarle, configura una YouTube API key in Impostazioni → Server.'
+            );
         }
 
         $url = add_query_arg(
