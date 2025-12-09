@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://github.com/daniemi1977/ipv
  * Description: Professional video production system for YouTube content creators: multi-source imports, AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration.
- * Version: 10.0.5
+ * Version: 10.0.6
  * Author: IPV Team
  * Author URI: https://github.com/daniemi1977/ipv
  * Text Domain: ipv-production-system-pro
@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // CONSTANTS
 // ============================================
 
-define( 'IPV_PROD_VERSION', '10.0.5' );
+define( 'IPV_PROD_VERSION', '10.0.6' );
 define( 'IPV_PROD_PLUGIN_FILE', __FILE__ );
 define( 'IPV_PROD_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_PROD_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -57,8 +57,20 @@ add_action( 'plugins_loaded', 'ipv_prod_load_textdomain', 5 );
 // LOAD CORE FILES (Prima dell'autoloader)
 // ============================================
 
-// API Client - DEVE essere caricato per primo (gestisce comunicazione server)
+// Logger - DEVE essere caricato per primo (usato da tutti)
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-logger.php';
+
+// API Client - Gestisce comunicazione server (usa logger)
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-api-client.php';
+
+// SupaData - Gestisce trascrizioni (usa API client)
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-supadata.php';
+
+// AI Generator - Gestisce descrizioni AI (usa API client)
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-ai-generator.php';
+
+// YouTube API - Gestisce dati video (usa API client)
+require_once IPV_PROD_PLUGIN_DIR . 'includes/class-youtube-api.php';
 
 // License Manager - Gestisce attivazione licenza
 require_once IPV_PROD_PLUGIN_DIR . 'includes/class-license-manager-client.php';
