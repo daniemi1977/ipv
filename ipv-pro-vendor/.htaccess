@@ -1,0 +1,36 @@
+# IPV Pro Vendor - Apache Configuration
+# Fix per SiteGround e altri hosting che bloccano Authorization header
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# CRITICAL: Preserva Authorization header
+# Molti hosting (SiteGround, Bluehost, etc) rimuovono questo header per default
+# Senza questo fix, tutte le chiamate API danno "401 Unauthorized"
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_AUTHORIZATION:%1]
+
+# Passa anche X-License-Key come fallback
+RewriteCond %{HTTP:X-License-Key} ^(.*)
+RewriteRule ^(.*) - [E=HTTP_X_LICENSE_KEY:%1]
+</IfModule>
+
+# Protezione directory
+<IfModule mod_autoindex.c>
+Options -Indexes
+</IfModule>
+
+# Protezione file sensibili
+<FilesMatch "^(README\.md|CHANGELOG\.md|\.git.*|composer\.(json|lock))$">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+# PHP settings (se supportato)
+<IfModule mod_php7.c>
+php_value upload_max_filesize 64M
+php_value post_max_size 64M
+php_value memory_limit 256M
+php_value max_execution_time 300
+php_value max_input_time 300
+</IfModule>
