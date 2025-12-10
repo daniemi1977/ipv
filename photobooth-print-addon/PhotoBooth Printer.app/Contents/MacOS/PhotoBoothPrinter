@@ -1,0 +1,167 @@
+#!/bin/bash
+# PhotoBooth Printer - Main Application Launcher
+
+APP_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+RESOURCES_DIR="$APP_DIR/Resources"
+
+# Function to show dialog
+show_dialog() {
+    osascript <<EOF
+tell application "System Events"
+    activate
+    display dialog "$1" buttons {"OK"} default button 1 with icon POSIX file "$RESOURCES_DIR/AppIcon.icns"
+end tell
+EOF
+}
+
+# Function to show alert
+show_alert() {
+    osascript <<EOF
+tell application "System Events"
+    activate
+    display alert "$1" message "$2" as $3
+end tell
+EOF
+}
+
+# Function to show choice dialog
+show_choice() {
+    osascript <<EOF
+tell application "System Events"
+    activate
+    set userChoice to button returned of (display dialog "$1" buttons {"Cancel", "No", "Yes"} default button "Yes")
+    return userChoice
+end tell
+EOF
+}
+
+# Check if Python 3 is installed
+if ! command -v python3 &> /dev/null; then
+    show_alert "Python 3 Required" "Python 3 is not installed. Please install it from python.org" "critical"
+    open "https://www.python.org/downloads/"
+    exit 1
+fi
+
+# Check if dependencies are installed
+if ! python3 -c "import watchdog" 2>/dev/null; then
+    show_alert "Installing Dependencies" "Installing required components... This may take a moment." "informational"
+
+    # Install pip if needed
+    if ! command -v pip3 &> /dev/null; then
+        python3 -m ensurepip --default-pip
+    fi
+
+    # Install watchdog
+    pip3 install watchdog --quiet --user
+
+    if [ $? -ne 0 ]; then
+        show_alert "Installation Failed" "Could not install dependencies. Please check your internet connection." "critical"
+        exit 1
+    fi
+fi
+
+# Copy Python script to user's application support if not exists
+USER_APP_DIR="$HOME/Library/Application Support/PhotoBooth Printer"
+mkdir -p "$USER_APP_DIR"
+
+if [ ! -f "$USER_APP_DIR/photobooth_printer.py" ]; then
+    cp "$RESOURCES_DIR/photobooth_printer.py" "$USER_APP_DIR/"
+fi
+
+# Check if already configured
+CONFIG_FILE="$HOME/.photobooth-printer-config.json"
+
+if [ ! -f "$CONFIG_FILE" ]; then
+    # First run - show welcome and setup
+    CHOICE=$(osascript <<EOF
+tell application "System Events"
+    activate
+    display dialog "Welcome to PhotoBooth Printer!
+
+This app will automatically print photos taken with Apple Photo Booth.
+
+Would you like to configure it now?" buttons {"Quit", "Configure"} default button "Configure" with icon POSIX file "$RESOURCES_DIR/AppIcon.icns"
+    return button returned
+end tell
+EOF
+)
+
+    if [ "$CHOICE" = "Quit" ]; then
+        exit 0
+    fi
+
+    # Open setup in Terminal
+    osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "cd '$USER_APP_DIR' && python3 photobooth_printer.py setup && echo '' && echo 'Press any key to close...' && read"
+end tell
+EOF
+    exit 0
+fi
+
+# Main menu
+while true; do
+    CHOICE=$(osascript <<EOF
+tell application "System Events"
+    activate
+    set dialogResult to display dialog "PhotoBooth Printer
+
+What would you like to do?" buttons {"Quit", "Settings", "Start"} default button "Start" with icon POSIX file "$RESOURCES_DIR/AppIcon.icns"
+    return button returned of dialogResult
+end tell
+EOF
+)
+
+    case "$CHOICE" in
+        "Start")
+            # Check if already running
+            if pgrep -f "photobooth_printer.py start" > /dev/null; then
+                show_alert "Already Running" "PhotoBooth Printer is already running!" "informational"
+            else
+                osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "cd '$USER_APP_DIR' && python3 photobooth_printer.py start"
+end tell
+EOF
+                show_alert "Started" "PhotoBooth Printer is now monitoring for new photos!" "informational"
+                exit 0
+            fi
+            ;;
+        "Settings")
+            SETTINGS_CHOICE=$(osascript <<EOF
+tell application "System Events"
+    activate
+    set dialogResult to display dialog "Settings
+
+Choose an option:" buttons {"Back", "Status", "Reconfigure"} default button "Status" with icon POSIX file "$RESOURCES_DIR/AppIcon.icns"
+    return button returned of dialogResult
+end tell
+EOF
+)
+
+            case "$SETTINGS_CHOICE" in
+                "Status")
+                    osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "cd '$USER_APP_DIR' && python3 photobooth_printer.py status && echo '' && echo 'Press any key to close...' && read"
+end tell
+EOF
+                    ;;
+                "Reconfigure")
+                    osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "cd '$USER_APP_DIR' && python3 photobooth_printer.py setup && echo '' && echo 'Press any key to close...' && read"
+end tell
+EOF
+                    ;;
+            esac
+            ;;
+        "Quit")
+            exit 0
+            ;;
+    esac
+done
