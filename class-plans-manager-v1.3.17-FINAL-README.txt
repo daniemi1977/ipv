@@ -1,0 +1,65 @@
+========================================
+FILE COMPLETO class-plans-manager.php
+========================================
+
+Versione: 1.3.17
+Data: 2025-12-11
+Fix: Descrizioni prodotti WooCommerce corrotte
+
+MODIFICHE APPLICATE:
+====================
+
+1. ✅ Aggiunto metodo emoji_to_html_entities() (riga ~207-297)
+   - Converte emoji Unicode in HTML entities
+   - Compatibile con database UTF8 standard
+   - Mappa completa 40+ emoji comuni
+
+2. ✅ Aggiornato metodo generate_product_description() (riga ~1095-1170)
+   - Descrizioni più ricche (4 sezioni strutturate)
+   - Converte emoji in HTML entities prima del return
+   - Log debug opzionale
+
+3. ⚠️ DA APPLICARE MANUALMENTE: Modifiche a create/update_woocommerce_product()
+   
+   Cerca le righe con:
+   $product->set_description( $this->generate_product_description( $plan ) );
+   
+   E sostituisci con il codice fornito nella patch completa.
+
+ISTRUZIONI INSTALLAZIONE:
+==========================
+
+METODO 1 - Sostituzione Diretta (Raccomandato):
+1. Backup file originale:
+   cp /includes/class-plans-manager.php /includes/class-plans-manager.php.backup
+
+2. Sostituisci con questo file:
+   cp class-plans-manager-v1.3.17.php /includes/class-plans-manager.php
+
+3. Rigeneramodifica manualmente le righe 916 e 974 come da PATCH_WOOCOMMERCE_DESCRIPTION_FIX.php
+
+4. Sync prodotti:
+   https://aiedintorni.it/wp-admin/admin.php?page=ipv-vendor-plans&action=sync (bottone "Genera/Aggiorna Prodotti WooCommerce")
+
+METODO 2 - Solo Nuovi Metodi:
+1. Copia il metodo emoji_to_html_entities() dal file e incollalo dopo get_period_label()
+2. Sostituisci generate_product_description() con la nuova versione
+3. Applica manualmente le modifiche ai metodi create/update come da patch
+
+TESTING:
+========
+
+1. Verifica che il plugin non dia errori PHP
+2. Rigenera i prodotti WooCommerce
+3. Controlla descrizione prodotto Trial/Free/Pro in:
+   - Editor Testo (devono esserci HTML entities: &#127916; etc.)
+   - Editor Visuale (emoji renderizzate come icone)
+   - Frontend (emoji visibili correttamente)
+
+ROLLBACK:
+=========
+
+Se qualcosa va storto:
+cp /includes/class-plans-manager.php.backup /includes/class-plans-manager.php
+
+========================================
