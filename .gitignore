@@ -2,3 +2,5 @@
 # Temporary extracted files
 extracted-plugin/
 extracted-vendor/
+dist/client/ipv-production-system-pro-optimized/
+dist/server/ipv-pro-vendor-optimized/
