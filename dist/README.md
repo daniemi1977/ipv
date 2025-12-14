@@ -4,9 +4,9 @@ Plugin completi con **AUTO-INSTALLER** integrato e versioni ottimizzate.
 Zero configurazione manuale - setup guidato automatico!
 
 **Data build**: 2025-12-14
-**Versione Client**: 10.3.0-optimized + Auto-Installer
-**Versione Server**: 1.4.0-optimized + Auto-Installer
-**Status**: ✅ **TURNKEY - Chiavi in Mano**
+**Versione Client**: 10.3.0-optimized + Auto-Installer (313 KB)
+**Versione Server**: 1.4.0-optimized + Auto-Installer (83 KB)
+**Status**: ✅ **TURNKEY - Chiavi in Mano** | **ULTRA-LEGGERO** (396 KB totale)
 
 ---
 
@@ -54,8 +54,8 @@ wp plugin activate ipv-production-system-pro
 dist/
 ├── README.md                                                     (questo file)
 ├── INSTALLAZIONE-AUTOMATICA.md                                   ✨ NUOVO: Guida wizard
-├── ipv-production-system-pro-client-v10.3.0-optimized-autoinstaller.zip    621 KB
-├── ipv-pro-vendor-server-v1.4.0-optimized-autoinstaller.zip                156 KB
+├── ipv-production-system-pro-client-v10.3.0-optimized-autoinstaller.zip    313 KB ⚡
+├── ipv-pro-vendor-server-v1.4.0-optimized-autoinstaller.zip                 83 KB ⚡
 │
 ├── client/
 │   └── ipv-production-system-pro-optimized/     Plugin Client WordPress
