@@ -1,10 +1,50 @@
-# 🎯 IPV Production System Pro - Plugin Pronti per Deployment
+# 🎯 IPV Production System Pro - Pacchetto Chiavi in Mano
 
-Plugin completi con versioni ottimizzate integrate, pronti per il deployment in produzione.
+Plugin completi con **AUTO-INSTALLER** integrato e versioni ottimizzate.
+Zero configurazione manuale - setup guidato automatico!
 
 **Data build**: 2025-12-14
-**Versione Client**: 10.3.0-optimized
-**Versione Server**: 1.4.0-optimized
+**Versione Client**: 10.3.0-optimized + Auto-Installer
+**Versione Server**: 1.4.0-optimized + Auto-Installer
+**Status**: ✅ **TURNKEY - Chiavi in Mano**
+
+---
+
+## 🚀 NOVITÀ: Auto-Installer Integrato!
+
+### ✨ Setup Guidato Automatico
+
+Entrambi i plugin includono un **wizard di installazione interattivo** che si avvia automaticamente alla prima attivazione:
+
+**SERVER (IPV Pro Vendor):**
+1. ✅ Creazione automatica 5 tabelle database
+2. 🔑 Form guidato per API keys (YouTube, OpenAI, SupaData)
+3. 🛒 Verifica WooCommerce + check Subscriptions
+4. 📦 Creazione automatica prodotti IPV Pro (Trial, Starter, Pro, Business)
+5. 🎉 Setup completo in 3-5 minuti!
+
+**CLIENT (IPV Production System Pro):**
+1. ✅ Creazione automatica 3 tabelle database
+2. 🌐 Configurazione Server URL con test connessione
+3. 🔑 Attivazione licenza one-click
+4. ⏰ Setup CRON (WordPress o System) con comandi generati
+5. 🎯 Test import video di prova
+
+### 🎯 Zero Configurazione Manuale
+
+```bash
+# SERVER - 2 comandi e sei pronto!
+wp plugin install dist/ipv-pro-vendor-server-v1.4.0-optimized-autoinstaller.zip
+wp plugin activate ipv-pro-vendor
+# → Il wizard si apre automaticamente! Segui i 5 step.
+
+# CLIENT - 2 comandi e sei pronto!
+wp plugin install dist/ipv-production-system-pro-client-v10.3.0-optimized-autoinstaller.zip
+wp plugin activate ipv-production-system-pro
+# → Il wizard si apre automaticamente! Segui i 5 step.
+```
+
+📖 **Guida completa**: Vedi [INSTALLAZIONE-AUTOMATICA.md](INSTALLAZIONE-AUTOMATICA.md)
 
 ---
 
@@ -12,14 +52,20 @@ Plugin completi con versioni ottimizzate integrate, pronti per il deployment in 
 
 ```
 dist/
-├── README.md (questo file)
+├── README.md                                                     (questo file)
+├── INSTALLAZIONE-AUTOMATICA.md                                   ✨ NUOVO: Guida wizard
+├── ipv-production-system-pro-client-v10.3.0-optimized-autoinstaller.zip    621 KB
+├── ipv-pro-vendor-server-v1.4.0-optimized-autoinstaller.zip                156 KB
+│
 ├── client/
 │   └── ipv-production-system-pro-optimized/     Plugin Client WordPress
-│       ├── ipv-production-system-pro.php        Main plugin file
+│       ├── ipv-production-system-pro.php        Main plugin file (v10.3.0-optimized)
 │       ├── README.md                             Documentazione utente
 │       ├── CHANGELOG.md                          Changelog versioni
-│       ├── includes/                             67 file PHP
+│       ├── includes/                             69 file PHP (+2 nuovi)
 │       │   ├── class-api-client.php             ✅ OTTIMIZZATO (v10.3.0)
+│       │   ├── class-auto-installer.php         ✨ NUOVO: Auto-installer
+│       │   ├── class-setup-wizard.php           ✨ NUOVO: Setup wizard UI
 │       │   ├── class-queue.php                  Sistema coda
 │       │   ├── class-menu-manager.php           Menu centralizzato
 │       │   └── ... (altri 64 file)
@@ -29,11 +75,13 @@ dist/
 │
 └── server/
     └── ipv-pro-vendor-optimized/                Plugin Server SaaS
-        ├── ipv-pro-vendor.php                   Main plugin file
+        ├── ipv-pro-vendor.php                   Main plugin file (v1.4.0-optimized)
         ├── README.md                             Setup guide
-        ├── audit-tables.sql                     ✅ NUOVO: Schema audit logging
-        ├── includes/                             10 file PHP
+        ├── audit-tables.sql                     Schema audit logging
+        ├── includes/                             12 file PHP (+2 nuovi)
         │   ├── class-api-gateway.php            ✅ OTTIMIZZATO (v1.4.0)
+        │   ├── class-auto-installer.php         ✨ NUOVO: Auto-installer
+        │   ├── class-setup-wizard.php           ✨ NUOVO: Setup wizard UI
         │   ├── class-license-manager.php        Gestione licenze
         │   └── ... (altri 8 file)
         └── api/endpoints/                        4 endpoint REST API
