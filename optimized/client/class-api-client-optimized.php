@@ -572,8 +572,92 @@ class IPV_Prod_API_Client_Optimized {
         IPV_Prod_Logger::log( 'API cache cleared', [ 'endpoint' => $endpoint ?? 'all' ] );
     }
 
-    // ... (altri metodi: validate_license, activate_license, etc. rimangono uguali)
-    // Per brevità mantengo solo i metodi ottimizzati chiave
+    /**
+     * Activate license
+     */
+    public function activate_license( $license_key, $site_url = '', $site_name = '' ) {
+        if ( empty( $site_url ) ) {
+            $site_url = home_url();
+        }
+
+        if ( empty( $site_name ) ) {
+            $site_name = get_bloginfo( 'name' );
+        }
+
+        // Imposta licenza temporaneamente
+        update_option( 'ipv_license_key', $license_key );
+
+        $response = $this->request( 'license/activate', 'POST', [
+            'license_key' => $license_key,
+            'site_url' => $site_url,
+            'site_name' => $site_name
+        ], 30, [ 'cache' => false ] );
+
+        if ( is_wp_error( $response ) ) {
+            // Rimuovi licenza invalida
+            delete_option( 'ipv_license_key' );
+            return $response;
+        }
+
+        // Salva info licenza
+        update_option( 'ipv_license_info', $response['license'] ?? [] );
+        update_option( 'ipv_license_activated_at', time() );
+
+        IPV_Prod_Logger::log( 'Licenza attivata', [
+            'license' => substr( $license_key, 0, 8 ) . '...',
+            'site' => $site_url
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * Deactivate license
+     */
+    public function deactivate_license() {
+        $license_key = $this->get_license_key();
+        $site_url = home_url();
+
+        if ( empty( $license_key ) ) {
+            return new WP_Error( 'no_license', __( 'Nessuna licenza da deattivare', 'ipv-production-system-pro' ) );
+        }
+
+        $response = $this->request( 'license/deactivate', 'POST', [
+            'license_key' => $license_key,
+            'site_url' => $site_url
+        ], 30, [ 'cache' => false ] );
+
+        if ( ! is_wp_error( $response ) ) {
+            // Rimuovi dati licenza locali
+            delete_option( 'ipv_license_key' );
+            delete_option( 'ipv_license_info' );
+            delete_option( 'ipv_license_activated_at' );
+
+            IPV_Prod_Logger::log( 'Licenza deattivata' );
+        }
+
+        return $response;
+    }
+
+    /**
+     * Get license info (detailed)
+     */
+    public function get_license_info() {
+        $license_key = $this->get_license_key();
+
+        if ( empty( $license_key ) ) {
+            return new WP_Error( 'no_license', __( 'License key non configurata', 'ipv-production-system-pro' ) );
+        }
+
+        $response = $this->request( 'license/info?license_key=' . $license_key, 'GET', [], 30, [ 'cache' => false ] );
+
+        if ( ! is_wp_error( $response ) && isset( $response['license'] ) ) {
+            // Aggiorna cache locale
+            update_option( 'ipv_license_info', $response['license'] );
+        }
+
+        return $response;
+    }
 
     /**
      * Get credits info (cached per 5 minuti)
