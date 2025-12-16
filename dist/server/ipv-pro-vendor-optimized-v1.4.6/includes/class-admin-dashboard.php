@@ -21,6 +21,7 @@ class IPV_Vendor_Admin_Dashboard {
     private function __construct() {
         add_action( 'admin_menu', [ $this, 'add_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'redirect_legacy_urls' ] ); // v1.4.1-FIXED3
+        add_action( 'admin_init', [ $this, 'handle_admin_actions' ] ); // v1.4.7
     }
 
     /**
@@ -30,6 +31,76 @@ class IPV_Vendor_Admin_Dashboard {
         // Redirect page=ipv-vendor to page=ipv-vendor-dashboard
         if (isset($_GET['page']) && $_GET['page'] === 'ipv-vendor') {
             wp_safe_redirect(admin_url('admin.php?page=ipv-vendor-dashboard'));
+            exit;
+        }
+    }
+
+    /**
+     * Handle admin actions (v1.4.7)
+     * Toggle Golden prompt status
+     */
+    public function handle_admin_actions() {
+        global $wpdb;
+
+        // Toggle Golden prompt
+        if ( isset( $_GET['action'] ) && $_GET['action'] === 'toggle_golden' && isset( $_GET['id'] ) ) {
+            $license_id = absint( $_GET['id'] );
+
+            // Verify nonce
+            if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'toggle_golden_' . $license_id ) ) {
+                wp_die( 'Security check failed' );
+            }
+
+            // Check permissions
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_die( 'Insufficient permissions' );
+            }
+
+            // Get license
+            $license = $wpdb->get_row( $wpdb->prepare(
+                "SELECT * FROM {$wpdb->prefix}ipv_licenses WHERE id = %d",
+                $license_id
+            ));
+
+            if ( ! $license || $license->variant_slug !== 'golden_prompt' ) {
+                wp_die( 'Invalid license or not a Golden prompt license' );
+            }
+
+            // Get current status
+            $current_status = $wpdb->get_var( $wpdb->prepare(
+                "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                WHERE license_id = %d AND meta_key = '_golden_prompt_enabled'",
+                $license_id
+            ));
+
+            // Toggle status
+            $new_status = $current_status ? 0 : 1;
+
+            // Update metadata
+            $wpdb->query( $wpdb->prepare(
+                "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+                VALUES (%d, '_golden_prompt_enabled', %d)
+                ON DUPLICATE KEY UPDATE meta_value = %d",
+                $license_id,
+                $new_status,
+                $new_status
+            ));
+
+            // Save timestamp
+            $wpdb->query( $wpdb->prepare(
+                "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+                VALUES (%d, '_golden_prompt_toggled_at', %s)
+                ON DUPLICATE KEY UPDATE meta_value = %s",
+                $license_id,
+                current_time( 'mysql' ),
+                current_time( 'mysql' )
+            ));
+
+            // Redirect back with success message
+            wp_safe_redirect( add_query_arg( [
+                'page' => 'ipv-vendor-licenses',
+                'golden_toggled' => $new_status
+            ], admin_url( 'admin.php' ) ) );
             exit;
         }
     }
@@ -94,16 +165,6 @@ class IPV_Vendor_Admin_Dashboard {
             'manage_options',
             'ipv-vendor-change-plan',
             [ $this, 'render_change_plan' ]
-        );
-
-        // Upload File (hidden, accessed via link from licenses - only for Golden prompt)
-        add_submenu_page(
-            null, // Hidden from menu
-            'Carica File Golden Prompt',
-            'Carica File',
-            'manage_options',
-            'ipv-vendor-upload-file',
-            [ $this, 'render_upload_file' ]
         );
     }
 
@@ -428,15 +489,31 @@ class IPV_Vendor_Admin_Dashboard {
                                     $toggle_text = $license->status === 'active' ? '⏸️ Sospendi' : '▶️ Attiva';
 
                                     $change_plan_url = admin_url( 'admin.php?page=ipv-vendor-change-plan&license_id=' . $license->id );
-                                    $upload_file_url = admin_url( 'admin.php?page=ipv-vendor-upload-file&license_id=' . $license->id );
 
                                     // Check if license is Golden prompt
                                     $is_golden_prompt = ($license->variant_slug === 'golden_prompt');
+
+                                    // Get Golden prompt status
+                                    if ( $is_golden_prompt ) {
+                                        $golden_enabled = $wpdb->get_var( $wpdb->prepare(
+                                            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                                            WHERE license_id = %d AND meta_key = '_golden_prompt_enabled'",
+                                            $license->id
+                                        ));
+                                        $golden_enabled = (bool) $golden_enabled;
+
+                                        $toggle_golden_url = wp_nonce_url(
+                                            admin_url( 'admin.php?page=ipv-vendor-licenses&action=toggle_golden&id=' . $license->id ),
+                                            'toggle_golden_' . $license->id
+                                        );
+                                        $golden_text = $golden_enabled ? '🌟 Disabilita Golden' : '⭐ Abilita Golden';
+                                        $golden_style = $golden_enabled ? 'background: #46b450; color: white; border-color: #46b450;' : 'background: #f7b500; color: white; border-color: #f7b500;';
+                                    }
                                     ?>
                                     <a href="<?php echo esc_url( $toggle_url ); ?>" class="button button-small"><?php echo $toggle_text; ?></a>
                                     <a href="<?php echo esc_url( $change_plan_url ); ?>" class="button button-small" style="background: #667eea; color: white; border-color: #667eea;">🔄 Cambia Piano</a>
                                     <?php if ( $is_golden_prompt ) : ?>
-                                        <a href="<?php echo esc_url( $upload_file_url ); ?>" class="button button-small" style="background: #f7b500; color: white; border-color: #f7b500;">📎 Carica File</a>
+                                        <a href="<?php echo esc_url( $toggle_golden_url ); ?>" class="button button-small" style="<?php echo $golden_style; ?>"><?php echo $golden_text; ?></a>
                                     <?php endif; ?>
                                 </td>
                             </tr>
@@ -858,190 +935,6 @@ class IPV_Vendor_Admin_Dashboard {
                         </button>
                         <a href="<?php echo admin_url( 'admin.php?page=ipv-vendor-licenses' ); ?>" class="button button-large">
                             ← Annulla
-                        </a>
-                    </p>
-                </form>
-            </div>
-        </div>
-        <?php
-    }
-
-    /**
-     * Render Upload File Page (v1.4.7)
-     * Admin-only page to upload Golden prompt file for a specific license
-     */
-    public function render_upload_file() {
-        global $wpdb;
-
-        // Get license ID
-        $license_id = isset( $_GET['license_id'] ) ? absint( $_GET['license_id'] ) : 0;
-
-        if ( ! $license_id ) {
-            echo '<div class="wrap"><div class="notice notice-error"><p>ID licenza non valido.</p></div></div>';
-            return;
-        }
-
-        // Get license data
-        $license = $wpdb->get_row( $wpdb->prepare(
-            "SELECT * FROM {$wpdb->prefix}ipv_licenses WHERE id = %d",
-            $license_id
-        ));
-
-        if ( ! $license ) {
-            echo '<div class="wrap"><div class="notice notice-error"><p>Licenza non trovata.</p></div></div>';
-            return;
-        }
-
-        // Check if license is Golden prompt
-        if ( $license->variant_slug !== 'golden_prompt' ) {
-            echo '<div class="wrap"><div class="notice notice-error"><p>Questa funzione è disponibile solo per licenze Golden prompt.</p></div></div>';
-            return;
-        }
-
-        // Handle file upload
-        if ( isset( $_POST['ipv_upload_file_submit'] ) ) {
-            check_admin_referer( 'ipv_upload_file_' . $license_id );
-
-            if ( ! empty( $_FILES['golden_prompt_file']['name'] ) ) {
-                $file = $_FILES['golden_prompt_file'];
-
-                // Validate file
-                $allowed_types = [ 'application/zip', 'application/x-zip-compressed' ];
-                $max_size = 50 * 1024 * 1024; // 50MB
-
-                if ( ! in_array( $file['type'], $allowed_types ) && ! str_ends_with( $file['name'], '.zip' ) ) {
-                    echo '<div class="notice notice-error"><p>❌ Solo file ZIP sono consentiti.</p></div>';
-                } elseif ( $file['size'] > $max_size ) {
-                    echo '<div class="notice notice-error"><p>❌ File troppo grande. Massimo 50MB.</p></div>';
-                } else {
-                    // Create secure upload directory
-                    $upload_dir = wp_upload_dir();
-                    $ipv_dir = $upload_dir['basedir'] . '/ipv-golden-prompts';
-
-                    if ( ! file_exists( $ipv_dir ) ) {
-                        wp_mkdir_p( $ipv_dir );
-                        // Add .htaccess to prevent direct access
-                        file_put_contents( $ipv_dir . '/.htaccess', "Options -Indexes\nDeny from all" );
-                    }
-
-                    // Generate secure filename
-                    $extension = pathinfo( $file['name'], PATHINFO_EXTENSION );
-                    $secure_filename = 'golden-prompt-license-' . $license->id . '-' . wp_generate_password( 12, false ) . '.' . $extension;
-                    $file_path = $ipv_dir . '/' . $secure_filename;
-
-                    // Move uploaded file
-                    if ( move_uploaded_file( $file['tmp_name'], $file_path ) ) {
-                        // Delete old file if exists
-                        $old_file = $wpdb->get_var( $wpdb->prepare(
-                            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
-                            WHERE license_id = %d AND meta_key = '_golden_prompt_file'",
-                            $license->id
-                        ));
-
-                        if ( $old_file && file_exists( $old_file ) ) {
-                            unlink( $old_file );
-                        }
-
-                        // Save file path in license metadata
-                        $wpdb->query( $wpdb->prepare(
-                            "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
-                            VALUES (%d, '_golden_prompt_file', %s)
-                            ON DUPLICATE KEY UPDATE meta_value = %s",
-                            $license->id,
-                            $file_path,
-                            $file_path
-                        ));
-
-                        // Save upload timestamp
-                        $wpdb->query( $wpdb->prepare(
-                            "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
-                            VALUES (%d, '_golden_prompt_uploaded_at', %s)
-                            ON DUPLICATE KEY UPDATE meta_value = %s",
-                            $license->id,
-                            current_time( 'mysql' ),
-                            current_time( 'mysql' )
-                        ));
-
-                        echo '<div class="notice notice-success"><p>✅ File caricato con successo! Il cliente potrà scaricarlo dal suo account.</p></div>';
-                    } else {
-                        echo '<div class="notice notice-error"><p>❌ Errore durante il caricamento del file.</p></div>';
-                    }
-                }
-            } else {
-                echo '<div class="notice notice-error"><p>❌ Nessun file selezionato.</p></div>';
-            }
-        }
-
-        // Get current file info
-        $current_file = $wpdb->get_var( $wpdb->prepare(
-            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
-            WHERE license_id = %d AND meta_key = '_golden_prompt_file'",
-            $license->id
-        ));
-
-        $uploaded_at = $wpdb->get_var( $wpdb->prepare(
-            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
-            WHERE license_id = %d AND meta_key = '_golden_prompt_uploaded_at'",
-            $license->id
-        ));
-
-        ?>
-        <div class="wrap">
-            <h1>📎 Carica File Golden Prompt</h1>
-
-            <div class="card" style="max-width: 800px;">
-                <h2>Licenza #<?php echo $license->id; ?> - <?php echo esc_html( $license->email ); ?></h2>
-
-                <div style="background: #fef7e0; border-left: 4px solid #f7b500; padding: 15px; margin: 20px 0;">
-                    <p><strong>ℹ️ Informazioni:</strong></p>
-                    <ul style="margin: 10px 0 0 20px;">
-                        <li>Solo file ZIP sono consentiti (max 50MB)</li>
-                        <li>Il file sarà salvato in modo sicuro e accessibile solo dal cliente</li>
-                        <li>Il cliente riceverà il link per il download nel suo Customer Portal</li>
-                        <li>Caricando un nuovo file, il precedente verrà eliminato</li>
-                    </ul>
-                </div>
-
-                <?php if ( $current_file && file_exists( $current_file ) ) : ?>
-                    <div style="background: #d4edda; border-left: 4px solid #46b450; padding: 15px; margin: 20px 0;">
-                        <p><strong>✅ File già caricato</strong></p>
-                        <ul style="margin: 10px 0 0 20px;">
-                            <li><strong>Nome file:</strong> <?php echo esc_html( basename( $current_file ) ); ?></li>
-                            <li><strong>Dimensione:</strong> <?php echo size_format( filesize( $current_file ) ); ?></li>
-                            <?php if ( $uploaded_at ) : ?>
-                                <li><strong>Caricato il:</strong> <?php echo date_i18n( 'd/m/Y H:i', strtotime( $uploaded_at ) ); ?></li>
-                            <?php endif; ?>
-                        </ul>
-                        <p style="margin-top: 10px;"><em>Caricando un nuovo file, questo verrà sostituito.</em></p>
-                    </div>
-                <?php else : ?>
-                    <div style="background: #fff3cd; border-left: 4px solid #ffb900; padding: 15px; margin: 20px 0;">
-                        <p><strong>⚠️ Nessun file caricato</strong></p>
-                        <p>Il cliente non può ancora scaricare il Golden prompt. Carica il file qui sotto.</p>
-                    </div>
-                <?php endif; ?>
-
-                <form method="post" enctype="multipart/form-data">
-                    <?php wp_nonce_field( 'ipv_upload_file_' . $license_id ); ?>
-
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row">
-                                <label for="golden_prompt_file">File Golden Prompt (ZIP)</label>
-                            </th>
-                            <td>
-                                <input type="file" name="golden_prompt_file" id="golden_prompt_file" accept=".zip" required>
-                                <p class="description">Seleziona il file ZIP contenente i prompt AI ottimizzati.</p>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <p class="submit" style="margin-top: 20px;">
-                        <button type="submit" name="ipv_upload_file_submit" class="button button-primary button-large">
-                            📤 Carica File
-                        </button>
-                        <a href="<?php echo admin_url( 'admin.php?page=ipv-vendor-licenses' ); ?>" class="button button-large">
-                            ← Torna alle Licenze
                         </a>
                     </p>
                 </form>
