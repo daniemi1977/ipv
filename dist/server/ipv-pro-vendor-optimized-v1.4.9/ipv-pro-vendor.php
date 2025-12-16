@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.4.8
+ * Version: 1.4.9
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -13,6 +13,26 @@
  * Text Domain: ipv-pro-vendor
  * Domain Path: /languages
  * License: GPL v2 or later
+ *
+ * CHANGELOG v1.4.9 (2025-12-16):
+ * - FIX: Configurazione Piani SaaS corretta
+ *   - Trial: 10 crediti gratuiti (once) - NON SCADE MAI
+ *   - Starter: 50 crediti/mese - 9,99€/mese (aggiornato da 25 crediti)
+ *   - Professional: 100 crediti/mese - 29,99€/mese
+ *   - Business: 500 crediti/mese - 79,99€/mese
+ *   - Executive: 2000 crediti/mese - 499€/mese
+ *   - Golden prompt: 150 crediti/mese - 59€/mese (cambiato da once a subscription)
+ *   - IPV Pro - 10: 10 crediti extra - 5€ (once)
+ *   - IPV Pro - 100: 100 crediti extra - 49€ (once)
+ * - CHANGE: Golden Prompt ora è Subscription mensile/annuale
+ *   - Cambiato da "once" (una tantum) a "month" (subscription)
+ *   - Crediti: 150/mese (prima 0)
+ *   - Attivazioni: 5 siti (prima 1)
+ *   - Re-download illimitati (prima 1 solo download)
+ *   - Include tutte le features: transcription, AI, support, API
+ * - FIX: Prezzi allineati con WooCommerce
+ *   - Tutti i prezzi corrispondono ai prodotti configurati
+ *   - Sistema hybrid billing corretto (once vs subscription)
  *
  * CHANGELOG v1.4.8 (2025-12-16):
  * - FEATURE: Sistema Auto-Generazione Golden Prompt
@@ -379,7 +399,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Constants
-define( 'IPV_VENDOR_VERSION', '1.4.8' );
+define( 'IPV_VENDOR_VERSION', '1.4.9' );
 define( 'IPV_VENDOR_FILE', __FILE__ );
 define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );

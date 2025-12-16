@@ -1,5 +1,5 @@
 # IPV Pro - Pacchetto Completo CLIENT + SERVER
-## Versione: 1.4.8 (16 Dicembre 2025)
+## Versione: 1.4.9 (16 Dicembre 2025)
 
 Questo pacchetto contiene entrambi i plugin necessari per il sistema IPV Production System Pro.
 
@@ -22,15 +22,16 @@ Questo pacchetto contiene entrambi i plugin necessari per il sistema IPV Product
 - Analisi AI: Argomenti, Ospiti, Persone/Enti
 
 ### 🏢 SERVER Plugin (Vendor Site)
-**Directory:** `server/ipv-pro-vendor-optimized-v1.4.8/`
-**Versione:** 1.4.8
+**Directory:** `server/ipv-pro-vendor-optimized-v1.4.9/`
+**Versione:** 1.4.9
 **Installazione:** Tuo sito WordPress (vendor/amministratore)
 
 **Funzionalità:**
 - Gestione licenze e attivazioni
 - Sistema billing WooCommerce
 - 8 piani SaaS (Trial, Starter, Professional, Business, Executive, Golden Prompt, IPV Pro 10, IPV Pro 100)
-- **NUOVO v1.4.8:** Auto-generazione Golden Prompt con form guidato
+- **NUOVO v1.4.9:** Configurazione piani corretta (Trial mai scade, Golden Prompt subscription)
+- Auto-generazione Golden Prompt con form guidato
 - Sistema Dual-Template (BASE gratuito + GOLDEN Premium)
 - API Gateway per YouTube Data API
 - Dashboard admin completa
@@ -44,10 +45,10 @@ Questo pacchetto contiene entrambi i plugin necessari per il sistema IPV Product
 
 ```bash
 # Vai nella directory server
-cd server/ipv-pro-vendor-optimized-v1.4.8/
+cd server/ipv-pro-vendor-optimized-v1.4.9/
 
 # Crea ZIP per upload WordPress
-zip -r ipv-pro-vendor-v1.4.8.zip .
+zip -r ipv-pro-vendor-v1.4.9.zip .
 
 # Carica su WordPress:
 # Dashboard → Plugin → Aggiungi nuovo → Carica plugin
@@ -56,7 +57,7 @@ zip -r ipv-pro-vendor-v1.4.8.zip .
 **Oppure via FTP:**
 ```bash
 # Carica l'intera cartella in:
-wp-content/plugins/ipv-pro-vendor-optimized-v1.4.8/
+wp-content/plugins/ipv-pro-vendor-optimized-v1.4.9/
 ```
 
 **Setup Iniziale:**
@@ -92,6 +93,26 @@ wp-content/plugins/ipv-production-system-pro-optimized/
 3. Inserisci License Key (acquistata dal SERVER)
 4. Attiva la licenza
 5. Configura API keys (OpenAI, ElevenLabs, ecc.)
+
+---
+
+## 🆕 Novità v1.4.9 - Configurazione Piani Corretta
+
+### **SERVER - Fix Configurazione**
+
+Correzione configurazione piani SaaS per allineamento con prodotti WooCommerce:
+
+**Modifiche ai Piani:**
+- ✅ **Trial**: 10 crediti gratuiti (once) - **NON SCADE MAI**
+- ✅ **Starter**: 50 crediti/mese (aggiornato da 25)
+- ✅ **Golden Prompt**: Ora è **Subscription mensile/annuale**
+  - Prima: Acquisto una tantum, 1 sito, 0 crediti
+  - Ora: 150 crediti/mese, 5 siti, re-download illimitati
+  - Include: Transcription, AI, Priority Support, API Access
+
+**Hybrid Billing Corretto:**
+- **Subscriptions** (renewal automatico): Starter, Professional, Business, Executive, Golden Prompt
+- **Once** (una tantum, non scadono): Trial, IPV Pro 10, IPV Pro 100
 
 ---
 
@@ -155,14 +176,14 @@ Solo per licenze Golden Prompt con configurazione abilitata:
 
 | Piano | Prezzo | Crediti | Attivazioni | Tipo |
 |-------|--------|---------|-------------|------|
-| Trial | Gratis | 10 (una tantum) | 1 | Once |
-| Starter | €9.90/mese | 50/mese | 1 | Subscription |
-| Professional | €29.90/mese | 200/mese | 5 | Subscription |
-| Business | €99/mese | 600/mese | 10 | Subscription |
+| Trial | Gratis | 10 (una tantum) | 1 | Once (non scade) |
+| Starter | €9.99/mese | 50/mese | 1 | Subscription |
+| Professional | €29.99/mese | 100/mese | 3 | Subscription |
+| Business | €79.99/mese | 500/mese | 10 | Subscription |
 | Executive | €499/mese | 2000/mese | 50 | Subscription |
-| **Golden Prompt** | €59 (una tantum) | 0 | 1 | Premium Asset |
-| IPV Pro - 10 | €5 (una tantum) | 10 extra | - | Once |
-| IPV Pro - 100 | €49 (una tantum) | 100 extra | - | Once |
+| **Golden Prompt** | €59/mese | 150/mese | 5 | Subscription |
+| IPV Pro - 10 | €5 (una tantum) | 10 extra | - | Once (non scade) |
+| IPV Pro - 100 | €49 (una tantum) | 100 extra | - | Once (non scade) |
 
 ---
 
@@ -192,6 +213,17 @@ Per problemi o domande:
 ---
 
 ## 📝 Changelog
+
+### v1.4.9 (2025-12-16) - SERVER
+- ✅ FIX: Configurazione Piani SaaS corretta
+  - Trial: 10 crediti (once) - NON SCADE MAI
+  - Starter: 50 crediti/mese (aggiornato da 25)
+  - Golden Prompt: Cambiato da "once" a "month" subscription
+  - Golden Prompt: 150 crediti/mese, 5 siti, re-download illimitati
+  - Prezzi allineati con prodotti WooCommerce
+- 🔧 CHANGE: Golden Prompt ora è Subscription mensile/annuale
+  - Include tutte le features: transcription, AI, support, API
+  - Sistema hybrid billing corretto (once vs subscription)
 
 ### v1.4.8 (2025-12-16) - SERVER
 - ✨ Sistema Auto-Generazione Golden Prompt con form guidato

@@ -91,7 +91,7 @@ class IPV_Vendor_Plans_Manager {
             'starter' => [
                 'name' => 'Starter',
                 'slug' => 'starter',
-                'credits' => 25,
+                'credits' => 50,
                 'credits_period' => 'month',
                 'activations' => 1,
                 'price' => 9.99,
@@ -163,22 +163,22 @@ class IPV_Vendor_Plans_Manager {
             'golden_prompt' => [
                 'name' => 'Golden prompt',
                 'slug' => 'golden_prompt',
-                'credits' => 0, // Nessun credito - è un digital asset
-                'credits_period' => 'once',
-                'activations' => 1, // Solo 1 sito
+                'credits' => 150, // Crediti mensili + Golden Prompt Premium
+                'credits_period' => 'month',
+                'activations' => 5, // 5 siti
                 'price' => 59.00,
-                'price_period' => 'once', // Acquisto una tantum
+                'price_period' => 'month', // Subscription mensile
                 'product_type' => 'digital_asset', // Tipo speciale: asset scaricabile
-                'download_limit' => 1, // Può essere scaricato solo 1 volta
+                'download_limit' => 999, // Può essere scaricato sempre (re-download)
                 'remote_download' => true, // Download gestito dal server
                 'features' => [
-                    'transcription' => false,
-                    'ai_description' => false,
+                    'transcription' => true,
+                    'ai_description' => true,
                     'priority_support' => true,
-                    'api_access' => false,
-                    'golden_prompt_access' => true, // Feature speciale
+                    'api_access' => true,
+                    'golden_prompt_access' => true, // Feature speciale: Template Premium personalizzato
                 ],
-                'description' => 'Prompt AI Premium ottimizzati (download una tantum, 1 sito)',
+                'description' => 'Template Premium personalizzato + 150 crediti/mese + 5 siti',
                 'is_active' => true,
                 'sort_order' => 6,
             ],
