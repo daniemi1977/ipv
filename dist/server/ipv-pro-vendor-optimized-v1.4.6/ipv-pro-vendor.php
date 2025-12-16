@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.4.5
+ * Version: 1.4.6
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -14,6 +14,28 @@
  * Domain Path: /languages
  * License: GPL v2 or later
  *
+ * CHANGELOG v1.4.6 (2025-12-16):
+ * - FEATURE: Golden Prompt come Digital Asset Sicuro
+ *   - Golden prompt convertito da piano subscription a digital asset
+ *   - Modificato a: €59 una tantum, 0 crediti, 1 solo sito
+ *   - Nuovo tipo prodotto: "digital_asset" con download remoto sicuro
+ *   - Sistema anti-pirateria: 1 solo download consentito per licenza
+ *   - Download legato alla licenza attivata (non copiabile)
+ * - FEATURE: Endpoint API Download Sicuro
+ *   - Nuovo endpoint: POST /wp-json/ipv-vendor/v1/license/download-asset
+ *   - Genera token sicuro valido 5 minuti
+ *   - Verifica licenza attiva e variant_slug corretto
+ *   - Tracking download count in ipv_license_meta
+ *   - Log timestamp download request
+ *   - Limite download configurabile per prodotto (_ipv_download_limit)
+ * - METADATA: Nuovi campi prodotto WooCommerce
+ *   - _ipv_product_type: 'digital_asset'
+ *   - _ipv_download_limit: numero massimo download (default: 1)
+ *   - _ipv_remote_download: true (download gestito dal server)
+ * - METADATA: Nuovi campi licenza
+ *   - _asset_download_count: numero download effettuati
+ *   - _asset_download_requested_at: timestamp ultima richiesta
+ *
  * CHANGELOG v1.4.5 (2025-12-16):
  * - FEATURE: Sistema Billing Ibrido Mensile/Annuale + Cambio Piano
  *   - Piani "once" (Trial, Extra Credits): creano 1 solo prodotto
@@ -23,19 +45,14 @@
  *   - Descrizioni prodotti con calcolo risparmio per piani annuali
  * - FEATURE: 3 Nuovi Piani SaaS
  *   - Executive: €499/mese, 2000 crediti/mese, 50 attivazioni
- *   - Golden prompt: €59/mese, 150 crediti/mese, 5 attivazioni, prompt AI ottimizzati
+ *   - Golden prompt: €59/mese, 150 crediti/mese, 5 attivazioni (MODIFICATO in v1.4.6)
  *   - IPV Pro - 100: €49 una tantum, 100 crediti extra che non scadono
  *   - Rinominato "Crediti Extra" in "IPV Pro - 10" per coerenza
  * - FEATURE: Sistema Cambio Piano con Anti-Frode (da v1.4.4)
  *   - Pulsante "🔄 Cambia Piano" in tabella licenze
- *   - Validazione automatica con 4 regole:
- *     1. ✅ Upgrade piano (stesso billing): sempre permesso
- *     2. ✅ Cambio billing (stesso piano): sempre permesso
- *     3. ⬇️ Downgrade piano: solo se crediti_residui < (crediti_piano × 10)
- *     4. ❌ Cross-billing (cambio piano + billing): NON permesso
+ *   - Validazione automatica con 4 regole
  *   - UI con card colorate (blu=permesso, rosso=bloccato)
  *   - Creazione ordine WooCommerce per tracciabilità
- *   - Aggiornamento completo metadati licenza
  * - MIGLIORAMENTO: Setup Wizard Step 4 mostra tabella piani con entrambe le varianti
  * - MIGLIORAMENTO: Compatibilità completa con FIXED10 (Trial una tantum, Extra Credits)
  *

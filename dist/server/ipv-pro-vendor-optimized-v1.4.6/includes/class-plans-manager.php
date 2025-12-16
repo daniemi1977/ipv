@@ -163,18 +163,22 @@ class IPV_Vendor_Plans_Manager {
             'golden_prompt' => [
                 'name' => 'Golden prompt',
                 'slug' => 'golden_prompt',
-                'credits' => 150,
-                'credits_period' => 'month',
-                'activations' => 5,
+                'credits' => 0, // Nessun credito - è un digital asset
+                'credits_period' => 'once',
+                'activations' => 1, // Solo 1 sito
                 'price' => 59.00,
-                'price_period' => 'month',
+                'price_period' => 'once', // Acquisto una tantum
+                'product_type' => 'digital_asset', // Tipo speciale: asset scaricabile
+                'download_limit' => 1, // Può essere scaricato solo 1 volta
+                'remote_download' => true, // Download gestito dal server
                 'features' => [
-                    'transcription' => true,
-                    'ai_description' => true,
+                    'transcription' => false,
+                    'ai_description' => false,
                     'priority_support' => true,
                     'api_access' => false,
+                    'golden_prompt_access' => true, // Feature speciale
                 ],
-                'description' => 'Piano speciale con prompt AI ottimizzati',
+                'description' => 'Prompt AI Premium ottimizzati (download una tantum, 1 sito)',
                 'is_active' => true,
                 'sort_order' => 6,
             ],

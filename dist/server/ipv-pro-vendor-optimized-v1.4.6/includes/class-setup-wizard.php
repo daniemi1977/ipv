@@ -614,6 +614,7 @@ class IPV_Pro_Vendor_Setup_Wizard {
             $is_once = ($plan['price_period'] === 'once');
             $is_extra_credits = (strpos($slug, 'extra_credits') === 0);
             $is_trial = ($slug === 'trial');
+            $is_digital_asset = (!empty($plan['product_type']) && $plan['product_type'] === 'digital_asset');
 
             // For "once" plans (Trial, Extra Credits): create 1 product
             // For "month" plans (Subscriptions): create 2 products (Monthly + Yearly)
@@ -694,9 +695,38 @@ class IPV_Pro_Vendor_Setup_Wizard {
                 $desc .= '<li>Ideale per picchi di utilizzo occasionali</li>';
                 $desc .= '</ul>';
                 $desc .= '<p><strong>Prezzo:</strong> 5,00 EUR (10 crediti)</p>';
-                
+
+            } elseif ($is_digital_asset) {
+                // DIGITAL ASSET: Golden prompt - Asset scaricabile una volta
+                $short_desc = $plan['name'] . ' - Prompt AI Premium ottimizzati (download sicuro, 1 sito)';
+
+                $desc = '<h3>IPV Production System Pro - ' . esc_html($plan['name']) . '</h3>';
+                $desc .= '<p><strong>⚠️ PRODOTTO DIGITALE UNICO - NON DUPLICABILE</strong></p>';
+                $desc .= '<p>Collezione esclusiva di prompt AI premium ottimizzati per ottenere il massimo dalle descrizioni video.</p>';
+
+                $desc .= '<h4>Caratteristiche:</h4>';
+                $desc .= '<ul>';
+                $desc .= '<li><strong>Download sicuro dal server</strong> - Legato alla tua licenza</li>';
+                $desc .= '<li><strong>1 sola attivazione</strong> - Utilizzabile su 1 sito WordPress</li>';
+                $desc .= '<li><strong>1 solo download</strong> - Dopo il primo download, l\'accesso viene disabilitato</li>';
+                $desc .= '<li><strong>Non copiabile</strong> - Sistema anti-pirateria integrato</li>';
+                $desc .= '<li><strong>Supporto prioritario</strong> incluso</li>';
+                $desc .= '</ul>';
+
+                $desc .= '<h4>Come Funziona:</h4>';
+                $desc .= '<ol>';
+                $desc .= '<li>Acquista il prodotto e ricevi la licenza</li>';
+                $desc .= '<li>Attiva la licenza sul tuo sito WordPress</li>';
+                $desc .= '<li>Dal pannello IPV Pro, clicca su "Scarica Golden Prompt"</li>';
+                $desc .= '<li>Il file verrà scaricato dal server e il link scadrà automaticamente</li>';
+                $desc .= '<li>Installa i prompt e inizia a usarli</li>';
+                $desc .= '</ol>';
+
+                $desc .= '<p><strong>IMPORTANTE:</strong> Questo è un acquisto una tantum. Il download è limitato a 1 volta per motivi di sicurezza. Conserva il file scaricato in un luogo sicuro.</p>';
+                $desc .= '<p><strong>Prezzo:</strong> ' . number_format($plan['price'], 2, ',', '.') . ' EUR (acquisto una tantum)</p>';
+
                 } else {
-                    // SUBSCRIPTION PLANS: Starter, Professional, Business, Executive, Golden prompt
+                    // SUBSCRIPTION PLANS: Starter, Professional, Business, Executive
                     $short_desc = 'Piano ' . $plan['name'] . ' (' . $billing_label . ') - ' . $credits_label . '. ' . $plan['description'];
 
                     $desc = '<h3>IPV Production System Pro - Piano ' . esc_html($plan['name']) . ' (' . $billing_label . ')</h3>';
@@ -773,7 +803,11 @@ class IPV_Pro_Vendor_Setup_Wizard {
                 }
 
                 // Product type based on plan
-                if ($is_extra_credits) {
+                if ($is_digital_asset) {
+                    $product->update_meta_data('_ipv_product_type', 'digital_asset');
+                    $product->update_meta_data('_ipv_download_limit', !empty($plan['download_limit']) ? $plan['download_limit'] : 1);
+                    $product->update_meta_data('_ipv_remote_download', true);
+                } elseif ($is_extra_credits) {
                     $product->update_meta_data('_ipv_product_type', 'extra_credits');
                 } elseif ($is_trial) {
                     $product->update_meta_data('_ipv_product_type', 'trial');

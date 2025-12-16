@@ -50,6 +50,13 @@ class IPV_Vendor_License_Endpoints {
             'callback' => [ $this, 'get_license_info' ],
             'permission_callback' => [ $this, 'validate_request' ]
         ]);
+
+        // POST /wp-json/ipv-vendor/v1/license/download-asset
+        register_rest_route( 'ipv-vendor/v1', '/license/download-asset', [
+            'methods' => 'POST',
+            'callback' => [ $this, 'download_digital_asset' ],
+            'permission_callback' => [ $this, 'validate_request' ]
+        ]);
     }
 
     /**
@@ -418,6 +425,143 @@ class IPV_Vendor_License_Endpoints {
                 'activations' => $activations,
                 'usage_stats' => $usage_stats
             ]
+        ]);
+    }
+
+    /**
+     * Download Digital Asset (Golden Prompt)
+     * Gestisce il download sicuro di asset digitali legati alla licenza
+     *
+     * @param WP_REST_Request $request
+     * @return WP_REST_Response|WP_Error
+     */
+    public function download_digital_asset( $request ) {
+        $license_key = $this->extract_license_key( $request );
+        $asset_slug = $request->get_param( 'asset_slug' );
+
+        // Validate params
+        if ( empty( $license_key ) ) {
+            return new WP_Error(
+                'missing_params',
+                'license_key è obbligatorio',
+                [ 'status' => 400 ]
+            );
+        }
+
+        if ( empty( $asset_slug ) ) {
+            return new WP_Error(
+                'missing_params',
+                'asset_slug è obbligatorio (es: golden_prompt)',
+                [ 'status' => 400 ]
+            );
+        }
+
+        $license_manager = IPV_Vendor_License_Manager::instance();
+        $license = $license_manager->get_license_by_key( $license_key );
+
+        if ( ! $license ) {
+            return new WP_Error(
+                'invalid_license',
+                'License non trovata',
+                [ 'status' => 404 ]
+            );
+        }
+
+        // Check license status
+        if ( $license->status !== 'active' ) {
+            return new WP_Error(
+                'license_inactive',
+                'Licenza non attiva. Stato corrente: ' . $license->status,
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Check if license variant matches asset
+        if ( $license->variant_slug !== $asset_slug ) {
+            return new WP_Error(
+                'variant_mismatch',
+                'Questa licenza non ha accesso a questo asset digitale. Licenza: ' . $license->variant_slug,
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Get product metadata to check if it's a digital asset
+        global $wpdb;
+        $product_id = $license->product_id;
+
+        $product_type = get_post_meta( $product_id, '_ipv_product_type', true );
+        $download_limit = get_post_meta( $product_id, '_ipv_download_limit', true );
+        $is_remote_download = get_post_meta( $product_id, '_ipv_remote_download', true );
+
+        if ( $product_type !== 'digital_asset' || ! $is_remote_download ) {
+            return new WP_Error(
+                'not_digital_asset',
+                'Questo prodotto non è un asset digitale scaricabile',
+                [ 'status' => 400 ]
+            );
+        }
+
+        // Check download count
+        $download_count = (int) $wpdb->get_var( $wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+            WHERE license_id = %d AND meta_key = '_asset_download_count'",
+            $license->id
+        ));
+
+        $max_downloads = $download_limit ? (int) $download_limit : 1;
+
+        if ( $download_count >= $max_downloads ) {
+            return new WP_Error(
+                'download_limit_reached',
+                sprintf( 'Limite download raggiunto (%d/%d). Non è possibile scaricare nuovamente questo asset.', $download_count, $max_downloads ),
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Generate secure download token (expires in 5 minutes)
+        $token = wp_generate_password( 64, false );
+        $expires_at = time() + 300; // 5 minutes
+
+        // Store token in transient
+        set_transient( 'ipv_download_token_' . $token, [
+            'license_id' => $license->id,
+            'asset_slug' => $asset_slug,
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '',
+        ], 300 );
+
+        // Increment download count
+        $wpdb->query( $wpdb->prepare(
+            "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+            VALUES (%d, '_asset_download_count', %d)
+            ON DUPLICATE KEY UPDATE meta_value = meta_value + 1",
+            $license->id,
+            1
+        ));
+
+        // Log download request
+        $wpdb->insert(
+            $wpdb->prefix . 'ipv_license_meta',
+            [
+                'license_id' => $license->id,
+                'meta_key' => '_asset_download_requested_at',
+                'meta_value' => current_time( 'mysql' )
+            ],
+            [ '%d', '%s', '%s' ]
+        );
+
+        // Generate download URL
+        $download_url = add_query_arg([
+            'ipv_download_token' => $token,
+            'asset' => $asset_slug
+        ], home_url( '/ipv-download-asset/' ));
+
+        return rest_ensure_response([
+            'success' => true,
+            'message' => 'Token di download generato con successo',
+            'download_url' => $download_url,
+            'expires_in' => 300, // seconds
+            'downloads_remaining' => max( 0, $max_downloads - $download_count - 1 ),
+            'warning' => 'Questo link scade tra 5 minuti e può essere usato una sola volta. Conserva il file scaricato in un luogo sicuro.'
         ]);
     }
 }
