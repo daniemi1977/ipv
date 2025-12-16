@@ -57,6 +57,13 @@ class IPV_Vendor_License_Endpoints {
             'callback' => [ $this, 'download_digital_asset' ],
             'permission_callback' => [ $this, 'validate_request' ]
         ]);
+
+        // GET /wp-json/ipv-vendor/v1/license/download-golden-prompt
+        register_rest_route( 'ipv-vendor/v1', '/license/download-golden-prompt', [
+            'methods' => 'GET',
+            'callback' => [ $this, 'download_golden_prompt' ],
+            'permission_callback' => [ $this, 'validate_request' ]
+        ]);
     }
 
     /**
@@ -410,21 +417,79 @@ class IPV_Vendor_License_Endpoints {
         $credits_info = $credits_manager->get_credits_info( $license );
         $usage_stats = $credits_manager->get_usage_stats( $license->id, 30 );
 
+        // Build license data
+        $license_data = [
+            'key' => $license->license_key,
+            'status' => $license->status,
+            'variant' => $license->variant_slug,
+            'email' => $license->email,
+            'created_at' => $license->created_at,
+            'expires_at' => $license->expires_at,
+            'activation_limit' => (int) $license->activation_limit,
+            'activation_count' => (int) $license->activation_count,
+            'credits' => $credits_info,
+            'activations' => $activations,
+            'usage_stats' => $usage_stats
+        ];
+
+        // Add Golden prompt data if license is golden_prompt
+        if ( $license->variant_slug === 'golden_prompt' ) {
+            // Get Golden prompt enabled status
+            $golden_enabled = $wpdb->get_var( $wpdb->prepare(
+                "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                WHERE license_id = %d AND meta_key = '_golden_prompt_enabled'",
+                $license->id
+            ));
+
+            // Get Golden prompt file path
+            $golden_file = $wpdb->get_var( $wpdb->prepare(
+                "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                WHERE license_id = %d AND meta_key = '_golden_prompt_file'",
+                $license->id
+            ));
+
+            // Check if file exists
+            $has_file = !empty($golden_file) && file_exists($golden_file);
+
+            // Get file info if available
+            $file_info = [];
+            if ( $has_file ) {
+                $file_info['size'] = filesize($golden_file);
+                $file_info['size_formatted'] = size_format($file_info['size']);
+
+                // Get original filename
+                $original_filename = $wpdb->get_var( $wpdb->prepare(
+                    "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                    WHERE license_id = %d AND meta_key = '_golden_prompt_original_filename'",
+                    $license->id
+                ));
+                if ( $original_filename ) {
+                    $file_info['filename'] = $original_filename;
+                }
+
+                // Get upload timestamp
+                $uploaded_at = $wpdb->get_var( $wpdb->prepare(
+                    "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                    WHERE license_id = %d AND meta_key = '_golden_prompt_uploaded_at'",
+                    $license->id
+                ));
+                if ( $uploaded_at ) {
+                    $file_info['uploaded_at'] = $uploaded_at;
+                }
+            }
+
+            // Add Golden prompt data to response
+            $license_data['golden_prompt'] = [
+                'enabled' => (bool) $golden_enabled,
+                'has_file' => $has_file,
+                'can_download' => (bool) $golden_enabled && $has_file,
+                'file_info' => $has_file ? $file_info : null
+            ];
+        }
+
         return rest_ensure_response([
             'success' => true,
-            'license' => [
-                'key' => $license->license_key,
-                'status' => $license->status,
-                'variant' => $license->variant_slug,
-                'email' => $license->email,
-                'created_at' => $license->created_at,
-                'expires_at' => $license->expires_at,
-                'activation_limit' => (int) $license->activation_limit,
-                'activation_count' => (int) $license->activation_count,
-                'credits' => $credits_info,
-                'activations' => $activations,
-                'usage_stats' => $usage_stats
-            ]
+            'license' => $license_data
         ]);
     }
 
@@ -563,5 +628,132 @@ class IPV_Vendor_License_Endpoints {
             'downloads_remaining' => max( 0, $max_downloads - $download_count - 1 ),
             'warning' => 'Questo link scade tra 5 minuti e può essere usato una sola volta. Conserva il file scaricato in un luogo sicuro.'
         ]);
+    }
+
+    /**
+     * Download Golden Prompt File
+     * Endpoint sicuro per CLIENT plugin per scaricare il file Golden prompt
+     * quando è abilitato dall'admin
+     *
+     * @param WP_REST_Request $request
+     * @return void (serves file directly) or WP_Error
+     */
+    public function download_golden_prompt( $request ) {
+        global $wpdb;
+
+        $license_key = $this->extract_license_key( $request );
+
+        // Validate license key
+        if ( empty( $license_key ) ) {
+            return new WP_Error(
+                'missing_license',
+                'license_key è obbligatorio',
+                [ 'status' => 400 ]
+            );
+        }
+
+        $license_manager = IPV_Vendor_License_Manager::instance();
+        $license = $license_manager->get_license_by_key( $license_key );
+
+        if ( ! $license ) {
+            return new WP_Error(
+                'invalid_license',
+                'License non trovata',
+                [ 'status' => 404 ]
+            );
+        }
+
+        // Check license status
+        if ( $license->status !== 'active' ) {
+            return new WP_Error(
+                'license_inactive',
+                'Licenza non attiva. Stato corrente: ' . $license->status,
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Check if license is Golden prompt
+        if ( $license->variant_slug !== 'golden_prompt' ) {
+            return new WP_Error(
+                'not_golden_prompt',
+                'Questa licenza non è di tipo Golden prompt. Tipo corrente: ' . $license->variant_slug,
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Check if Golden prompt is enabled
+        $golden_enabled = $wpdb->get_var( $wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+            WHERE license_id = %d AND meta_key = '_golden_prompt_enabled'",
+            $license->id
+        ));
+
+        if ( ! $golden_enabled ) {
+            return new WP_Error(
+                'golden_prompt_disabled',
+                'Golden prompt non abilitato per questa licenza. Contatta l\'amministratore.',
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Get file path
+        $file_path = $wpdb->get_var( $wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+            WHERE license_id = %d AND meta_key = '_golden_prompt_file'",
+            $license->id
+        ));
+
+        if ( empty( $file_path ) || ! file_exists( $file_path ) ) {
+            return new WP_Error(
+                'file_not_found',
+                'File Golden prompt non trovato. Contatta l\'amministratore.',
+                [ 'status' => 404 ]
+            );
+        }
+
+        // Get original filename
+        $original_filename = $wpdb->get_var( $wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+            WHERE license_id = %d AND meta_key = '_golden_prompt_original_filename'",
+            $license->id
+        ));
+
+        if ( empty( $original_filename ) ) {
+            $original_filename = 'golden-prompt.zip';
+        }
+
+        // Log download attempt
+        $wpdb->insert(
+            $wpdb->prefix . 'ipv_license_meta',
+            [
+                'license_id' => $license->id,
+                'meta_key' => '_golden_prompt_downloaded_at',
+                'meta_value' => current_time( 'mysql' )
+            ],
+            [ '%d', '%s', '%s' ]
+        );
+
+        // Log download with IP
+        error_log( sprintf(
+            'IPV Vendor: Golden prompt downloaded - License: %s, IP: %s, File: %s',
+            substr( $license_key, 0, 8 ) . '...',
+            $this->get_client_ip(),
+            $original_filename
+        ));
+
+        // Serve file
+        header( 'Content-Type: application/zip' );
+        header( 'Content-Disposition: attachment; filename="' . sanitize_file_name( $original_filename ) . '"' );
+        header( 'Content-Length: ' . filesize( $file_path ) );
+        header( 'Cache-Control: no-cache, no-store, must-revalidate' );
+        header( 'Pragma: no-cache' );
+        header( 'Expires: 0' );
+
+        // Prevent WordPress from adding any additional output
+        @ob_clean();
+        flush();
+
+        readfile( $file_path );
+        exit;
     }
 }

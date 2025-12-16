@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.4.6
+ * Version: 1.4.7
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -14,25 +14,63 @@
  * Domain Path: /languages
  * License: GPL v2 or later
  *
+ * CHANGELOG v1.4.7 (2025-12-16):
+ * - FEATURE: Golden Prompt come Script Personalizzato Admin-Managed
+ *   - Sistema completamente riprogettato: Admin carica file per ogni licenza
+ *   - Admin abilita/disabilita Golden prompt con toggle button
+ *   - CLIENT plugin scarica automaticamente quando abilitato
+ *   - File protetto e non visibile direttamente (motore descrizioni AI)
+ * - FEATURE: Admin UI per Gestione Golden Prompt
+ *   - Tabella licenze mostra pulsanti per licenze Golden prompt:
+ *     - "📎 Carica/Modifica": Upload file ZIP (max 50MB)
+ *     - "⭐ Abilita / 🌟 Disabilita": Toggle con colori (giallo/verde)
+ *   - Pagina upload dedicata con form sicuro e validazione
+ *   - Storage sicuro in /wp-content/uploads/ipv-golden-prompts/
+ *   - .htaccess blocca accesso diretto, filename randomizzato
+ * - FEATURE: API Endpoint per CLIENT Plugin
+ *   - GET /wp-json/ipv-vendor/v1/license/download-golden-prompt
+ *   - Verifica: licenza attiva + tipo golden_prompt + file abilitato
+ *   - Serve file ZIP direttamente con headers sicuri
+ *   - Log download con IP e timestamp
+ *   - Nessun limite download (cliente può re-scaricare se reinstalla)
+ * - FEATURE: Metadata Golden Prompt in API /license/info
+ *   - Nuovo oggetto 'golden_prompt' nella risposta
+ *   - Campi: enabled, has_file, can_download, file_info
+ *   - file_info include: size, size_formatted, filename, uploaded_at
+ *   - CLIENT plugin può verificare disponibilità prima di scaricare
+ * - METADATA: Nuovi campi licenza Golden prompt
+ *   - _golden_prompt_enabled: boolean (toggle admin)
+ *   - _golden_prompt_file: percorso file ZIP
+ *   - _golden_prompt_uploaded_at: timestamp upload
+ *   - _golden_prompt_original_filename: nome file originale
+ *   - _golden_prompt_toggled_at: timestamp ultimo toggle
+ *   - _golden_prompt_downloaded_at: timestamp download CLIENT
+ * - SICUREZZA: Sistema protezione file Golden prompt
+ *   - Directory con .htaccess "Deny from all"
+ *   - Filename randomizzato con wp_generate_password(16)
+ *   - Solo scaricabile via API autenticata
+ *   - Validazione file ZIP, max 50MB
+ *   - Vecchio file eliminato automaticamente su nuovo upload
+ *
  * CHANGELOG v1.4.6 (2025-12-16):
- * - FEATURE: Golden Prompt come Digital Asset Sicuro
+ * - FEATURE: Golden Prompt come Digital Asset Sicuro (DEPRECATO in v1.4.7)
  *   - Golden prompt convertito da piano subscription a digital asset
  *   - Modificato a: €59 una tantum, 0 crediti, 1 solo sito
  *   - Nuovo tipo prodotto: "digital_asset" con download remoto sicuro
  *   - Sistema anti-pirateria: 1 solo download consentito per licenza
  *   - Download legato alla licenza attivata (non copiabile)
- * - FEATURE: Endpoint API Download Sicuro
+ * - FEATURE: Endpoint API Download Sicuro (DEPRECATO in v1.4.7)
  *   - Nuovo endpoint: POST /wp-json/ipv-vendor/v1/license/download-asset
  *   - Genera token sicuro valido 5 minuti
  *   - Verifica licenza attiva e variant_slug corretto
  *   - Tracking download count in ipv_license_meta
  *   - Log timestamp download request
  *   - Limite download configurabile per prodotto (_ipv_download_limit)
- * - METADATA: Nuovi campi prodotto WooCommerce
+ * - METADATA: Nuovi campi prodotto WooCommerce (MANTENUTI in v1.4.7)
  *   - _ipv_product_type: 'digital_asset'
  *   - _ipv_download_limit: numero massimo download (default: 1)
  *   - _ipv_remote_download: true (download gestito dal server)
- * - METADATA: Nuovi campi licenza
+ * - METADATA: Nuovi campi licenza (DEPRECATI in v1.4.7)
  *   - _asset_download_count: numero download effettuati
  *   - _asset_download_requested_at: timestamp ultima richiesta
  *
@@ -282,7 +320,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Constants
-define( 'IPV_VENDOR_VERSION', '1.4.2-FIXED10' );
+define( 'IPV_VENDOR_VERSION', '1.4.7' );
 define( 'IPV_VENDOR_FILE', __FILE__ );
 define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );
