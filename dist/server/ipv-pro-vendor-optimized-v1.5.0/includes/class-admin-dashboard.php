@@ -207,16 +207,6 @@ class IPV_Vendor_Admin_Dashboard {
             [ $this, 'render_licenses' ]
         );
 
-        // Analytics
-        add_submenu_page(
-            'ipv-vendor-dashboard',
-            'Analytics',
-            'Analytics',
-            'manage_options',
-            'ipv-vendor-analytics',
-            [ $this, 'render_analytics' ]
-        );
-
         // Settings
         add_submenu_page(
             'ipv-vendor-dashboard',
@@ -273,93 +263,146 @@ class IPV_Vendor_Admin_Dashboard {
         );
 
         ?>
-        <div class="wrap">
-            <h1>🎬 IPV Pro Vendor Dashboard</h1>
+        <div class="ipv-modern-page bg-gray-50 min-h-screen -ml-5 -mt-2 p-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">🎬 IPV Pro Vendor Dashboard</h1>
+                <p class="text-gray-600">Panoramica generale del sistema di licenze</p>
+            </div>
 
-            <div class="ipv-stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin: 20px 0;">
-                <div class="ipv-stat-box" style="background: white; padding: 20px; border-left: 4px solid #667eea; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="color: #666; font-size: 14px;">Licenze Totali</div>
-                    <div style="font-size: 32px; font-weight: bold; color: #667eea;"><?php echo number_format_i18n( $total_licenses ); ?></div>
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="ipv-stat-card">
+                    <div class="ipv-stat-icon primary">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                        </svg>
+                    </div>
+                    <div class="ipv-stat-label">Licenze Totali</div>
+                    <div class="ipv-stat-value"><?php echo number_format_i18n( $total_licenses ); ?></div>
                 </div>
-                <div class="ipv-stat-box" style="background: white; padding: 20px; border-left: 4px solid #46b450; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="color: #666; font-size: 14px;">Licenze Attive</div>
-                    <div style="font-size: 32px; font-weight: bold; color: #46b450;"><?php echo number_format_i18n( $active_licenses ); ?></div>
+
+                <div class="ipv-stat-card">
+                    <div class="ipv-stat-icon success">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ipv-stat-label">Licenze Attive</div>
+                    <div class="ipv-stat-value text-green-600"><?php echo number_format_i18n( $active_licenses ); ?></div>
                 </div>
-                <div class="ipv-stat-box" style="background: white; padding: 20px; border-left: 4px solid #ffb900; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="color: #666; font-size: 14px;">Attivazioni Siti</div>
-                    <div style="font-size: 32px; font-weight: bold; color: #ffb900;"><?php echo number_format_i18n( $total_activations ); ?></div>
+
+                <div class="ipv-stat-card">
+                    <div class="ipv-stat-icon warning">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                        </svg>
+                    </div>
+                    <div class="ipv-stat-label">Attivazioni Siti</div>
+                    <div class="ipv-stat-value text-amber-600"><?php echo number_format_i18n( $total_activations ); ?></div>
                 </div>
-                <div class="ipv-stat-box" style="background: white; padding: 20px; border-left: 4px solid #00a0d2; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                    <div style="color: #666; font-size: 14px;">API Calls (30gg)</div>
-                    <div style="font-size: 32px; font-weight: bold; color: #00a0d2;"><?php echo number_format_i18n( $total_api_calls ); ?></div>
+
+                <div class="ipv-stat-card">
+                    <div class="ipv-stat-icon info">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div class="ipv-stat-label">API Calls (30gg)</div>
+                    <div class="ipv-stat-value text-blue-600"><?php echo number_format_i18n( $total_api_calls ); ?></div>
                 </div>
             </div>
 
-            <div class="card">
-                <h2>📋 Licenze Recenti</h2>
-                <table class="wp-list-table widefat fixed striped">
-                    <thead>
-                        <tr>
-                            <th>License Key</th>
-                            <th>Email</th>
-                            <th>Piano</th>
-                            <th>Status</th>
-                            <th>Crediti</th>
-                            <th>Data Creazione</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if ( empty( $recent_licenses ) ) : ?>
-                            <tr><td colspan="6">Nessuna licenza trovata</td></tr>
-                        <?php else : ?>
-                            <?php foreach ( $recent_licenses as $license ) : ?>
-                                <tr>
-                                    <td><code><?php echo esc_html( $license->license_key ); ?></code></td>
-                                    <td><?php echo esc_html( $license->email ); ?></td>
-                                    <td><?php echo esc_html( ucfirst( $license->variant_slug ) ); ?></td>
-                                    <td>
-                                        <?php
-                                        $status_colors = [
-                                            'active' => '#46b450',
-                                            'cancelled' => '#dc3232',
-                                            'expired' => '#dc3232',
-                                            'on-hold' => '#ffb900'
-                                        ];
-                                        $color = $status_colors[ $license->status ] ?? '#666';
-                                        echo '<span style="color: ' . $color . '; font-weight: bold;">' . esc_html( $license->status ) . '</span>';
-                                        ?>
-                                    </td>
-                                    <td><?php echo esc_html( $license->credits_remaining . '/' . $license->credits_total ); ?></td>
-                                    <td><?php echo date_i18n( 'd/m/Y H:i', strtotime( $license->created_at ) ); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+            <!-- Recent Licenses Table -->
+            <div class="ipv-card mb-8">
+                <div class="ipv-card-header">
+                    <h2 class="ipv-card-title">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        📋 Licenze Recenti
+                    </h2>
+                    <span class="ipv-badge ipv-badge-primary"><?php echo $total_licenses; ?> totali</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="ipv-table">
+                        <thead>
+                            <tr>
+                                <th>License Key</th>
+                                <th>Email</th>
+                                <th>Piano</th>
+                                <th>Status</th>
+                                <th>Crediti</th>
+                                <th>Data Creazione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ( empty( $recent_licenses ) ) : ?>
+                                <tr><td colspan="6" class="text-center text-gray-500">Nessuna licenza trovata</td></tr>
+                            <?php else : ?>
+                                <?php foreach ( $recent_licenses as $license ) : ?>
+                                    <tr>
+                                        <td><code class="ipv-code"><?php echo esc_html( $license->license_key ); ?></code></td>
+                                        <td><?php echo esc_html( $license->email ); ?></td>
+                                        <td><strong><?php echo esc_html( ucfirst( $license->variant_slug ) ); ?></strong></td>
+                                        <td>
+                                            <?php
+                                            $badge_class = 'ipv-badge ';
+                                            switch ( $license->status ) {
+                                                case 'active':
+                                                    $badge_class .= 'ipv-badge-success';
+                                                    break;
+                                                case 'cancelled':
+                                                case 'expired':
+                                                    $badge_class .= 'ipv-badge-danger';
+                                                    break;
+                                                case 'on-hold':
+                                                    $badge_class .= 'ipv-badge-warning';
+                                                    break;
+                                                default:
+                                                    $badge_class .= 'ipv-badge-default';
+                                            }
+                                            echo '<span class="' . $badge_class . '">' . esc_html( $license->status ) . '</span>';
+                                            ?>
+                                        </td>
+                                        <td><?php echo esc_html( $license->credits_remaining . '/' . $license->credits_total ); ?></td>
+                                        <td><?php echo date_i18n( 'd/m/Y H:i', strtotime( $license->created_at ) ); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div class="card" style="margin-top: 20px;">
-                <h2>🔗 API Endpoints</h2>
-                <table class="widefat">
-                    <tbody>
-                        <tr>
-                            <th style="width: 200px;">Health Check:</th>
-                            <td><code><?php echo esc_url( rest_url( 'ipv-vendor/v1/health' ) ); ?></code></td>
-                        </tr>
-                        <tr>
-                            <th>License Activation:</th>
-                            <td><code><?php echo esc_url( rest_url( 'ipv-vendor/v1/license/activate' ) ); ?></code></td>
-                        </tr>
-                        <tr>
-                            <th>Transcript Gateway:</th>
-                            <td><code><?php echo esc_url( rest_url( 'ipv-vendor/v1/transcript' ) ); ?></code></td>
-                        </tr>
-                        <tr>
-                            <th>Plugin Info:</th>
-                            <td><code><?php echo esc_url( rest_url( 'ipv-vendor/v1/plugin-info' ) ); ?></code></td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- API Endpoints Card -->
+            <div class="ipv-card">
+                <div class="ipv-card-header">
+                    <h2 class="ipv-card-title">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                        </svg>
+                        🔗 API Endpoints
+                    </h2>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium text-gray-700">Health Check:</span>
+                        <code class="ipv-code text-xs"><?php echo esc_url( rest_url( 'ipv-vendor/v1/health' ) ); ?></code>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium text-gray-700">License Activation:</span>
+                        <code class="ipv-code text-xs"><?php echo esc_url( rest_url( 'ipv-vendor/v1/license/activate' ) ); ?></code>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium text-gray-700">Transcript Gateway:</span>
+                        <code class="ipv-code text-xs"><?php echo esc_url( rest_url( 'ipv-vendor/v1/transcript' ) ); ?></code>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="font-medium text-gray-700">Plugin Info:</span>
+                        <code class="ipv-code text-xs"><?php echo esc_url( rest_url( 'ipv-vendor/v1/plugin-info' ) ); ?></code>
+                    </div>
+                </div>
             </div>
         </div>
         <?php
@@ -457,67 +500,88 @@ class IPV_Vendor_Admin_Dashboard {
         );
 
         ?>
-        <div class="wrap">
-            <h1>🔑 Gestione Licenze</h1>
+        <div class="ipv-modern-page bg-gray-50 min-h-screen -ml-5 -mt-2 p-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">🔑 Gestione Licenze</h1>
+                <p class="text-gray-600">Crea e gestisci le licenze cliente</p>
+            </div>
 
             <!-- CREATE LICENSE FORM -->
-            <div class="card" style="max-width: 600px; margin-bottom: 20px;">
-                <h2>➕ Crea Licenza Manuale</h2>
-                <form method="post">
+            <div class="ipv-card mb-8 max-w-3xl">
+                <div class="ipv-card-header">
+                    <h2 class="ipv-card-title">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        ➕ Crea Licenza Manuale
+                    </h2>
+                </div>
+                <form method="post" class="p-6">
                     <?php wp_nonce_field( 'ipv_create_license_nonce' ); ?>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th><label for="license_email">Email *</label></th>
-                            <td><input type="email" name="license_email" id="license_email" class="regular-text" required /></td>
-                        </tr>
-                        <tr>
-                            <th><label for="license_variant">Piano</label></th>
-                            <td>
-                                <select name="license_variant" id="license_variant">
-                                    <?php 
-                                    $plan_options = apply_filters( 'ipv_vendor_plan_options', [] );
-                                    foreach ( $plan_options as $slug => $label ) :
-                                    ?>
-                                        <option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $slug, 'professional' ); ?>>
-                                            <?php echo esc_html( $label ); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="license_credits">Crediti Mensili</label></th>
-                            <td>
-                                <input type="number" name="license_credits" id="license_credits" placeholder="Auto dal piano" min="1" max="9999" />
-                                <p class="description">Lascia vuoto per usare il valore del piano</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="license_activations">Limite Siti</label></th>
-                            <td>
-                                <input type="number" name="license_activations" id="license_activations" placeholder="Auto dal piano" min="1" max="100" />
-                                <p class="description">Lascia vuoto per usare il valore del piano</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th><label for="license_expires">Scadenza (giorni)</label></th>
-                            <td>
-                                <input type="number" name="license_expires" id="license_expires" value="0" min="0" max="3650" />
-                                <p class="description">0 = Mai (subscription attiva)</p>
-                            </td>
-                        </tr>
-                    </table>
-                    
-                    <p class="submit">
-                        <button type="submit" name="ipv_create_license" class="button button-primary">🔑 Genera Licenza</button>
-                    </p>
+
+                    <div class="space-y-6">
+                        <div>
+                            <label for="license_email" class="ipv-label">Email *</label>
+                            <input type="email" name="license_email" id="license_email" class="ipv-input" required />
+                        </div>
+
+                        <div>
+                            <label for="license_variant" class="ipv-label">Piano</label>
+                            <select name="license_variant" id="license_variant" class="ipv-select">
+                                <?php
+                                $plan_options = apply_filters( 'ipv_vendor_plan_options', [] );
+                                foreach ( $plan_options as $slug => $label ) :
+                                ?>
+                                    <option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $slug, 'professional' ); ?>>
+                                        <?php echo esc_html( $label ); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="license_credits" class="ipv-label">Crediti Mensili</label>
+                                <input type="number" name="license_credits" id="license_credits" class="ipv-input" placeholder="Auto dal piano" min="1" max="9999" />
+                                <p class="text-sm text-gray-500 mt-1">Lascia vuoto per usare il valore del piano</p>
+                            </div>
+
+                            <div>
+                                <label for="license_activations" class="ipv-label">Limite Siti</label>
+                                <input type="number" name="license_activations" id="license_activations" class="ipv-input" placeholder="Auto dal piano" min="1" max="100" />
+                                <p class="text-sm text-gray-500 mt-1">Lascia vuoto per usare il valore del piano</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="license_expires" class="ipv-label">Scadenza (giorni)</label>
+                            <input type="number" name="license_expires" id="license_expires" value="0" class="ipv-input" min="0" max="3650" />
+                            <p class="text-sm text-gray-500 mt-1">0 = Mai (subscription attiva)</p>
+                        </div>
+
+                        <div class="flex justify-end pt-4 border-t border-gray-200">
+                            <button type="submit" name="ipv_create_license" class="ipv-btn ipv-btn-primary">
+                                🔑 Genera Licenza
+                            </button>
+                        </div>
+                    </div>
                 </form>
             </div>
 
             <!-- LICENSES TABLE -->
-            <h2>📋 Licenze Esistenti (<?php echo count( $licenses ); ?>)</h2>
-            <table class="wp-list-table widefat fixed striped">
+            <div class="ipv-card">
+                <div class="ipv-card-header">
+                    <h2 class="ipv-card-title">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        📋 Licenze Esistenti
+                    </h2>
+                    <span class="ipv-badge ipv-badge-primary"><?php echo count( $licenses ); ?> totali</span>
+                </div>
+                <div class="overflow-x-auto">
+            <table class="ipv-table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -533,50 +597,63 @@ class IPV_Vendor_Admin_Dashboard {
                 </thead>
                 <tbody>
                     <?php if ( empty( $licenses ) ) : ?>
-                        <tr><td colspan="9">Nessuna licenza trovata. Crea la prima licenza sopra! ☝️</td></tr>
+                        <tr><td colspan="9" class="text-center text-gray-500 py-8">Nessuna licenza trovata. Crea la prima licenza sopra! ☝️</td></tr>
                     <?php else : ?>
                         <?php foreach ( $licenses as $license ) : ?>
                             <tr>
-                                <td><?php echo esc_html( $license->id ); ?></td>
+                                <td class="font-semibold text-gray-700"><?php echo esc_html( $license->id ); ?></td>
                                 <td>
-                                    <code style="font-size: 12px; background: #f0f0f1; padding: 2px 6px;"><?php echo esc_html( $license->license_key ); ?></code>
-                                    <button type="button" class="button button-small" onclick="navigator.clipboard.writeText('<?php echo esc_attr( $license->license_key ); ?>'); this.textContent='✓';" title="Copia">📋</button>
+                                    <div class="flex items-center gap-2">
+                                        <code class="ipv-code text-xs"><?php echo esc_html( $license->license_key ); ?></code>
+                                        <button type="button" class="ipv-btn ipv-btn-secondary text-xs px-2 py-1" onclick="navigator.clipboard.writeText('<?php echo esc_attr( $license->license_key ); ?>'); this.textContent='✓';" title="Copia">📋</button>
+                                    </div>
                                 </td>
                                 <td><?php echo esc_html( $license->email ); ?></td>
-                                <td><strong><?php echo esc_html( ucfirst( $license->variant_slug ) ); ?></strong></td>
+                                <td><strong class="text-gray-900"><?php echo esc_html( ucfirst( $license->variant_slug ) ); ?></strong></td>
                                 <td>
                                     <?php
-                                    $status_colors = [
-                                        'active' => '#46b450',
-                                        'suspended' => '#dc3232',
-                                        'cancelled' => '#dc3232',
-                                        'expired' => '#dc3232',
-                                        'on-hold' => '#ffb900'
-                                    ];
-                                    $color = $status_colors[ $license->status ] ?? '#666';
-                                    echo '<span style="color: ' . $color . '; font-weight: bold;">' . esc_html( $license->status ) . '</span>';
+                                    $badge_class = 'ipv-badge ';
+                                    switch ( $license->status ) {
+                                        case 'active':
+                                            $badge_class .= 'ipv-badge-success';
+                                            break;
+                                        case 'suspended':
+                                        case 'cancelled':
+                                        case 'expired':
+                                            $badge_class .= 'ipv-badge-danger';
+                                            break;
+                                        case 'on-hold':
+                                            $badge_class .= 'ipv-badge-warning';
+                                            break;
+                                        default:
+                                            $badge_class .= 'ipv-badge-default';
+                                    }
+                                    echo '<span class="' . $badge_class . '">' . esc_html( $license->status ) . '</span>';
                                     ?>
                                 </td>
-                                <td><?php echo esc_html( $license->credits_remaining . '/' . $license->credits_total ); ?></td>
-                                <td><?php echo esc_html( $license->activation_count . '/' . $license->activation_limit ); ?></td>
+                                <td><span class="text-gray-700"><?php echo esc_html( $license->credits_remaining . '/' . $license->credits_total ); ?></span></td>
+                                <td><span class="text-gray-700"><?php echo esc_html( $license->activation_count . '/' . $license->activation_limit ); ?></span></td>
                                 <td>
                                     <?php
                                     if ( $license->expires_at ) {
                                         $expires = strtotime( $license->expires_at );
-                                        $color = $expires < time() ? '#dc3232' : '#666';
-                                        echo '<span style="color: ' . $color . ';">' . date_i18n( 'd/m/Y', $expires ) . '</span>';
+                                        $is_expired = $expires < time();
+                                        $badge_class = $is_expired ? 'ipv-badge ipv-badge-danger' : 'ipv-badge ipv-badge-default';
+                                        echo '<span class="' . $badge_class . '">' . date_i18n( 'd/m/Y', $expires ) . '</span>';
                                     } else {
-                                        echo '<span style="color: #46b450;">∞ Mai</span>';
+                                        echo '<span class="ipv-badge ipv-badge-success">∞ Mai</span>';
                                     }
                                     ?>
                                 </td>
                                 <td>
+                                    <div class="flex flex-wrap gap-2">
                                     <?php
                                     $toggle_url = wp_nonce_url(
                                         admin_url( 'admin.php?page=ipv-vendor-licenses&action=toggle_status&id=' . $license->id ),
                                         'toggle_license_' . $license->id
                                     );
                                     $toggle_text = $license->status === 'active' ? '⏸️ Sospendi' : '▶️ Attiva';
+                                    $toggle_class = $license->status === 'active' ? 'ipv-btn ipv-btn-warning text-xs px-2 py-1' : 'ipv-btn ipv-btn-success text-xs px-2 py-1';
 
                                     $change_plan_url = admin_url( 'admin.php?page=ipv-vendor-change-plan&license_id=' . $license->id );
 
@@ -606,35 +683,25 @@ class IPV_Vendor_Admin_Dashboard {
                                         $configure_golden_url = admin_url( 'admin.php?page=ipv-vendor-configure-golden&license_id=' . $license->id );
 
                                         $golden_text = $golden_enabled ? '🌟 Disabilita' : '⭐ Abilita';
-                                        $golden_style = $golden_enabled ? 'background: #46b450; color: white; border-color: #46b450;' : 'background: #f7b500; color: white; border-color: #f7b500;';
+                                        $golden_btn_class = $golden_enabled ? 'ipv-btn ipv-btn-success text-xs px-2 py-1' : 'ipv-btn ipv-btn-warning text-xs px-2 py-1';
                                     }
                                     ?>
-                                    <a href="<?php echo esc_url( $toggle_url ); ?>" class="button button-small"><?php echo $toggle_text; ?></a>
-                                    <a href="<?php echo esc_url( $change_plan_url ); ?>" class="button button-small" style="background: #667eea; color: white; border-color: #667eea;">🔄 Cambia Piano</a>
+                                    <a href="<?php echo esc_url( $toggle_url ); ?>" class="<?php echo $toggle_class; ?>"><?php echo $toggle_text; ?></a>
+                                    <a href="<?php echo esc_url( $change_plan_url ); ?>" class="ipv-btn ipv-btn-primary text-xs px-2 py-1">🔄 Cambia Piano</a>
                                     <?php if ( $is_golden_prompt ) : ?>
-                                        <a href="<?php echo esc_url( $configure_golden_url ); ?>" class="button button-small" style="background: #9b59b6; color: white; border-color: #9b59b6;" title="<?php echo $has_file ? 'Configurato ✓' : 'Da configurare'; ?>">
+                                        <a href="<?php echo esc_url( $configure_golden_url ); ?>" class="ipv-btn ipv-btn-purple text-xs px-2 py-1" title="<?php echo $has_file ? 'Configurato ✓' : 'Da configurare'; ?>">
                                             ⚙️ <?php echo $has_file ? 'Modifica' : 'Configura'; ?>
                                         </a>
-                                        <a href="<?php echo esc_url( $toggle_golden_url ); ?>" class="button button-small" style="<?php echo $golden_style; ?>"><?php echo $golden_text; ?></a>
+                                        <a href="<?php echo esc_url( $toggle_golden_url ); ?>" class="<?php echo $golden_btn_class; ?>"><?php echo $golden_text; ?></a>
                                     <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </tbody>
             </table>
-        </div>
-        <?php
-    }
-
-    public function render_analytics() {
-        ?>
-        <div class="wrap">
-            <h1>📊 Analytics</h1>
-            <div class="card">
-                <h2>Analytics Avanzate</h2>
-                <p>Questa sezione mostrerà grafici e statistiche dettagliate sull'uso del sistema.</p>
-                <p><em>Dashboard analytics in fase di sviluppo...</em></p>
+                </div>
             </div>
         </div>
         <?php
@@ -661,73 +728,102 @@ class IPV_Vendor_Admin_Dashboard {
         $supadata_api_key_3 = get_option( 'ipv_supadata_api_key_3', '' );
         $openai_api_key     = get_option( 'ipv_openai_api_key', '' );
         ?>
-        <div class="wrap">
-            <h1>⚙️ Impostazioni</h1>
+        <div class="ipv-modern-page bg-gray-50 min-h-screen -ml-5 -mt-2 p-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">⚙️ Impostazioni</h1>
+                <p class="text-gray-600">Configura le chiavi API e le impostazioni di sistema</p>
+            </div>
 
-            <form method="post">
-                <?php wp_nonce_field( 'ipv_vendor_settings' ); ?>
+            <!-- Settings Form -->
+            <div class="ipv-card max-w-4xl">
+                <div class="ipv-card-header">
+                    <h2 class="ipv-card-title">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        🔑 API Keys & Configurazione
+                    </h2>
+                </div>
 
-                <table class="form-table">
-                    <tr>
-                        <th scope="row">Modalità Rotazione SupaData Keys</th>
-                        <td>
-                            <select name="supadata_rotation_mode">
+                <form method="post" class="p-6">
+                    <?php wp_nonce_field( 'ipv_vendor_settings' ); ?>
+
+                    <div class="space-y-6">
+                        <!-- Rotation Mode -->
+                        <div>
+                            <label for="supadata_rotation_mode" class="ipv-label">Modalità Rotazione SupaData Keys</label>
+                            <select name="supadata_rotation_mode" id="supadata_rotation_mode" class="ipv-select">
                                 <option value="fixed" <?php selected( $rotation_mode, 'fixed' ); ?>>Fissa (usa sempre key 1)</option>
                                 <option value="round-robin" <?php selected( $rotation_mode, 'round-robin' ); ?>>Round-Robin (rotazione automatica)</option>
                             </select>
-                            <p class="description">Modalità di rotazione per le 3 API keys SupaData configurate.</p>
-                        </td>
-                    </tr>
+                            <p class="text-sm text-gray-500 mt-1">Modalità di rotazione per le 3 API keys SupaData configurate.</p>
+                        </div>
 
-                    <tr>
-                        <th scope="row">YouTube API Key</th>
-                        <td>
-                            <input type="text" name="youtube_api_key" value="<?php echo esc_attr( $youtube_api_key ); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description">Chiave API usata per le chiamate a YouTube Data API. Lascia vuoto per usare la costante <code>YOUTUBE_API_KEY</code> definita in <code>class-api-gateway.php</code>.</p>
-                        </td>
-                    </tr>
+                        <!-- YouTube API Key -->
+                        <div>
+                            <label for="youtube_api_key" class="ipv-label">YouTube API Key</label>
+                            <input type="text" name="youtube_api_key" id="youtube_api_key" value="<?php echo esc_attr( $youtube_api_key ); ?>" class="ipv-input font-mono text-sm" autocomplete="off" />
+                            <p class="text-sm text-gray-500 mt-1">Chiave API usata per le chiamate a YouTube Data API. Lascia vuoto per usare la costante <code class="ipv-code text-xs">YOUTUBE_API_KEY</code> definita in <code class="ipv-code text-xs">class-api-gateway.php</code>.</p>
+                        </div>
 
-                    <tr>
-                        <th scope="row">SupaData API Key 1</th>
-                        <td>
-                            <input type="text" name="supadata_api_key_1" value="<?php echo esc_attr( $supadata_api_key_1 ); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description">Prima chiave SupaData usata per le trascrizioni. Lascia vuoto per usare la costante <code>SUPADATA_API_KEY_1</code>.</p>
-                        </td>
-                    </tr>
+                        <!-- SupaData Keys -->
+                        <div class="space-y-4">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                </svg>
+                                SupaData API Keys
+                            </h3>
 
-                    <tr>
-                        <th scope="row">SupaData API Key 2</th>
-                        <td>
-                            <input type="text" name="supadata_api_key_2" value="<?php echo esc_attr( $supadata_api_key_2 ); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description">Seconda chiave SupaData (opzionale). Lascia vuoto per usare la costante <code>SUPADATA_API_KEY_2</code>.</p>
-                        </td>
-                    </tr>
+                            <div>
+                                <label for="supadata_api_key_1" class="ipv-label">SupaData API Key 1</label>
+                                <input type="text" name="supadata_api_key_1" id="supadata_api_key_1" value="<?php echo esc_attr( $supadata_api_key_1 ); ?>" class="ipv-input font-mono text-sm" autocomplete="off" />
+                                <p class="text-sm text-gray-500 mt-1">Prima chiave SupaData usata per le trascrizioni. Lascia vuoto per usare la costante <code class="ipv-code text-xs">SUPADATA_API_KEY_1</code>.</p>
+                            </div>
 
-                    <tr>
-                        <th scope="row">SupaData API Key 3</th>
-                        <td>
-                            <input type="text" name="supadata_api_key_3" value="<?php echo esc_attr( $supadata_api_key_3 ); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description">Terza chiave SupaData (opzionale). Lascia vuoto per usare la costante <code>SUPADATA_API_KEY_3</code>.</p>
-                        </td>
-                    </tr>
+                            <div>
+                                <label for="supadata_api_key_2" class="ipv-label">SupaData API Key 2</label>
+                                <input type="text" name="supadata_api_key_2" id="supadata_api_key_2" value="<?php echo esc_attr( $supadata_api_key_2 ); ?>" class="ipv-input font-mono text-sm" autocomplete="off" />
+                                <p class="text-sm text-gray-500 mt-1">Seconda chiave SupaData (opzionale). Lascia vuoto per usare la costante <code class="ipv-code text-xs">SUPADATA_API_KEY_2</code>.</p>
+                            </div>
 
-                    <tr>
-                        <th scope="row">OpenAI API Key</th>
-                        <td>
-                            <input type="text" name="openai_api_key" value="<?php echo esc_attr( $openai_api_key ); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description">Chiave usata per le richieste a OpenAI. Lascia vuoto per usare la costante <code>OPENAI_API_KEY</code>.</p>
-                        </td>
-                    </tr>
-                </table>
+                            <div>
+                                <label for="supadata_api_key_3" class="ipv-label">SupaData API Key 3</label>
+                                <input type="text" name="supadata_api_key_3" id="supadata_api_key_3" value="<?php echo esc_attr( $supadata_api_key_3 ); ?>" class="ipv-input font-mono text-sm" autocomplete="off" />
+                                <p class="text-sm text-gray-500 mt-1">Terza chiave SupaData (opzionale). Lascia vuoto per usare la costante <code class="ipv-code text-xs">SUPADATA_API_KEY_3</code>.</p>
+                            </div>
+                        </div>
 
-                <p class="submit">
-                    <button type="submit" name="ipv_save_settings" class="button button-primary">Salva Impostazioni</button>
-                </p>
-            </form>
+                        <!-- OpenAI API Key -->
+                        <div>
+                            <label for="openai_api_key" class="ipv-label">OpenAI API Key</label>
+                            <input type="text" name="openai_api_key" id="openai_api_key" value="<?php echo esc_attr( $openai_api_key ); ?>" class="ipv-input font-mono text-sm" autocomplete="off" />
+                            <p class="text-sm text-gray-500 mt-1">Chiave usata per le richieste a OpenAI. Lascia vuoto per usare la costante <code class="ipv-code text-xs">OPENAI_API_KEY</code>.</p>
+                        </div>
 
-            <div class="card" style="margin-top: 20px;">
-                <h3>ℹ️ Configurazione avanzata</h3>
-                <p>Le costanti di fallback rimangono disponibili in <code>includes/class-api-gateway.php</code>. Se compili i campi sopra, verranno usate le chiavi salvate nel database. Se lasci vuoto un campo, verrà utilizzata la costante corrispondente.</p>
+                        <!-- Submit Button -->
+                        <div class="flex justify-end pt-4 border-t border-gray-200">
+                            <button type="submit" name="ipv_save_settings" class="ipv-btn ipv-btn-primary">
+                                💾 Salva Impostazioni
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Info Card -->
+            <div class="ipv-card max-w-4xl mt-6">
+                <div class="p-6 bg-blue-50 border-l-4 border-blue-500">
+                    <h3 class="text-lg font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        ℹ️ Configurazione Avanzata
+                    </h3>
+                    <p class="text-gray-700">Le costanti di fallback rimangono disponibili in <code class="ipv-code text-xs">includes/class-api-gateway.php</code>. Se compili i campi sopra, verranno usate le chiavi salvate nel database. Se lasci vuoto un campo, verrà utilizzata la costante corrispondente.</p>
+                </div>
             </div>
         </div>
         <?php
