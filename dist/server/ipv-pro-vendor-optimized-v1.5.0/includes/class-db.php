@@ -27,8 +27,14 @@ class IPV_Vendor_DB {
         // Create ledger table
         self::create_ledger_table();
 
+        // Create rate limits table (v1.5.0)
+        IPV_Vendor_Rate_Limiter::create_table();
+
+        // Create audit log table (v1.5.0)
+        IPV_Vendor_Audit_Log::create_table();
+
         // Update version
-        update_option( 'ipv_vendor_db_version', '1.4.1' );
+        update_option( 'ipv_vendor_db_version', '1.5.0' );
     }
 
     /**

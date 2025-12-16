@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.4.10
+ * Version: 1.5.0
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -14,7 +14,81 @@
  * Domain Path: /languages
  * License: GPL v2 or later
  *
+ * ====================================
+ * CHANGELOG v1.5.0 (2025-12-16) - MAJOR UI/UX UPDATE
+ * ====================================
+ *
+ * 🎨 UI/UX MODERNIZATION:
+ * - ✨ Integrato Tailwind CSS v3.4 per design moderno e responsive
+ * - 🎨 Redesign completo Admin Dashboard con UI/UX professionale
+ * - 📱 Mobile-first responsive design ottimizzato per tutti i dispositivi
+ * - 🌈 Sistema di colori moderno (Blue, Green, Amber, Red gradients)
+ * - 💅 Custom scrollbar, smooth transitions, micro-animations
+ *
+ * 📊 DASHBOARD ANALYTICS:
+ * - 📈 Nuova pagina Analytics con Chart.js per visualizzazione dati
+ * - 💰 MRR (Monthly Recurring Revenue) con trend chart 12 mesi
+ * - 📊 ARR (Annual Recurring Revenue) calcolato automaticamente
+ * - 👥 Customer Lifetime Value (LTV) e ARPU metrics
+ * - 📉 Churn Rate tracking con percentuali
+ * - 🎯 Plans Distribution (doughnut chart interattivo)
+ * - ⚡ Credits Usage Chart (bar chart ultimi 7 giorni)
+ * - 🔄 Live stats con AJAX real-time updates
+ *
+ * 🔔 TOAST NOTIFICATIONS:
+ * - ✅ Toast notifications moderne per feedback operazioni
+ * - 🎨 4 tipi: Success (green), Error (red), Warning (yellow), Info (blue)
+ * - ⏱️ Auto-dismiss dopo 4 secondi con animazioni smooth
+ * - 📍 Posizionate top-right con stacking intelligente
+ *
+ * 🛡️ SECURITY & PERFORMANCE:
+ * - 🚦 Rate Limiting API integrato (60-120 req/min per endpoint)
+ *   * License Info: 60 req/min
+ *   * YouTube Gateway: 100 req/min
+ *   * Downloads: 10 req/min
+ *   * Default: 120 req/min
+ * - 📝 Audit Log completo per azioni critiche
+ *   * License create/delete/suspend
+ *   * Credits add/remove/reset
+ *   * Plan changes, refunds
+ *   * Golden Prompt uploads/deletes
+ *   * Config changes, security alerts
+ * - 🔒 IP tracking e identifier-based limiting
+ * - 📊 Rate limit stats e reset capabilities
+ * - 🗄️ Audit log export CSV per compliance
+ *
+ * 🎨 NEW COMPONENTS:
+ * - IPV_Vendor_Modern_Assets: Gestione assets moderni (Tailwind, Alpine.js, Chart.js)
+ * - IPV_Vendor_Analytics_Dashboard: Dashboard analytics completa
+ * - IPV_Vendor_Rate_Limiter: Sistema rate limiting con database tracking
+ * - IPV_Vendor_Audit_Log: Sistema logging azioni critiche con export
+ *
+ * 📦 NEW TABLES:
+ * - ipv_rate_limits: Tracking requests per identifier/endpoint/window
+ * - ipv_audit_log: Log eventi con user, IP, metadata JSON
+ *
+ * 🎨 NEW FILES:
+ * - admin/assets/css/modern-admin.css: Tailwind extensions + custom components
+ * - admin/assets/js/modern-admin.js: Toast, charts, AJAX, utils
+ * - includes/class-modern-assets.php: Assets manager
+ * - includes/class-analytics-dashboard.php: Analytics page renderer
+ * - includes/class-rate-limiter.php: API rate limiting
+ * - includes/class-audit-log.php: Audit logging system
+ *
+ * 🔧 IMPROVEMENTS:
+ * - 🎯 Custom CSS variables per brand colors
+ * - 📐 Grid system responsive (1/2/3/4 columns)
+ * - 🎴 Card components con shadows e hover effects
+ * - 🔘 Button variants (primary, success, danger, secondary, ghost)
+ * - 📝 Form components styled con Tailwind
+ * - 🏷️ Badge system (success, warning, danger, primary, gray)
+ * - 📊 Stat cards con icons, values, change indicators
+ * - ⚙️ Skeleton loaders e shimmer effects
+ * - 🌙 Dark mode support preparato (future implementation)
+ *
+ * ====================================
  * CHANGELOG v1.4.10 (2025-12-16):
+ * ====================================
  * - REMOVE: Piano Executive rimosso (non commerciale a 499€/mese)
  *   - Verrà sostituito da piano White Label personalizzato in futuro
  * - UPDATE: 7 piani SaaS attivi (Trial, Starter, Professional, Business, Golden Prompt, IPV Pro 10, IPV Pro 100)
@@ -404,7 +478,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Constants
-define( 'IPV_VENDOR_VERSION', '1.4.10' );
+define( 'IPV_VENDOR_VERSION', '1.5.0' );
 define( 'IPV_VENDOR_FILE', __FILE__ );
 define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );

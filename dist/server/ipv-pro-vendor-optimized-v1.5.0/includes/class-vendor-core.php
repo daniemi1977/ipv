@@ -37,6 +37,10 @@ class IPV_Vendor_Core {
         require_once IPV_VENDOR_DIR . 'includes/class-webhook-handler.php';
         require_once IPV_VENDOR_DIR . 'includes/class-admin-dashboard.php';
         require_once IPV_VENDOR_DIR . 'includes/class-customer-portal.php';
+        require_once IPV_VENDOR_DIR . 'includes/class-modern-assets.php';
+        require_once IPV_VENDOR_DIR . 'includes/class-analytics-dashboard.php';
+        require_once IPV_VENDOR_DIR . 'includes/class-rate-limiter.php';
+        require_once IPV_VENDOR_DIR . 'includes/class-audit-log.php';
     }
 
     private function init_hooks() {
