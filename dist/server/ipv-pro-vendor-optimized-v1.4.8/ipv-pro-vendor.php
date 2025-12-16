@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.4.7
+ * Version: 1.4.8
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -13,6 +13,48 @@
  * Text Domain: ipv-pro-vendor
  * Domain Path: /languages
  * License: GPL v2 or later
+ *
+ * CHANGELOG v1.4.8 (2025-12-16):
+ * - FEATURE: Sistema Auto-Generazione Golden Prompt
+ *   - Nuova pagina "⚙️ Configura Golden Prompt" per licenze Golden
+ *   - Form predisposto con campi personalizzabili:
+ *     - Nome Canale (obbligatorio)
+ *     - Link Social (Telegram, Facebook, Instagram, Sito, Donazioni)
+ *     - Sponsor (nome + link, opzionale)
+ *     - Testo "Supporta il Canale" (customizzabile)
+ *   - Generazione automatica file .txt personalizzato
+ *   - Sezioni AI-driven: Argomenti, Ospiti, Persone/Enti (estratti dal CLIENT)
+ *   - Pulsante "⚙️ Configura" sostituisce "📎 Carica" nella tabella licenze
+ * - FEATURE: Template Golden Prompt Personalizzato
+ *   - Template completo con tutte le sezioni:
+ *     - Descrizione ottimizzata
+ *     - Argomenti trattati (AI)
+ *     - Ospiti (AI)
+ *     - Persone/Enti menzionati (AI)
+ *     - Sponsor personalizzato
+ *     - Supporta il Canale (custom text)
+ *     - Capitoli/timestamp
+ *     - Link Utili (social personalizzati)
+ *     - Hashtag strategici
+ *   - Generato automaticamente da configurazione admin
+ *   - Salvato come file .txt protetto
+ * - METADATA: Nuovi campi configurazione Golden Prompt
+ *   - _golden_channel_name: Nome canale cliente
+ *   - _golden_telegram: Link Telegram
+ *   - _golden_facebook: Link Facebook
+ *   - _golden_instagram: Link Instagram
+ *   - _golden_website: Sito ufficiale
+ *   - _golden_donations: Link donazioni
+ *   - _golden_sponsor_name: Nome sponsor
+ *   - _golden_sponsor_link: Link sponsor
+ *   - _golden_support_text: Testo call-to-action personalizzato
+ * - UI/UX: Flusso Semplificato
+ *   1. Admin clicca "⚙️ Configura" nella tabella licenze
+ *   2. Compila form con dati cliente
+ *   3. Clicca "✨ Genera Golden Prompt"
+ *   4. Sistema genera file .txt automaticamente
+ *   5. Admin abilita dal toggle nella tabella licenze
+ *   6. CLIENT scarica automaticamente alla prossima sync
  *
  * CHANGELOG v1.4.7 (2025-12-16):
  * - FEATURE: Template BASE Gratuito per Tutti
@@ -337,7 +379,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Constants
-define( 'IPV_VENDOR_VERSION', '1.4.7' );
+define( 'IPV_VENDOR_VERSION', '1.4.8' );
 define( 'IPV_VENDOR_FILE', __FILE__ );
 define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );

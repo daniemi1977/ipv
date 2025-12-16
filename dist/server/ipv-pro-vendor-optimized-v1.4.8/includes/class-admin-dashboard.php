@@ -103,6 +103,76 @@ class IPV_Vendor_Admin_Dashboard {
             ], admin_url( 'admin.php' ) ) );
             exit;
         }
+
+        // Generate Golden Prompt
+        if ( isset( $_POST['ipv_generate_golden_submit'] ) && isset( $_POST['license_id'] ) ) {
+            $license_id = absint( $_POST['license_id'] );
+
+            // Verify nonce
+            check_admin_referer( 'ipv_generate_golden_' . $license_id );
+
+            // Check permissions
+            if ( ! current_user_can( 'manage_options' ) ) {
+                wp_die( 'Insufficient permissions' );
+            }
+
+            // Get license
+            $license = $wpdb->get_row( $wpdb->prepare(
+                "SELECT * FROM {$wpdb->prefix}ipv_licenses WHERE id = %d",
+                $license_id
+            ));
+
+            if ( ! $license || $license->variant_slug !== 'golden_prompt' ) {
+                wp_die( 'Invalid license or not a Golden prompt license' );
+            }
+
+            // Get form data
+            $channel_name = sanitize_text_field( $_POST['channel_name'] ?? '' );
+            $telegram = esc_url_raw( $_POST['telegram'] ?? '' );
+            $facebook = esc_url_raw( $_POST['facebook'] ?? '' );
+            $instagram = esc_url_raw( $_POST['instagram'] ?? '' );
+            $website = esc_url_raw( $_POST['website'] ?? '' );
+            $donations = esc_url_raw( $_POST['donations'] ?? '' );
+            $sponsor_name = sanitize_text_field( $_POST['sponsor_name'] ?? '' );
+            $sponsor_link = esc_url_raw( $_POST['sponsor_link'] ?? '' );
+            $support_text = sanitize_textarea_field( $_POST['support_text'] ?? '• Lascia un like\n• Commenta\n• Condividi il video' );
+
+            // Save metadata
+            $metadata = [
+                '_golden_channel_name' => $channel_name,
+                '_golden_telegram' => $telegram,
+                '_golden_facebook' => $facebook,
+                '_golden_instagram' => $instagram,
+                '_golden_website' => $website,
+                '_golden_donations' => $donations,
+                '_golden_sponsor_name' => $sponsor_name,
+                '_golden_sponsor_link' => $sponsor_link,
+                '_golden_support_text' => $support_text,
+            ];
+
+            foreach ( $metadata as $meta_key => $meta_value ) {
+                $wpdb->query( $wpdb->prepare(
+                    "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+                    VALUES (%d, %s, %s)
+                    ON DUPLICATE KEY UPDATE meta_value = %s",
+                    $license_id,
+                    $meta_key,
+                    $meta_value,
+                    $meta_value
+                ));
+            }
+
+            // Generate Golden Prompt file
+            $this->generate_golden_prompt_file( $license_id, $metadata );
+
+            // Redirect back with success message
+            wp_safe_redirect( add_query_arg( [
+                'page' => 'ipv-vendor-configure-golden',
+                'license_id' => $license_id,
+                'golden_generated' => 1
+            ], admin_url( 'admin.php' ) ) );
+            exit;
+        }
     }
 
     public function add_admin_menu() {
@@ -175,6 +245,16 @@ class IPV_Vendor_Admin_Dashboard {
             'manage_options',
             'ipv-vendor-upload-golden',
             [ $this, 'render_upload_golden' ]
+        );
+
+        // Configure Golden Prompt (hidden, accessed via link from licenses)
+        add_submenu_page(
+            null, // Hidden from menu
+            'Configura Golden Prompt',
+            'Configura Golden Prompt',
+            'manage_options',
+            'ipv-vendor-configure-golden',
+            [ $this, 'render_configure_golden' ]
         );
     }
 
@@ -523,7 +603,7 @@ class IPV_Vendor_Admin_Dashboard {
                                             admin_url( 'admin.php?page=ipv-vendor-licenses&action=toggle_golden&id=' . $license->id ),
                                             'toggle_golden_' . $license->id
                                         );
-                                        $upload_golden_url = admin_url( 'admin.php?page=ipv-vendor-upload-golden&license_id=' . $license->id );
+                                        $configure_golden_url = admin_url( 'admin.php?page=ipv-vendor-configure-golden&license_id=' . $license->id );
 
                                         $golden_text = $golden_enabled ? '🌟 Disabilita' : '⭐ Abilita';
                                         $golden_style = $golden_enabled ? 'background: #46b450; color: white; border-color: #46b450;' : 'background: #f7b500; color: white; border-color: #f7b500;';
@@ -532,8 +612,8 @@ class IPV_Vendor_Admin_Dashboard {
                                     <a href="<?php echo esc_url( $toggle_url ); ?>" class="button button-small"><?php echo $toggle_text; ?></a>
                                     <a href="<?php echo esc_url( $change_plan_url ); ?>" class="button button-small" style="background: #667eea; color: white; border-color: #667eea;">🔄 Cambia Piano</a>
                                     <?php if ( $is_golden_prompt ) : ?>
-                                        <a href="<?php echo esc_url( $upload_golden_url ); ?>" class="button button-small" style="background: #9b59b6; color: white; border-color: #9b59b6;" title="<?php echo $has_file ? 'File caricato ✓' : 'Nessun file'; ?>">
-                                            📎 <?php echo $has_file ? 'Modifica' : 'Carica'; ?>
+                                        <a href="<?php echo esc_url( $configure_golden_url ); ?>" class="button button-small" style="background: #9b59b6; color: white; border-color: #9b59b6;" title="<?php echo $has_file ? 'Configurato ✓' : 'Da configurare'; ?>">
+                                            ⚙️ <?php echo $has_file ? 'Modifica' : 'Configura'; ?>
                                         </a>
                                         <a href="<?php echo esc_url( $toggle_golden_url ); ?>" class="button button-small" style="<?php echo $golden_style; ?>"><?php echo $golden_text; ?></a>
                                     <?php endif; ?>
@@ -1198,6 +1278,424 @@ class IPV_Vendor_Admin_Dashboard {
                     </p>
                 </form>
             </div>
+        </div>
+        <?php
+    }
+
+    /**
+     * Generate Golden Prompt file from configuration
+     */
+    private function generate_golden_prompt_file( $license_id, $metadata ) {
+        global $wpdb;
+
+        // Build Golden Prompt template
+        $template = $this->build_golden_prompt_template( $metadata );
+
+        // Create upload directory
+        $upload_dir = wp_upload_dir();
+        $ipv_dir = $upload_dir['basedir'] . '/ipv-golden-prompts';
+
+        if ( ! file_exists( $ipv_dir ) ) {
+            wp_mkdir_p( $ipv_dir );
+            file_put_contents( $ipv_dir . '/.htaccess', "Options -Indexes\nDeny from all" );
+            file_put_contents( $ipv_dir . '/index.php', "<?php\n// Silence is golden" );
+        }
+
+        // Generate secure filename
+        $secure_filename = 'golden-prompt-license-' . $license_id . '-' . wp_generate_password( 16, false ) . '.txt';
+        $file_path = $ipv_dir . '/' . $secure_filename;
+
+        // Delete old file if exists
+        $old_file = $wpdb->get_var( $wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+            WHERE license_id = %d AND meta_key = '_golden_prompt_file'",
+            $license_id
+        ));
+
+        if ( $old_file && file_exists( $old_file ) ) {
+            unlink( $old_file );
+        }
+
+        // Save new file
+        file_put_contents( $file_path, $template );
+
+        // Save file metadata
+        $wpdb->query( $wpdb->prepare(
+            "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+            VALUES (%d, '_golden_prompt_file', %s)
+            ON DUPLICATE KEY UPDATE meta_value = %s",
+            $license_id, $file_path, $file_path
+        ));
+
+        $wpdb->query( $wpdb->prepare(
+            "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+            VALUES (%d, '_golden_prompt_uploaded_at', %s)
+            ON DUPLICATE KEY UPDATE meta_value = %s",
+            $license_id, current_time( 'mysql' ), current_time( 'mysql' )
+        ));
+
+        $wpdb->query( $wpdb->prepare(
+            "INSERT INTO {$wpdb->prefix}ipv_license_meta (license_id, meta_key, meta_value)
+            VALUES (%d, '_golden_prompt_original_filename', %s)
+            ON DUPLICATE KEY UPDATE meta_value = %s",
+            $license_id, 'golden-prompt-generated.txt', 'golden-prompt-generated.txt'
+        ));
+
+        return $file_path;
+    }
+
+    /**
+     * Build Golden Prompt template with personalized data
+     */
+    private function build_golden_prompt_template( $metadata ) {
+        $channel_name = $metadata['_golden_channel_name'] ?? 'Il Canale';
+        $telegram = $metadata['_golden_telegram'] ?? '';
+        $facebook = $metadata['_golden_facebook'] ?? '';
+        $instagram = $metadata['_golden_instagram'] ?? '';
+        $website = $metadata['_golden_website'] ?? '';
+        $donations = $metadata['_golden_donations'] ?? '';
+        $sponsor_name = $metadata['_golden_sponsor_name'] ?? '';
+        $sponsor_link = $metadata['_golden_sponsor_link'] ?? '';
+        $support_text = $metadata['_golden_support_text'] ?? '• Lascia un like\n• Commenta\n• Condividi il video';
+
+        // Start with BASE template structure
+        $template = "# GOLDEN PROMPT - $channel_name\n";
+        $template .= "# Template Personalizzato - Generato automaticamente\n";
+        $template .= "# Versione: 1.0\n\n";
+        $template .= "---\n\n";
+        $template .= "## FORMATO OUTPUT COMPLETO\n\n";
+        $template .= "```\n";
+        $template .= "[TITOLO VIDEO ESATTO]\n\n";
+
+        // DESCRIZIONE
+        $template .= "✨ DESCRIZIONE\n";
+        $template .= "[150-200 parole. Narrativa impersonale (terza persona).\n\n";
+        $template .= "Struttura in 3 paragrafi:\n";
+        $template .= "- 1° Paragrafo (50-60 parole): Hook + tema principale\n";
+        $template .= "- 2° Paragrafo (50-70 parole): Sviluppo contenuti\n";
+        $template .= "- 3° Paragrafo (40-50 parole): Chiusura\n\n";
+        $template .= "REGOLE:\n";
+        $template .= "- Usa terza persona: \"viene analizzato\", \"l'episodio tratta\"\n";
+        $template .= "- NO \"noi\", \"il conduttore\"\n";
+        $template .= "- Testo fluido e naturale]\n\n";
+
+        // ARGOMENTI TRATTATI
+        $template .= "🗂️ ARGOMENTI TRATTATI\n";
+        $template .= "[Estratti tramite analisi AI del contenuto]\n";
+        $template .= "• [Argomento 1]\n";
+        $template .= "• [Argomento 2]\n";
+        $template .= "• [Argomento 3]\n";
+        $template .= "• [... altri argomenti]\n\n";
+
+        // OSPITI
+        $template .= "👤 OSPITI\n";
+        $template .= "[Estratti tramite analisi AI]\n";
+        $template .= "• [Nome Ospite] — [Ruolo/Descrizione]\n";
+        $template .= "oppure: Nessun ospite presente\n\n";
+
+        // PERSONE/ENTI MENZIONATI
+        $template .= "🏛️ PERSONE / ENTI MENZIONATI\n";
+        $template .= "[Estratti tramite analisi AI]\n";
+        $template .= "• [Nome] — [Descrizione]\n";
+        $template .= "• [Nome] — [Descrizione]\n\n";
+
+        // SPONSOR (se presente)
+        if ( !empty( $sponsor_name ) && !empty( $sponsor_link ) ) {
+            $template .= "🤝 SPONSOR\n";
+            $template .= "$sponsor_name\n";
+            $template .= "Sostieni il progetto 👉 $sponsor_link\n\n";
+        }
+
+        // SUPPORTA IL CANALE
+        $template .= "💬 SUPPORTA IL CANALE\n";
+        $template .= $support_text . "\n\n";
+
+        // CAPITOLI
+        $template .= "⏱️ CAPITOLI\n";
+        $template .= "⚠️ DURATA TOTALE VIDEO: [inserire durata] ⚠️\n";
+        $template .= "🚨 I timestamp DEVONO coprire TUTTA la durata fino alla FINE del video!\n\n";
+        $template .= "ISTRUZIONI TIMESTAMP:\n";
+        $template .= "- Timestamp iniziale: 00:00 — Introduzione\n";
+        $template .= "- Timestamp finale DEVE essere vicino alla fine del video\n";
+        $template .= "- Genera timestamp ad OGNI CAMBIO DI ARGOMENTO\n";
+        $template .= "- Distribuisci uniformemente lungo TUTTA la trascrizione\n";
+        $template .= "- Video > 60 min: MINIMO 15-20 timestamp\n";
+        $template .= "- Video 30-60 min: MINIMO 10-15 timestamp\n";
+        $template .= "- Formato: MM:SS per video < 1 ora, H:MM:SS per video ≥ 1 ora\n\n";
+        $template .= "00:00 — Introduzione\n";
+        $template .= "[timestamp] — [Titolo capitolo]\n";
+        $template .= "[timestamp] — [Titolo capitolo]\n";
+        $template .= "...\n\n";
+
+        // LINK UTILI
+        $template .= "🔧 LINK UTILI\n";
+        if ( !empty( $telegram ) ) $template .= "📱 Telegram: $telegram\n";
+        if ( !empty( $facebook ) ) $template .= "👥 Facebook: $facebook\n";
+        if ( !empty( $instagram ) ) $template .= "📸 Instagram: $instagram\n";
+        if ( !empty( $website ) ) $template .= "🌐 Sito ufficiale: $website\n";
+        if ( !empty( $donations ) ) $template .= "💝 Donazioni: $donations\n";
+        $template .= "\n";
+
+        // HASHTAG
+        $template .= "🏷️ HASHTAG\n";
+        $template .= "[15-20 hashtag strategici su UNA RIGA]\n";
+        $template .= "```\n\n";
+
+        $template .= "---\n\n";
+        $template .= "## REGOLE CRITICHE\n\n";
+        $template .= "### 🚨 CAPITOLI/TIMESTAMP\n";
+        $template .= "* I timestamp DEVONO coprire TUTTA la durata del video FINO ALLA FINE\n";
+        $template .= "* L'ULTIMO timestamp deve essere vicino alla fine\n";
+        $template .= "* NON FERMARTI A METÀ VIDEO!\n\n";
+        $template .= "### 🚫 TIMESTAMP FINALE\n";
+        $template .= "UN SOLO timestamp per la chiusura. NON spacchettare!\n\n";
+        $template .= "❌ SBAGLIATO: 4 timestamp separati per chiusura\n";
+        $template .= "✅ CORRETTO: 1 solo timestamp finale\n\n";
+        $template .= "### 🏷️ HASHTAG\n";
+        $template .= "15-20 hashtag su UNA RIGA, ordinati per priorità.\n\n";
+        $template .= "---\n\n";
+        $template .= "## OUTPUT\n\n";
+        $template .= "Genera descrizione YouTube completa seguendo questo formato.\n";
+        $template .= "NESSUN commento aggiuntivo.\n";
+
+        return $template;
+    }
+
+    /**
+     * Render Configure Golden Prompt page
+     */
+    public function render_configure_golden() {
+        global $wpdb;
+
+        // Get license ID
+        $license_id = isset( $_GET['license_id'] ) ? absint( $_GET['license_id'] ) : 0;
+
+        if ( ! $license_id ) {
+            wp_die( 'License ID mancante' );
+        }
+
+        // Get license
+        $license = $wpdb->get_row( $wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}ipv_licenses WHERE id = %d",
+            $license_id
+        ));
+
+        if ( ! $license || $license->variant_slug !== 'golden_prompt' ) {
+            wp_die( 'Licenza non valida o non è di tipo Golden Prompt' );
+        }
+
+        // Get current configuration
+        $metadata_keys = [
+            '_golden_channel_name',
+            '_golden_telegram',
+            '_golden_facebook',
+            '_golden_instagram',
+            '_golden_website',
+            '_golden_donations',
+            '_golden_sponsor_name',
+            '_golden_sponsor_link',
+            '_golden_support_text',
+        ];
+
+        $config = [];
+        foreach ( $metadata_keys as $key ) {
+            $value = $wpdb->get_var( $wpdb->prepare(
+                "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+                WHERE license_id = %d AND meta_key = %s",
+                $license_id,
+                $key
+            ));
+            $config[$key] = $value ?? '';
+        }
+
+        // Check if file exists
+        $current_file = $wpdb->get_var( $wpdb->prepare(
+            "SELECT meta_value FROM {$wpdb->prefix}ipv_license_meta
+            WHERE license_id = %d AND meta_key = '_golden_prompt_file'",
+            $license_id
+        ));
+        $has_file = !empty($current_file) && file_exists($current_file);
+
+        // Check if just generated
+        $just_generated = isset( $_GET['golden_generated'] );
+
+        ?>
+        <div class="wrap">
+            <h1>⚙️ Configura Golden Prompt - Licenza #<?php echo $license->id; ?></h1>
+
+            <div style="background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px; margin: 20px 0;">
+                <h2 style="margin-top: 0;">📋 Informazioni Licenza</h2>
+                <p style="margin: 10px 0;">
+                    <strong>Email:</strong> <?php echo esc_html( $license->email ); ?><br>
+                    <strong>Chiave:</strong> <code><?php echo esc_html( $license->license_key ); ?></code><br>
+                    <strong>Stato:</strong> <span style="color: <?php echo $license->status === 'active' ? '#46b450' : '#dc3232'; ?>"><?php echo esc_html( $license->status ); ?></span>
+                </p>
+            </div>
+
+            <?php if ( $just_generated ) : ?>
+                <div class="notice notice-success is-dismissible">
+                    <p><strong>✅ Golden Prompt generato con successo!</strong> Il file è stato creato e salvato. Ora puoi abilitarlo dal toggle nella tabella licenze.</p>
+                </div>
+            <?php endif; ?>
+
+            <?php if ( $has_file ) : ?>
+                <div style="background: #d4edda; border-left: 4px solid #46b450; padding: 15px; margin: 20px 0;">
+                    <p><strong>✅ Golden Prompt già generato</strong></p>
+                    <p>Puoi modificare la configurazione e rigenerare il file in qualsiasi momento.</p>
+                </div>
+            <?php else : ?>
+                <div style="background: #fff3cd; border-left: 4px solid #f7b500; padding: 15px; margin: 20px 0;">
+                    <p><strong>⚠️ Nessun Golden Prompt configurato</strong></p>
+                    <p>Compila il form sottostante per generare il Golden Prompt personalizzato per questo cliente.</p>
+                </div>
+            <?php endif; ?>
+
+            <div style="background: #f0f6fc; border-left: 4px solid #2271b1; padding: 15px; margin: 20px 0;">
+                <h3 style="margin-top: 0;">💡 Come Funziona</h3>
+                <p>Il <strong>Golden Prompt</strong> è un template personalizzato che il CLIENT plugin scaricherà automaticamente quando abilitato.</p>
+                <p><strong>Configurazione automatica:</strong></p>
+                <ol style="margin: 10px 0 0 20px;">
+                    <li>Compila i campi sottostanti con i dati del cliente</li>
+                    <li>Clicca "Genera Golden Prompt" per creare il file</li>
+                    <li>Il sistema genererà automaticamente un file .txt personalizzato</li>
+                    <li>Abilita il Golden Prompt dal toggle nella tabella licenze</li>
+                    <li>Il CLIENT scaricherà automaticamente il template alla prossima sincronizzazione</li>
+                </ol>
+                <p><strong>Sezioni automatiche:</strong> Argomenti, Ospiti, Persone/Enti vengono estratti automaticamente dal CLIENT tramite AI.</p>
+            </div>
+
+            <form method="post" action="">
+                <?php wp_nonce_field( 'ipv_generate_golden_' . $license_id ); ?>
+                <input type="hidden" name="license_id" value="<?php echo $license_id; ?>">
+
+                <div style="background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px; margin: 20px 0;">
+                    <h2 style="margin-top: 0;">🎬 Informazioni Canale</h2>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="channel_name">Nome Canale *</label>
+                            </th>
+                            <td>
+                                <input type="text" name="channel_name" id="channel_name" class="regular-text"
+                                       value="<?php echo esc_attr( $config['_golden_channel_name'] ); ?>" required>
+                                <p class="description">Es: Il Punto di Vista</p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px; margin: 20px 0;">
+                    <h2 style="margin-top: 0;">🔗 Link Social</h2>
+                    <p class="description">Inserisci i link completi (con https://). Lascia vuoto se non disponibile.</p>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="telegram">📱 Telegram</label>
+                            </th>
+                            <td>
+                                <input type="url" name="telegram" id="telegram" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_telegram'] ); ?>"
+                                       placeholder="https://t.me/canale">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="facebook">👥 Facebook</label>
+                            </th>
+                            <td>
+                                <input type="url" name="facebook" id="facebook" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_facebook'] ); ?>"
+                                       placeholder="https://facebook.com/groups/...">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="instagram">📸 Instagram</label>
+                            </th>
+                            <td>
+                                <input type="url" name="instagram" id="instagram" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_instagram'] ); ?>"
+                                       placeholder="https://instagram.com/...">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="website">🌐 Sito Ufficiale</label>
+                            </th>
+                            <td>
+                                <input type="url" name="website" id="website" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_website'] ); ?>"
+                                       placeholder="https://...">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="donations">💝 Donazioni</label>
+                            </th>
+                            <td>
+                                <input type="url" name="donations" id="donations" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_donations'] ); ?>"
+                                       placeholder="https://paypal.me/...">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px; margin: 20px 0;">
+                    <h2 style="margin-top: 0;">🤝 Sponsor (Opzionale)</h2>
+                    <p class="description">Se il cliente ha uno sponsor fisso, inserisci i dati qui.</p>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="sponsor_name">Nome Sponsor</label>
+                            </th>
+                            <td>
+                                <input type="text" name="sponsor_name" id="sponsor_name" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_sponsor_name'] ); ?>"
+                                       placeholder="Es: Biovital – Progetto Italia">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="sponsor_link">Link Sponsor</label>
+                            </th>
+                            <td>
+                                <input type="url" name="sponsor_link" id="sponsor_link" class="large-text"
+                                       value="<?php echo esc_attr( $config['_golden_sponsor_link'] ); ?>"
+                                       placeholder="https://...">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="background: white; padding: 20px; border: 1px solid #ccd0d4; border-radius: 4px; margin: 20px 0;">
+                    <h2 style="margin-top: 0;">💬 Supporta il Canale</h2>
+                    <p class="description">Testo per la call-to-action. Usa • per gli elenchi puntati.</p>
+
+                    <table class="form-table">
+                        <tr>
+                            <th scope="row">
+                                <label for="support_text">Testo Supporto</label>
+                            </th>
+                            <td>
+                                <textarea name="support_text" id="support_text" rows="5" class="large-text"><?php echo esc_textarea( $config['_golden_support_text'] ?: "• Lascia un like\n• Commenta\n• Condividi il video" ); ?></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <p class="submit" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+                    <button type="submit" name="ipv_generate_golden_submit" class="button button-primary button-large" style="height: auto; padding: 10px 20px;">
+                        ✨ <?php echo $has_file ? 'Rigenera Golden Prompt' : 'Genera Golden Prompt'; ?>
+                    </button>
+                    <a href="<?php echo admin_url( 'admin.php?page=ipv-vendor-licenses' ); ?>" class="button button-large" style="height: auto; padding: 10px 20px; margin-left: 10px;">
+                        ← Torna alle Licenze
+                    </a>
+                </p>
+            </form>
         </div>
         <?php
     }
