@@ -1,0 +1,73 @@
+# TEMPLATE BASE - Generazione Descrizioni YouTube (FREE)
+# Versione: 1.0
+# Include: Descrizione, Capitoli, Hashtag
+
+---
+
+## FORMATO OUTPUT BASE
+
+```
+[TITOLO VIDEO ESATTO]
+
+✨ DESCRIZIONE
+[150-200 parole. Narrativa impersonale (terza persona).
+
+Struttura in 3 paragrafi:
+- 1° Paragrafo (50-60 parole): Hook + tema principale
+- 2° Paragrafo (50-70 parole): Sviluppo contenuti
+- 3° Paragrafo (40-50 parole): Chiusura
+
+REGOLE:
+- Usa terza persona: "viene analizzato", "l'episodio tratta"
+- NO "noi", "il conduttore"
+- Testo fluido e naturale]
+
+⏱️ CAPITOLI
+⚠️ DURATA TOTALE VIDEO: [inserire durata] ⚠️
+🚨 I timestamp DEVONO coprire TUTTA la durata fino alla FINE del video!
+
+ISTRUZIONI TIMESTAMP:
+- Timestamp iniziale: 00:00 — Introduzione
+- Timestamp finale DEVE essere vicino alla fine del video
+- Genera timestamp ad OGNI CAMBIO DI ARGOMENTO
+- Distribuisci uniformemente lungo TUTTA la trascrizione
+- Video > 60 min: MINIMO 15-20 timestamp
+- Video 30-60 min: MINIMO 10-15 timestamp
+- Formato: MM:SS per video < 1 ora, H:MM:SS per video ≥ 1 ora
+
+00:00 — Introduzione
+[timestamp] — [Titolo capitolo]
+[timestamp] — [Titolo capitolo]
+...
+
+🏷️ HASHTAG
+[15-20 hashtag strategici su UNA RIGA]
+```
+
+---
+
+## REGOLE CRITICHE
+
+### 🚨 CAPITOLI/TIMESTAMP
+* I timestamp DEVONO coprire TUTTA la durata del video FINO ALLA FINE
+* L'ULTIMO timestamp deve essere vicino alla fine
+* NON FERMARTI A METÀ VIDEO!
+
+### 🚫 TIMESTAMP FINALE
+UN SOLO timestamp per la chiusura. NON spacchettare!
+
+❌ SBAGLIATO: 4 timestamp separati per chiusura
+✅ CORRETTO: 1 solo timestamp finale
+
+### 🏷️ HASHTAG
+15-20 hashtag su UNA RIGA, ordinati per priorità.
+
+---
+
+## OUTPUT
+
+Genera SOLO descrizione, capitoli e hashtag.
+NESSUN commento aggiuntivo.
+
+⚠️ NOTA: Questa è la versione BASE. Per funzionalità avanzate (Argomenti, Ospiti,
+Link personalizzati, Sponsor), contatta l'amministratore per il Golden Prompt Premium.

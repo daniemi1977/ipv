@@ -64,6 +64,13 @@ class IPV_Vendor_License_Endpoints {
             'callback' => [ $this, 'download_golden_prompt' ],
             'permission_callback' => [ $this, 'validate_request' ]
         ]);
+
+        // GET /wp-json/ipv-vendor/v1/license/download-template-base
+        register_rest_route( 'ipv-vendor/v1', '/license/download-template-base', [
+            'methods' => 'GET',
+            'callback' => [ $this, 'download_template_base' ],
+            'permission_callback' => [ $this, 'validate_request' ]
+        ]);
     }
 
     /**
@@ -485,6 +492,19 @@ class IPV_Vendor_License_Endpoints {
                 'can_download' => (bool) $golden_enabled && $has_file,
                 'file_info' => $has_file ? $file_info : null
             ];
+
+            // Set template type
+            if ( (bool) $golden_enabled && $has_file ) {
+                $license_data['template_type'] = 'golden_premium';
+                $license_data['template_description'] = 'Template personalizzato Golden Prompt con formato completo';
+            } else {
+                $license_data['template_type'] = 'base';
+                $license_data['template_description'] = 'Template BASE gratuito (Descrizione, Capitoli, Hashtag)';
+            }
+        } else {
+            // All other licenses use BASE template
+            $license_data['template_type'] = 'base';
+            $license_data['template_description'] = 'Template BASE gratuito (Descrizione, Capitoli, Hashtag)';
         }
 
         return rest_ensure_response([
@@ -754,6 +774,79 @@ class IPV_Vendor_License_Endpoints {
         flush();
 
         readfile( $file_path );
+        exit;
+    }
+
+    /**
+     * Download Template BASE
+     * Template gratuito per tutti gli utenti - genera solo Descrizione, Capitoli, Hashtag
+     * Disponibile per tutte le licenze attive
+     *
+     * @param WP_REST_Request $request
+     * @return void (serves file directly) or WP_Error
+     */
+    public function download_template_base( $request ) {
+        $license_key = $this->extract_license_key( $request );
+
+        // Validate license key
+        if ( empty( $license_key ) ) {
+            return new WP_Error(
+                'missing_license',
+                'license_key è obbligatorio',
+                [ 'status' => 400 ]
+            );
+        }
+
+        $license_manager = IPV_Vendor_License_Manager::instance();
+        $license = $license_manager->get_license_by_key( $license_key );
+
+        if ( ! $license ) {
+            return new WP_Error(
+                'invalid_license',
+                'License non trovata',
+                [ 'status' => 404 ]
+            );
+        }
+
+        // Check license status
+        if ( $license->status !== 'active' ) {
+            return new WP_Error(
+                'license_inactive',
+                'Licenza non attiva. Stato corrente: ' . $license->status,
+                [ 'status' => 403 ]
+            );
+        }
+
+        // Get template BASE path
+        $template_path = IPV_VENDOR_DIR . 'templates/youtube-description-base.txt';
+
+        if ( ! file_exists( $template_path ) ) {
+            return new WP_Error(
+                'template_not_found',
+                'Template BASE non trovato sul server',
+                [ 'status' => 500 ]
+            );
+        }
+
+        // Log download
+        error_log( sprintf(
+            'IPV Vendor: Template BASE downloaded - License: %s, IP: %s',
+            substr( $license_key, 0, 8 ) . '...',
+            $this->get_client_ip()
+        ));
+
+        // Serve file
+        header( 'Content-Type: text/plain; charset=utf-8' );
+        header( 'Content-Disposition: attachment; filename="youtube-description-template-base.txt"' );
+        header( 'Content-Length: ' . filesize( $template_path ) );
+        header( 'Cache-Control: public, max-age=3600' ); // Cache per 1 ora (il template non cambia spesso)
+        header( 'Pragma: public' );
+
+        // Prevent WordPress from adding any additional output
+        @ob_clean();
+        flush();
+
+        readfile( $template_path );
         exit;
     }
 }

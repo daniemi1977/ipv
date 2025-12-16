@@ -15,6 +15,21 @@
  * License: GPL v2 or later
  *
  * CHANGELOG v1.4.7 (2025-12-16):
+ * - FEATURE: Template BASE Gratuito per Tutti
+ *   - Nuovo template predefinito per tutte le licenze attive
+ *   - Genera solo: Descrizione, Capitoli, Hashtag (versione semplificata)
+ *   - File: /templates/youtube-description-base.txt
+ *   - Disponibile per chi NON acquista Golden Prompt Premium
+ * - FEATURE: Sistema Dual-Template (BASE vs GOLDEN PREMIUM)
+ *   - Template BASE: Gratuito per tutti, funzionalità essenziali
+ *   - Template GOLDEN: Premium personalizzato, formato completo
+ *   - API /license/info include: template_type (base/golden_premium)
+ *   - CLIENT decide automaticamente quale template usare
+ * - FEATURE: Endpoint Download Template BASE
+ *   - GET /wp-json/ipv-vendor/v1/license/download-template-base
+ *   - Disponibile per tutte le licenze attive (non solo Golden)
+ *   - Cache pubblico 1 ora (template statico)
+ *   - Content-Type: text/plain
  * - FEATURE: Golden Prompt come Script Personalizzato Admin-Managed
  *   - Sistema completamente riprogettato: Admin carica file per ogni licenza
  *   - Admin abilita/disabilita Golden prompt con toggle button
@@ -37,6 +52,8 @@
  *   - Nuovo oggetto 'golden_prompt' nella risposta
  *   - Campi: enabled, has_file, can_download, file_info
  *   - file_info include: size, size_formatted, filename, uploaded_at
+ *   - template_type: 'base' o 'golden_premium'
+ *   - template_description: Descrizione tipo template da usare
  *   - CLIENT plugin può verificare disponibilità prima di scaricare
  * - METADATA: Nuovi campi licenza Golden prompt
  *   - _golden_prompt_enabled: boolean (toggle admin)
