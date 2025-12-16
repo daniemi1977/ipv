@@ -142,24 +142,6 @@ class IPV_Vendor_Plans_Manager {
                 'is_active' => true,
                 'sort_order' => 4,
             ],
-            'executive' => [
-                'name' => 'Executive',
-                'slug' => 'executive',
-                'credits' => 2000,
-                'credits_period' => 'month',
-                'activations' => 50,
-                'price' => 499.00,
-                'price_period' => 'month',
-                'features' => [
-                    'transcription' => true,
-                    'ai_description' => true,
-                    'priority_support' => true,
-                    'api_access' => true,
-                ],
-                'description' => 'Per grandi aziende e network',
-                'is_active' => true,
-                'sort_order' => 5,
-            ],
             'golden_prompt' => [
                 'name' => 'Golden prompt',
                 'slug' => 'golden_prompt',
@@ -180,7 +162,7 @@ class IPV_Vendor_Plans_Manager {
                 ],
                 'description' => 'Template Premium personalizzato + 150 crediti/mese + 5 siti',
                 'is_active' => true,
-                'sort_order' => 6,
+                'sort_order' => 5,
             ],
             'extra_credits_10' => [
                 'name' => 'IPV Pro - 10',
@@ -198,7 +180,7 @@ class IPV_Vendor_Plans_Manager {
                 ],
                 'description' => 'Pacchetto 10 crediti extra (0,50€/credito). Non scadono mai.',
                 'is_active' => true,
-                'sort_order' => 7,
+                'sort_order' => 6,
             ],
             'extra_credits_100' => [
                 'name' => 'IPV Pro - 100',
@@ -216,7 +198,7 @@ class IPV_Vendor_Plans_Manager {
                 ],
                 'description' => 'Pacchetto 100 crediti extra (0,49€/credito). Non scadono mai.',
                 'is_active' => true,
-                'sort_order' => 8,
+                'sort_order' => 7,
             ],
         ];
     }

@@ -1,5 +1,5 @@
 # IPV Pro - Pacchetto Completo CLIENT + SERVER
-## Versione: 1.4.9 (16 Dicembre 2025)
+## Versione: 1.4.10 (16 Dicembre 2025)
 
 Questo pacchetto contiene entrambi i plugin necessari per il sistema IPV Production System Pro.
 
@@ -22,15 +22,15 @@ Questo pacchetto contiene entrambi i plugin necessari per il sistema IPV Product
 - Analisi AI: Argomenti, Ospiti, Persone/Enti
 
 ### 🏢 SERVER Plugin (Vendor Site)
-**Directory:** `server/ipv-pro-vendor-optimized-v1.4.9/`
-**Versione:** 1.4.9
+**Directory:** `server/ipv-pro-vendor-optimized-v1.4.10/`
+**Versione:** 1.4.10
 **Installazione:** Tuo sito WordPress (vendor/amministratore)
 
 **Funzionalità:**
 - Gestione licenze e attivazioni
 - Sistema billing WooCommerce
-- 8 piani SaaS (Trial, Starter, Professional, Business, Executive, Golden Prompt, IPV Pro 10, IPV Pro 100)
-- **NUOVO v1.4.9:** Configurazione piani corretta (Trial mai scade, Golden Prompt subscription)
+- **7 piani SaaS** (Trial, Starter, Professional, Business, Golden Prompt, IPV Pro 10, IPV Pro 100)
+- **NUOVO v1.4.10:** Piano Executive rimosso (verrà sostituito da White Label personalizzato)
 - Auto-generazione Golden Prompt con form guidato
 - Sistema Dual-Template (BASE gratuito + GOLDEN Premium)
 - API Gateway per YouTube Data API
@@ -45,10 +45,10 @@ Questo pacchetto contiene entrambi i plugin necessari per il sistema IPV Product
 
 ```bash
 # Vai nella directory server
-cd server/ipv-pro-vendor-optimized-v1.4.9/
+cd server/ipv-pro-vendor-optimized-v1.4.10/
 
 # Crea ZIP per upload WordPress
-zip -r ipv-pro-vendor-v1.4.9.zip .
+zip -r ipv-pro-vendor-v1.4.10.zip .
 
 # Carica su WordPress:
 # Dashboard → Plugin → Aggiungi nuovo → Carica plugin
@@ -57,7 +57,7 @@ zip -r ipv-pro-vendor-v1.4.9.zip .
 **Oppure via FTP:**
 ```bash
 # Carica l'intera cartella in:
-wp-content/plugins/ipv-pro-vendor-optimized-v1.4.9/
+wp-content/plugins/ipv-pro-vendor-optimized-v1.4.10/
 ```
 
 **Setup Iniziale:**
@@ -96,6 +96,21 @@ wp-content/plugins/ipv-production-system-pro-optimized/
 
 ---
 
+## 🆕 Novità v1.4.10 - Piano Executive Rimosso
+
+### **SERVER - Ottimizzazione Offerta**
+
+**Rimozione Piano Executive:**
+- ❌ **Executive** (€499/mese, 2000 crediti) rimosso - non commerciale
+- 📋 Verrà sostituito da piano **White Label personalizzato** in futuro
+- ✅ **7 piani SaaS attivi**: Trial, Starter, Professional, Business, Golden Prompt, IPV Pro 10, IPV Pro 100
+
+**Hybrid Billing:**
+- **Subscriptions** (renewal automatico): Starter, Professional, Business, Golden Prompt
+- **Once** (una tantum, non scadono): Trial, IPV Pro 10, IPV Pro 100
+
+---
+
 ## 🆕 Novità v1.4.9 - Configurazione Piani Corretta
 
 ### **SERVER - Fix Configurazione**
@@ -109,10 +124,6 @@ Correzione configurazione piani SaaS per allineamento con prodotti WooCommerce:
   - Prima: Acquisto una tantum, 1 sito, 0 crediti
   - Ora: 150 crediti/mese, 5 siti, re-download illimitati
   - Include: Transcription, AI, Priority Support, API Access
-
-**Hybrid Billing Corretto:**
-- **Subscriptions** (renewal automatico): Starter, Professional, Business, Executive, Golden Prompt
-- **Once** (una tantum, non scadono): Trial, IPV Pro 10, IPV Pro 100
 
 ---
 
@@ -180,7 +191,6 @@ Solo per licenze Golden Prompt con configurazione abilitata:
 | Starter | €9.99/mese | 50/mese | 1 | Subscription |
 | Professional | €29.99/mese | 100/mese | 3 | Subscription |
 | Business | €79.99/mese | 500/mese | 10 | Subscription |
-| Executive | €499/mese | 2000/mese | 50 | Subscription |
 | **Golden Prompt** | €59/mese | 150/mese | 5 | Subscription |
 | IPV Pro - 10 | €5 (una tantum) | 10 extra | - | Once (non scade) |
 | IPV Pro - 100 | €49 (una tantum) | 100 extra | - | Once (non scade) |
@@ -213,6 +223,12 @@ Per problemi o domande:
 ---
 
 ## 📝 Changelog
+
+### v1.4.10 (2025-12-16) - SERVER
+- ❌ REMOVE: Piano Executive rimosso (€499/mese non commerciale)
+  - Verrà sostituito da piano White Label personalizzato
+- ✅ UPDATE: 7 piani SaaS attivi (Trial, Starter, Professional, Business, Golden Prompt, IPV Pro 10, IPV Pro 100)
+- 🔧 FIX: Sort order aggiornato per tutti i piani rimanenti
 
 ### v1.4.9 (2025-12-16) - SERVER
 - ✅ FIX: Configurazione Piani SaaS corretta
