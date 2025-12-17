@@ -1,0 +1,462 @@
+/**
+ * WCFM Affiliate Pro - Admin Styles
+ *
+ * @package WCFM_Affiliate_Pro
+ * @since 1.0.0
+ */
+
+/* Variables */
+:root {
+    --wcfm-admin-primary: #00897b;
+    --wcfm-admin-primary-dark: #006b5f;
+    --wcfm-admin-secondary: #455a64;
+    --wcfm-admin-success: #4caf50;
+    --wcfm-admin-warning: #ff9800;
+    --wcfm-admin-error: #f44336;
+    --wcfm-admin-info: #2196f3;
+    --wcfm-admin-light: #f5f5f5;
+    --wcfm-admin-border: #e0e0e0;
+    --wcfm-admin-text: #333;
+    --wcfm-admin-text-light: #666;
+    --wcfm-admin-radius: 6px;
+    --wcfm-admin-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Admin wrapper */
+.wcfm-affiliate-admin {
+    margin-top: 20px;
+}
+
+/* Admin toolbar */
+.wcfm-affiliate-admin-toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.wcfm-affiliate-admin-toolbar select {
+    padding: 8px 12px;
+    border: 1px solid var(--wcfm-admin-border);
+    border-radius: var(--wcfm-admin-radius);
+    background: #fff;
+}
+
+/* Admin row/col layout */
+.wcfm-affiliate-admin-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.wcfm-affiliate-admin-col {
+    flex: 1;
+    min-width: 300px;
+}
+
+/* Admin cards */
+.wcfm-affiliate-admin-card {
+    background: #fff;
+    border: 1px solid var(--wcfm-admin-border);
+    border-radius: var(--wcfm-admin-radius);
+    box-shadow: var(--wcfm-admin-shadow);
+    margin-bottom: 20px;
+}
+
+.wcfm-affiliate-admin-card h3 {
+    margin: 0;
+    padding: 15px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--wcfm-admin-border);
+    background: var(--wcfm-admin-light);
+}
+
+.wcfm-affiliate-admin-card table.form-table {
+    margin: 0;
+}
+
+.wcfm-affiliate-admin-card table.form-table th {
+    padding: 15px 20px;
+    width: 150px;
+}
+
+.wcfm-affiliate-admin-card table.form-table td {
+    padding: 15px 20px;
+}
+
+/* Admin stats */
+.wcfm-affiliate-admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 20px;
+}
+
+.wcfm-affiliate-admin-stat {
+    background: var(--wcfm-admin-light);
+    padding: 20px;
+    border-radius: var(--wcfm-admin-radius);
+    text-align: center;
+}
+
+.wcfm-affiliate-admin-stat-value {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--wcfm-admin-primary);
+    margin-bottom: 5px;
+}
+
+.wcfm-affiliate-admin-stat-label {
+    display: block;
+    font-size: 12px;
+    color: var(--wcfm-admin-text-light);
+    text-transform: uppercase;
+}
+
+/* Status badges */
+.wcfm-affiliate-status {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.wcfm-affiliate-status-pending {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.wcfm-affiliate-status-approved,
+.wcfm-affiliate-status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.wcfm-affiliate-status-paid {
+    background-color: #e3f2fd;
+    color: #1565c0;
+}
+
+.wcfm-affiliate-status-rejected,
+.wcfm-affiliate-status-failed,
+.wcfm-affiliate-status-suspended {
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+/* Admin actions */
+.wcfm-affiliate-admin-actions {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Settings tabs */
+.wcfm-affiliate-settings-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--wcfm-admin-border);
+    margin-bottom: 20px;
+    background: #fff;
+    padding: 0;
+}
+
+.wcfm-affiliate-settings-tabs .nav-tab {
+    padding: 12px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--wcfm-admin-text-light);
+    text-decoration: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s ease;
+}
+
+.wcfm-affiliate-settings-tabs .nav-tab:hover {
+    color: var(--wcfm-admin-text);
+    background: var(--wcfm-admin-light);
+}
+
+.wcfm-affiliate-settings-tabs .nav-tab-active {
+    color: var(--wcfm-admin-primary);
+    border-bottom-color: var(--wcfm-admin-primary);
+}
+
+/* Settings form */
+.wcfm-affiliate-settings-form {
+    background: #fff;
+    border: 1px solid var(--wcfm-admin-border);
+    border-radius: var(--wcfm-admin-radius);
+}
+
+.wcfm-affiliate-settings-section {
+    padding: 20px;
+    border-bottom: 1px solid var(--wcfm-admin-border);
+}
+
+.wcfm-affiliate-settings-section:last-child {
+    border-bottom: none;
+}
+
+.wcfm-affiliate-settings-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--wcfm-admin-text);
+}
+
+.wcfm-affiliate-settings-section p.description {
+    color: var(--wcfm-admin-text-light);
+    font-size: 13px;
+    margin: 5px 0 0 0;
+}
+
+/* Table enhancements */
+.wp-list-table .wcfm-affiliate-status {
+    white-space: nowrap;
+}
+
+.wp-list-table .column-id {
+    width: 60px;
+}
+
+.wp-list-table .column-cb {
+    width: 30px;
+}
+
+/* Chart container */
+#wcfm-affiliate-chart {
+    max-height: 300px;
+}
+
+/* Notice styling in admin */
+.wcfm-affiliate-admin .notice {
+    margin: 15px 0;
+}
+
+/* Admin page title actions */
+.wcfm-affiliate-admin .page-title-action {
+    margin-left: 10px;
+}
+
+/* Form field enhancements */
+.wcfm-affiliate-admin input[type="text"],
+.wcfm-affiliate-admin input[type="email"],
+.wcfm-affiliate-admin input[type="number"],
+.wcfm-affiliate-admin input[type="url"],
+.wcfm-affiliate-admin select,
+.wcfm-affiliate-admin textarea {
+    border-radius: var(--wcfm-admin-radius);
+}
+
+.wcfm-affiliate-admin input[type="text"]:focus,
+.wcfm-affiliate-admin input[type="email"]:focus,
+.wcfm-affiliate-admin input[type="number"]:focus,
+.wcfm-affiliate-admin input[type="url"]:focus,
+.wcfm-affiliate-admin select:focus,
+.wcfm-affiliate-admin textarea:focus {
+    border-color: var(--wcfm-admin-primary);
+    box-shadow: 0 0 0 1px var(--wcfm-admin-primary);
+}
+
+/* Toggle switch */
+.wcfm-affiliate-toggle {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.wcfm-affiliate-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.wcfm-affiliate-toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.wcfm-affiliate-toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.wcfm-affiliate-toggle input:checked + .wcfm-affiliate-toggle-slider {
+    background-color: var(--wcfm-admin-primary);
+}
+
+.wcfm-affiliate-toggle input:checked + .wcfm-affiliate-toggle-slider::before {
+    transform: translateX(20px);
+}
+
+/* Color picker field */
+.wcfm-affiliate-color-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wcfm-affiliate-color-preview {
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--wcfm-admin-border);
+    border-radius: var(--wcfm-admin-radius);
+}
+
+/* MLM tree styling */
+.wcfm-affiliate-mlm-tree {
+    padding: 20px;
+}
+
+.wcfm-affiliate-mlm-tree ul {
+    list-style: none;
+    padding-left: 25px;
+}
+
+.wcfm-affiliate-mlm-tree > ul {
+    padding-left: 0;
+}
+
+.wcfm-affiliate-mlm-tree li {
+    position: relative;
+    padding: 8px 0;
+}
+
+.wcfm-affiliate-mlm-tree li::before {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: var(--wcfm-admin-border);
+}
+
+.wcfm-affiliate-mlm-tree li::after {
+    content: '';
+    position: absolute;
+    left: -15px;
+    top: 18px;
+    width: 15px;
+    height: 1px;
+    background: var(--wcfm-admin-border);
+}
+
+.wcfm-affiliate-mlm-tree li:last-child::before {
+    height: 18px;
+}
+
+.wcfm-affiliate-mlm-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--wcfm-admin-light);
+    border-radius: var(--wcfm-admin-radius);
+}
+
+/* Tier table */
+.wcfm-affiliate-tier-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.wcfm-affiliate-tier-table th,
+.wcfm-affiliate-tier-table td {
+    padding: 10px;
+    border: 1px solid var(--wcfm-admin-border);
+    text-align: left;
+}
+
+.wcfm-affiliate-tier-table th {
+    background: var(--wcfm-admin-light);
+    font-weight: 600;
+}
+
+.wcfm-affiliate-tier-table input {
+    width: 100%;
+}
+
+.wcfm-affiliate-tier-actions {
+    width: 50px;
+    text-align: center;
+}
+
+.wcfm-affiliate-tier-actions button {
+    color: var(--wcfm-admin-error);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Export button */
+#wcfm-affiliate-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#wcfm-affiliate-export-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Responsive admin */
+@media (max-width: 782px) {
+    .wcfm-affiliate-admin-row {
+        flex-direction: column;
+    }
+
+    .wcfm-affiliate-admin-col {
+        min-width: auto;
+    }
+
+    .wcfm-affiliate-admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wcfm-affiliate-settings-tabs {
+        flex-wrap: wrap;
+    }
+
+    .wcfm-affiliate-settings-tabs .nav-tab {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wcfm-affiliate-admin-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .wcfm-affiliate-admin-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
