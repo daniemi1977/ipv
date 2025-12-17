@@ -1,0 +1,416 @@
+/**
+ * IPV Pro - Modern Admin Styles
+ * Tailwind CSS Extensions & Custom Components
+ *
+ * @version 1.5.0
+ */
+
+/* ========================================
+   RESET & BASE
+======================================== */
+
+.ipv-modern-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f8fafc;
+}
+
+.ipv-modern-page .wrap {
+    margin: 0;
+    padding: 0;
+}
+
+/* ========================================
+   CARDS & CONTAINERS
+======================================== */
+
+.ipv-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+}
+
+.ipv-card-header {
+    @apply flex items-center justify-between mb-6 pb-4 border-b border-gray-200;
+}
+
+.ipv-card-title {
+    @apply text-xl font-semibold text-gray-900 flex items-center gap-2;
+}
+
+.ipv-card-body {
+    @apply space-y-4;
+}
+
+/* ========================================
+   STATS CARDS (Dashboard Analytics)
+======================================== */
+
+.ipv-stat-card {
+    @apply bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow;
+}
+
+.ipv-stat-icon {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center mb-4;
+}
+
+.ipv-stat-icon.primary {
+    @apply bg-blue-100 text-blue-600;
+}
+
+.ipv-stat-icon.success {
+    @apply bg-green-100 text-green-600;
+}
+
+.ipv-stat-icon.warning {
+    @apply bg-amber-100 text-amber-600;
+}
+
+.ipv-stat-icon.danger {
+    @apply bg-red-100 text-red-600;
+}
+
+.ipv-stat-label {
+    @apply text-sm font-medium text-gray-600 uppercase tracking-wide;
+}
+
+.ipv-stat-value {
+    @apply text-3xl font-bold text-gray-900 mt-2;
+}
+
+.ipv-stat-change {
+    @apply text-sm font-medium mt-2 flex items-center gap-1;
+}
+
+.ipv-stat-change.up {
+    @apply text-green-600;
+}
+
+.ipv-stat-change.down {
+    @apply text-red-600;
+}
+
+/* ========================================
+   BUTTONS
+======================================== */
+
+.ipv-btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.ipv-btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+}
+
+.ipv-btn-success {
+    @apply bg-green-600 text-white hover:bg-green-700 focus:ring-green-500;
+}
+
+.ipv-btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+}
+
+.ipv-btn-warning {
+    @apply bg-amber-600 text-white hover:bg-amber-700 focus:ring-amber-500;
+}
+
+.ipv-btn-purple {
+    @apply bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500;
+}
+
+.ipv-btn-secondary {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-500;
+}
+
+.ipv-btn-ghost {
+    @apply text-gray-700 hover:bg-gray-100 focus:ring-gray-500;
+}
+
+.ipv-btn-sm {
+    @apply px-3 py-1.5 text-sm;
+}
+
+.ipv-btn-lg {
+    @apply px-6 py-3 text-lg;
+}
+
+/* ========================================
+   FORMS
+======================================== */
+
+.ipv-form-group {
+    @apply space-y-2;
+}
+
+.ipv-label {
+    @apply block text-sm font-medium text-gray-700;
+}
+
+.ipv-label-required::after {
+    content: ' *';
+    @apply text-red-500;
+}
+
+.ipv-input {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all;
+}
+
+.ipv-input:disabled {
+    @apply bg-gray-100 cursor-not-allowed;
+}
+
+.ipv-textarea {
+    @apply ipv-input resize-none;
+}
+
+.ipv-select {
+    @apply ipv-input;
+}
+
+.ipv-checkbox {
+    @apply w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500;
+}
+
+.ipv-radio {
+    @apply w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500;
+}
+
+/* ========================================
+   BADGES & PILLS
+======================================== */
+
+.ipv-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.ipv-badge-primary {
+    @apply bg-blue-100 text-blue-800;
+}
+
+.ipv-badge-success {
+    @apply bg-green-100 text-green-800;
+}
+
+.ipv-badge-warning {
+    @apply bg-amber-100 text-amber-800;
+}
+
+.ipv-badge-danger {
+    @apply bg-red-100 text-red-800;
+}
+
+.ipv-badge-gray {
+    @apply bg-gray-100 text-gray-800;
+}
+
+/* ========================================
+   TABLES
+======================================== */
+
+.ipv-table-container {
+    @apply overflow-x-auto rounded-lg border border-gray-200;
+}
+
+.ipv-table {
+    @apply w-full divide-y divide-gray-200;
+}
+
+.ipv-table thead {
+    @apply bg-gray-50;
+}
+
+.ipv-table th {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.ipv-table td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+}
+
+.ipv-table tbody tr:hover {
+    @apply bg-gray-50;
+}
+
+.ipv-table tbody tr {
+    @apply transition-colors;
+}
+
+/* ========================================
+   TOAST NOTIFICATIONS
+======================================== */
+
+.ipv-toast {
+    @apply flex items-center gap-3 p-4 rounded-lg shadow-lg border max-w-md transform transition-all duration-300 ease-in-out;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.ipv-toast.removing {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.ipv-toast-success {
+    @apply bg-green-50 border-green-200;
+}
+
+.ipv-toast-error {
+    @apply bg-red-50 border-red-200;
+}
+
+.ipv-toast-warning {
+    @apply bg-yellow-50 border-yellow-200;
+}
+
+.ipv-toast-info {
+    @apply bg-blue-50 border-blue-200;
+}
+
+.ipv-toast-content {
+    @apply flex-1 text-sm font-medium text-gray-900;
+}
+
+.ipv-toast-close {
+    @apply text-gray-400 hover:text-gray-600 cursor-pointer;
+}
+
+/* ========================================
+   CHARTS
+======================================== */
+
+.ipv-chart-container {
+    @apply relative h-64 md:h-80;
+}
+
+canvas {
+    @apply max-w-full;
+}
+
+/* ========================================
+   LOADING STATES
+======================================== */
+
+.ipv-spinner {
+    @apply animate-spin rounded-full border-2 border-gray-300 border-t-blue-600;
+}
+
+.ipv-skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.ipv-shimmer {
+    animation: shimmer 2s infinite;
+    background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
+    background-size: 1000px 100%;
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+======================================== */
+
+@media (max-width: 768px) {
+    .ipv-card {
+        @apply p-4;
+    }
+
+    .ipv-stat-value {
+        @apply text-2xl;
+    }
+
+    .ipv-table td,
+    .ipv-table th {
+        @apply px-4 py-3 text-xs;
+    }
+}
+
+/* ========================================
+   DARK MODE SUPPORT (Future)
+======================================== */
+
+@media (prefers-color-scheme: dark) {
+    /* Will be implemented in future version */
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+.ipv-sr-only {
+    @apply sr-only;
+}
+
+.focus-visible:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+}
+
+/* ========================================
+   ANIMATIONS
+======================================== */
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ipv-fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.ipv-slide-down {
+    animation: slideDown 0.3s ease-out;
+}
+
+/* ========================================
+   CUSTOM WORDPRESS ADMIN OVERRIDES
+======================================== */
+
+.ipv-modern-page .notice {
+    @apply hidden;
+}
+
+.ipv-modern-page #wpbody-content {
+    @apply pb-0;
+}
+
+/* Remove WordPress default padding on IPV pages */
+.ipv-modern-page #wpbody-content > .wrap {
+    margin-left: 0;
+    margin-right: 0;
+}
