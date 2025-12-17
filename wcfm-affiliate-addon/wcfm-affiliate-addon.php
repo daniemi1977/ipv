@@ -80,6 +80,7 @@ final class WCFM_Affiliate_Pro {
     public ?WCFM_Affiliate_Emails $emails = null;
     public ?WCFM_Affiliate_REST_API $api = null;
     public ?WCFM_Affiliate_Coupons $coupons = null;
+    public ?WCFM_Affiliate_Dual_Role $dual_role = null;
 
     /**
      * Get single instance
@@ -181,6 +182,7 @@ final class WCFM_Affiliate_Pro {
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-reports.php';
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-emails.php';
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-coupons.php';
+        require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-dual-role.php';
 
         // WCFM Integration
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-wcfm-integration.php';
@@ -217,6 +219,7 @@ final class WCFM_Affiliate_Pro {
         $this->reports = new WCFM_Affiliate_Reports();
         $this->emails = new WCFM_Affiliate_Emails();
         $this->coupons = new WCFM_Affiliate_Coupons();
+        $this->dual_role = new WCFM_Affiliate_Dual_Role();
         $this->wcfm = new WCFM_Affiliate_WCFM_Integration();
         $this->api = new WCFM_Affiliate_REST_API();
 
@@ -324,6 +327,7 @@ final class WCFM_Affiliate_Pro {
                 'credit_last_referrer' => 'yes',
                 'require_approval' => 'yes',
                 'auto_approve_vendors' => 'no',
+                'auto_register_vendors' => 'no', // Auto-register new vendors as affiliates
                 'minimum_payout' => 50,
                 'payout_methods' => ['paypal', 'bank_transfer'],
                 'payout_schedule' => 'monthly',

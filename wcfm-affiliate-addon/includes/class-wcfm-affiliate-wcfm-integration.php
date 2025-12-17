@@ -345,6 +345,13 @@ class WCFM_Affiliate_WCFM_Integration {
                     <?php $this->render_referrals_table($affiliate->id, 5); ?>
                 </div>
             </div>
+
+            <!-- Dual Role Widget: Become a Vendor -->
+            <?php
+            if (wcfm_affiliate_pro()->dual_role) {
+                do_action('wcfm_affiliate_pro_dashboard_widgets');
+            }
+            ?>
         </div>
         <?php
     }
@@ -891,31 +898,39 @@ class WCFM_Affiliate_WCFM_Integration {
 
     /**
      * Add affiliate widget to vendor dashboard
+     *
+     * Shows affiliate stats if vendor is an affiliate,
+     * or shows "Become an Affiliate" widget if they're not.
      */
     public function add_affiliate_widget(): void {
         $user_id = get_current_user_id();
         $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user($user_id);
 
-        if (!$affiliate || $affiliate->status !== 'active') {
-            return;
+        if ($affiliate && $affiliate->status === 'active') {
+            // Vendor is already an affiliate - show stats widget
+            $stats = wcfm_affiliate_pro()->affiliates->get_affiliate_stats($affiliate->id);
+            ?>
+            <div class="wcfm_dashboard_affiliate_widget">
+                <div class="wcfm_dashboard_widget_title">
+                    <span class="wcfmfa fa-users"></span>
+                    <?php _e('Guadagni Affiliate', 'wcfm-affiliate-pro'); ?>
+                </div>
+                <div class="wcfm_dashboard_widget_content">
+                    <span class="wcfm_dashboard_widget_value"><?php echo wc_price($stats['earnings_balance']); ?></span>
+                    <span class="wcfm_dashboard_widget_label"><?php _e('Saldo Disponibile', 'wcfm-affiliate-pro'); ?></span>
+                    <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro'); ?>" class="wcfm_dashboard_widget_link">
+                        <?php _e('Visualizza Dashboard Affiliate', 'wcfm-affiliate-pro'); ?>
+                    </a>
+                </div>
+            </div>
+            <?php
         }
 
-        $stats = wcfm_affiliate_pro()->affiliates->get_affiliate_stats($affiliate->id);
-        ?>
-        <div class="wcfm_dashboard_affiliate_widget">
-            <div class="wcfm_dashboard_widget_title">
-                <span class="wcfmfa fa-users"></span>
-                <?php _e('Guadagni Affiliate', 'wcfm-affiliate-pro'); ?>
-            </div>
-            <div class="wcfm_dashboard_widget_content">
-                <span class="wcfm_dashboard_widget_value"><?php echo wc_price($stats['earnings_balance']); ?></span>
-                <span class="wcfm_dashboard_widget_label"><?php _e('Saldo Disponibile', 'wcfm-affiliate-pro'); ?></span>
-                <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro'); ?>" class="wcfm_dashboard_widget_link">
-                    <?php _e('Visualizza Dashboard Affiliate', 'wcfm-affiliate-pro'); ?>
-                </a>
-            </div>
-        </div>
-        <?php
+        // Always trigger the dual-role widget hook for vendors
+        // This will show "Become an Affiliate" if they're not one yet
+        if (wcfm_affiliate_pro()->dual_role) {
+            do_action('wcfm_vendor_dashboard_after_widgets');
+        }
     }
 
     /**
