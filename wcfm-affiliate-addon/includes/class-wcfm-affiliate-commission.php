@@ -31,8 +31,9 @@ class WCFM_Affiliate_Commission {
      * Constructor
      */
     public function __construct() {
-        $this->settings = get_option('wcfm_affiliate_commission', []);
-        $this->mlm_settings = get_option('wcfm_affiliate_mlm', []);
+        // Usa nomi opzioni unici
+        $this->settings = get_option('wcfm_aff_pro_commission', []);
+        $this->mlm_settings = get_option('wcfm_aff_pro_mlm', []);
 
         $this->init_hooks();
     }
@@ -41,13 +42,13 @@ class WCFM_Affiliate_Commission {
      * Initialize hooks
      */
     private function init_hooks(): void {
-        // Admin AJAX
-        add_action('wp_ajax_wcfm_affiliate_approve_commission', [$this, 'handle_approve_commission']);
-        add_action('wp_ajax_wcfm_affiliate_reject_commission', [$this, 'handle_reject_commission']);
-        add_action('wp_ajax_wcfm_affiliate_bulk_commission_action', [$this, 'handle_bulk_action']);
+        // Admin AJAX - usa nomi azione unici
+        add_action('wp_ajax_wcfm_aff_pro_approve_commission', [$this, 'handle_approve_commission']);
+        add_action('wp_ajax_wcfm_aff_pro_reject_commission', [$this, 'handle_reject_commission']);
+        add_action('wp_ajax_wcfm_aff_pro_bulk_commission_action', [$this, 'handle_bulk_action']);
 
-        // Auto-approval cron
-        add_action('wcfm_affiliate_auto_approve_commissions', [$this, 'auto_approve_pending']);
+        // Auto-approval cron - usa nomi unici
+        add_action('wcfm_aff_pro_auto_approve_commissions', [$this, 'auto_approve_pending']);
     }
 
     /**
@@ -78,8 +79,8 @@ class WCFM_Affiliate_Commission {
             return;
         }
 
-        // Check self-referral
-        $settings = get_option('wcfm_affiliate_general', []);
+        // Check self-referral - usa nome opzione unico
+        $settings = get_option('wcfm_aff_pro_general', []);
         if (($settings['allow_self_referral'] ?? 'no') === 'no') {
             $customer_id = $order->get_customer_id();
             if ($customer_id && $customer_id == $affiliate->user_id) {

@@ -68,7 +68,7 @@ class WCFM_Affiliate_Admin_Settings {
 
     private function render_general_settings(): void {
         settings_fields('wcfm_affiliate_general');
-        $options = get_option('wcfm_affiliate_general', []);
+        $options = get_option('wcfm_aff_pro_general', []);
         ?>
         <table class="form-table">
             <tr>
@@ -201,7 +201,7 @@ class WCFM_Affiliate_Admin_Settings {
 
     private function render_commission_settings(): void {
         settings_fields('wcfm_affiliate_commission');
-        $options = get_option('wcfm_affiliate_commission', []);
+        $options = get_option('wcfm_aff_pro_commission', []);
         ?>
         <table class="form-table">
             <tr>
@@ -340,7 +340,7 @@ class WCFM_Affiliate_Admin_Settings {
 
     private function render_mlm_settings(): void {
         settings_fields('wcfm_affiliate_mlm');
-        $options = get_option('wcfm_affiliate_mlm', []);
+        $options = get_option('wcfm_aff_pro_mlm', []);
         ?>
         <table class="form-table">
             <tr>
@@ -405,7 +405,7 @@ class WCFM_Affiliate_Admin_Settings {
 
     private function render_notification_settings(): void {
         settings_fields('wcfm_affiliate_notifications');
-        $options = get_option('wcfm_affiliate_notifications', []);
+        $options = get_option('wcfm_aff_pro_notifications', []);
         ?>
         <h3><?php _e('Notifiche Admin', 'wcfm-affiliate-pro'); ?></h3>
         <table class="form-table">
@@ -506,14 +506,14 @@ class WCFM_Affiliate_Admin_Settings {
                 <th scope="row"><?php _e('Client ID', 'wcfm-affiliate-pro'); ?></th>
                 <td>
                     <input type="text" name="wcfm_affiliate_paypal_client_id" class="regular-text"
-                           value="<?php echo esc_attr(get_option('wcfm_affiliate_paypal_client_id', '')); ?>">
+                           value="<?php echo esc_attr(get_option('wcfm_aff_pro_paypal_client_id', '')); ?>">
                 </td>
             </tr>
             <tr>
                 <th scope="row"><?php _e('Secret Key', 'wcfm-affiliate-pro'); ?></th>
                 <td>
                     <input type="password" name="wcfm_affiliate_paypal_secret" class="regular-text"
-                           value="<?php echo esc_attr(get_option('wcfm_affiliate_paypal_secret', '')); ?>">
+                           value="<?php echo esc_attr(get_option('wcfm_aff_pro_paypal_secret', '')); ?>">
                     <p class="description"><?php _e('Necessario per pagamenti automatici via PayPal Payouts API.', 'wcfm-affiliate-pro'); ?></p>
                 </td>
             </tr>
@@ -525,7 +525,7 @@ class WCFM_Affiliate_Admin_Settings {
                 <th scope="row"><?php _e('Secret Key', 'wcfm-affiliate-pro'); ?></th>
                 <td>
                     <input type="password" name="wcfm_affiliate_stripe_secret_key" class="regular-text"
-                           value="<?php echo esc_attr(get_option('wcfm_affiliate_stripe_secret_key', '')); ?>">
+                           value="<?php echo esc_attr(get_option('wcfm_aff_pro_stripe_secret_key', '')); ?>">
                     <p class="description"><?php _e('Necessario per pagamenti automatici via Stripe Connect.', 'wcfm-affiliate-pro'); ?></p>
                 </td>
             </tr>
@@ -537,7 +537,7 @@ class WCFM_Affiliate_Admin_Settings {
 
     private function render_design_settings(): void {
         settings_fields('wcfm_affiliate_design');
-        $options = get_option('wcfm_affiliate_design', []);
+        $options = get_option('wcfm_aff_pro_design', []);
         ?>
         <table class="form-table">
             <tr>

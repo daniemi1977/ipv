@@ -31,7 +31,7 @@ class WCFM_Affiliate_Payout {
      * Constructor
      */
     public function __construct() {
-        $this->settings = get_option('wcfm_affiliate_general', []);
+        $this->settings = get_option('wcfm_aff_pro_general', []);
         $this->register_payment_methods();
 
         $this->init_hooks();
@@ -513,8 +513,8 @@ class WCFM_Affiliate_Payout {
      */
     private function process_paypal_payout(object $payout, array $data): array {
         // Check if PayPal API is configured
-        $paypal_client_id = get_option('wcfm_affiliate_paypal_client_id');
-        $paypal_secret = get_option('wcfm_affiliate_paypal_secret');
+        $paypal_client_id = get_option('wcfm_aff_pro_paypal_client_id');
+        $paypal_secret = get_option('wcfm_aff_pro_paypal_secret');
 
         if (!$paypal_client_id || !$paypal_secret) {
             // Manual PayPal transfer
@@ -613,7 +613,7 @@ class WCFM_Affiliate_Payout {
      * Process Stripe payout
      */
     private function process_stripe_payout(object $payout, array $data): array {
-        $stripe_secret = get_option('wcfm_affiliate_stripe_secret_key');
+        $stripe_secret = get_option('wcfm_aff_pro_stripe_secret_key');
 
         if (!$stripe_secret) {
             return [

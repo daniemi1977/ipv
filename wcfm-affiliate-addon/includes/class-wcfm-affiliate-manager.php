@@ -124,7 +124,7 @@ class WCFM_Affiliate_Manager {
         }
 
         if ($result) {
-            $settings = get_option('wcfm_affiliate_general', []);
+            $settings = get_option('wcfm_aff_pro_general', []);
             $require_approval = $settings['require_approval'] ?? 'yes';
 
             if ($require_approval === 'yes') {
@@ -158,7 +158,7 @@ class WCFM_Affiliate_Manager {
             return false;
         }
 
-        $settings = get_option('wcfm_affiliate_general', []);
+        $settings = get_option('wcfm_aff_pro_general', []);
         $registration_type = $settings['registration_type'] ?? 'approval';
 
         // Determine status
@@ -837,7 +837,7 @@ class WCFM_Affiliate_Manager {
      * Get dashboard URL
      */
     public function get_dashboard_url(): string {
-        $pages = get_option('wcfm_affiliate_pages', []);
+        $pages = get_option('wcfm_aff_pro_pages', []);
         $page_id = $pages['dashboard'] ?? 0;
 
         if ($page_id) {

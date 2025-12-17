@@ -26,7 +26,7 @@ class WCFM_Affiliate_Emails {
      * Constructor
      */
     public function __construct() {
-        $this->settings = get_option('wcfm_affiliate_notifications', []);
+        $this->settings = get_option('wcfm_aff_pro_notifications', []);
 
         $this->init_hooks();
     }
@@ -601,7 +601,7 @@ class WCFM_Affiliate_Emails {
      * Wrap email template
      */
     private function wrap_email_template(string $content): string {
-        $design = get_option('wcfm_affiliate_design', []);
+        $design = get_option('wcfm_aff_pro_design', []);
         $primary_color = $design['primary_color'] ?? '#00897b';
 
         return '

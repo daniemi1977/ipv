@@ -14,11 +14,12 @@ class WCFM_Affiliate_Frontend {
 
     public function __construct() {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
-        add_action('wp_ajax_wcfm_affiliate_dashboard_action', [$this, 'handle_ajax']);
-        add_action('wp_ajax_wcfm_affiliate_generate_link', [$this, 'ajax_generate_link']);
-        add_action('wp_ajax_wcfm_affiliate_request_payout', [$this, 'ajax_request_payout']);
-        add_action('wp_ajax_wcfm_affiliate_save_settings', [$this, 'ajax_save_settings']);
-        add_action('wp_ajax_wcfm_affiliate_get_stats', [$this, 'ajax_get_stats']);
+        // Usa nomi azione AJAX unici
+        add_action('wp_ajax_wcfm_aff_pro_dashboard_action', [$this, 'handle_ajax']);
+        add_action('wp_ajax_wcfm_aff_pro_generate_link', [$this, 'ajax_generate_link']);
+        add_action('wp_ajax_wcfm_aff_pro_request_payout', [$this, 'ajax_request_payout']);
+        add_action('wp_ajax_wcfm_aff_pro_save_settings', [$this, 'ajax_save_settings']);
+        add_action('wp_ajax_wcfm_aff_pro_get_stats', [$this, 'ajax_get_stats']);
         add_action('template_redirect', [$this, 'handle_registration']);
     }
 
@@ -66,18 +67,21 @@ class WCFM_Affiliate_Frontend {
     }
 
     private function is_affiliate_page(): bool {
-        $dashboard_page = get_option('wcfm_affiliate_dashboard_page');
-        $registration_page = get_option('wcfm_affiliate_registration_page');
+        $pages = get_option('wcfm_aff_pro_pages', []);
+        $dashboard_page = $pages['dashboard'] ?? 0;
+        $registration_page = $pages['registration'] ?? 0;
 
         return is_page($dashboard_page) || is_page($registration_page);
     }
 
     public function handle_registration(): void {
-        if (!isset($_POST['wcfm_affiliate_register'])) {
+        // Usa nome azione unico
+        if (!isset($_POST['wcfm_aff_pro_register'])) {
             return;
         }
 
-        if (!wp_verify_nonce($_POST['wcfm_affiliate_nonce'] ?? '', 'wcfm_affiliate_register')) {
+        // Usa nome nonce unico
+        if (!wp_verify_nonce($_POST['wcfm_aff_pro_nonce'] ?? '', 'wcfm_aff_pro_register')) {
             return;
         }
 
@@ -167,7 +171,7 @@ class WCFM_Affiliate_Frontend {
             wp_set_auth_cookie($user_id);
 
             // Redirect to dashboard
-            $dashboard_page = get_option('wcfm_affiliate_dashboard_page');
+            $dashboard_page = get_option('wcfm_aff_pro_pages', [])['dashboard']);
             wp_redirect(get_permalink($dashboard_page));
             exit;
         }

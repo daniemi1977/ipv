@@ -81,7 +81,7 @@ class WCFM_Affiliate_Dashboard {
 
             <p class="wcfm-affiliate-register-link">
                 <?php _e('Non sei ancora affiliato?', 'wcfm-affiliate-pro'); ?>
-                <a href="<?php echo esc_url(get_permalink(get_option('wcfm_affiliate_pages', [])['registration'] ?? 0)); ?>">
+                <a href="<?php echo esc_url(get_permalink(get_option('wcfm_aff_pro_pages', [])['registration'] ?? 0)); ?>">
                     <?php _e('Registrati ora', 'wcfm-affiliate-pro'); ?>
                 </a>
             </p>
@@ -99,7 +99,7 @@ class WCFM_Affiliate_Dashboard {
         <div class="wcfm-affiliate-message wcfm-affiliate-info">
             <h3><?php _e('Non sei un affiliato', 'wcfm-affiliate-pro'); ?></h3>
             <p><?php _e('Non risulti registrato nel nostro programma di affiliazione.', 'wcfm-affiliate-pro'); ?></p>
-            <a href="<?php echo esc_url(get_permalink(get_option('wcfm_affiliate_pages', [])['registration'] ?? 0)); ?>" class="wcfm-affiliate-btn">
+            <a href="<?php echo esc_url(get_permalink(get_option('wcfm_aff_pro_pages', [])['registration'] ?? 0)); ?>" class="wcfm-affiliate-btn">
                 <?php _e('Diventa Affiliato', 'wcfm-affiliate-pro'); ?>
             </a>
         </div>
@@ -184,7 +184,7 @@ class WCFM_Affiliate_Dashboard {
      */
     private function render_active_dashboard(object $affiliate): string {
         $stats = wcfm_affiliate_pro()->affiliates->get_affiliate_stats($affiliate->id);
-        $settings = get_option('wcfm_affiliate_general', []);
+        $settings = get_option('wcfm_aff_pro_general', []);
         $minimum_payout = floatval($settings['minimum_payout'] ?? 50);
 
         ob_start();

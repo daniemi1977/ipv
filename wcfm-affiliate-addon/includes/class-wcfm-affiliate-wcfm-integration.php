@@ -77,6 +77,9 @@ class WCFM_Affiliate_WCFM_Integration {
 
     /**
      * Add WCFM menu items
+     *
+     * NOTA: Aggiunge "Affiliate Pro" come sottomenu sotto il menu Affiliate esistente
+     * NON sovrascrive il menu Affiliate esistente
      */
     public function add_wcfm_menu(array $menus): array {
         global $WCFM;
@@ -85,27 +88,29 @@ class WCFM_Affiliate_WCFM_Integration {
             return $menus;
         }
 
-        $menus['wcfm-affiliate'] = [
-            'label' => __('Affiliate', 'wcfm-affiliate-pro'),
-            'url' => wcfm_get_endpoint_url('wcfm-affiliate'),
-            'icon' => 'users',
-            'priority' => 55,
+        // Aggiungi "Affiliate Pro" come sottomenu dopo il menu Affiliate esistente
+        // Usa priority maggiore per apparire dopo il menu Affiliate standard
+        $menus['wcfm-affiliate-pro'] = [
+            'label' => __('Affiliate Pro', 'wcfm-affiliate-pro'),
+            'url' => wcfm_get_endpoint_url('wcfm-affiliate-pro'),
+            'icon' => 'user-shield',  // Icona diversa per distinguerlo
+            'priority' => 58,  // Dopo il menu Affiliate esistente (55-57)
         ];
 
-        $menus['wcfm-affiliate-referrals'] = [
-            'label' => __('I Miei Referral', 'wcfm-affiliate-pro'),
-            'url' => wcfm_get_endpoint_url('wcfm-affiliate-referrals'),
+        $menus['wcfm-affiliate-pro-referrals'] = [
+            'label' => __('Referral Pro', 'wcfm-affiliate-pro'),
+            'url' => wcfm_get_endpoint_url('wcfm-affiliate-pro-referrals'),
             'icon' => 'link',
-            'priority' => 56,
-            'capability' => 'view_affiliate_dashboard',
+            'priority' => 59,
+            'capability' => 'view_aff_pro_dashboard',
         ];
 
-        $menus['wcfm-affiliate-payouts'] = [
-            'label' => __('Pagamenti Affiliate', 'wcfm-affiliate-pro'),
-            'url' => wcfm_get_endpoint_url('wcfm-affiliate-payouts'),
+        $menus['wcfm-affiliate-pro-payouts'] = [
+            'label' => __('Pagamenti Pro', 'wcfm-affiliate-pro'),
+            'url' => wcfm_get_endpoint_url('wcfm-affiliate-pro-payouts'),
             'icon' => 'credit-card',
-            'priority' => 57,
-            'capability' => 'request_payout',
+            'priority' => 60,
+            'capability' => 'request_aff_pro_payout',
         ];
 
         return $menus;
@@ -113,13 +118,15 @@ class WCFM_Affiliate_WCFM_Integration {
 
     /**
      * Add query vars
+     *
+     * Usa endpoint UNICI con prefisso 'wcfm-affiliate-pro'
      */
     public function add_query_vars(array $query_vars): array {
-        $query_vars['wcfm-affiliate'] = 'wcfm-affiliate';
-        $query_vars['wcfm-affiliate-referrals'] = 'wcfm-affiliate-referrals';
-        $query_vars['wcfm-affiliate-payouts'] = 'wcfm-affiliate-payouts';
-        $query_vars['wcfm-affiliate-links'] = 'wcfm-affiliate-links';
-        $query_vars['wcfm-affiliate-creatives'] = 'wcfm-affiliate-creatives';
+        $query_vars['wcfm-affiliate-pro'] = 'wcfm-affiliate-pro';
+        $query_vars['wcfm-affiliate-pro-referrals'] = 'wcfm-affiliate-pro-referrals';
+        $query_vars['wcfm-affiliate-pro-payouts'] = 'wcfm-affiliate-pro-payouts';
+        $query_vars['wcfm-affiliate-pro-links'] = 'wcfm-affiliate-pro-links';
+        $query_vars['wcfm-affiliate-pro-creatives'] = 'wcfm-affiliate-pro-creatives';
 
         return $query_vars;
     }
@@ -129,16 +136,16 @@ class WCFM_Affiliate_WCFM_Integration {
      */
     public function endpoint_title(string $title, string $endpoint): string {
         switch ($endpoint) {
-            case 'wcfm-affiliate':
-                return __('Dashboard Affiliate', 'wcfm-affiliate-pro');
-            case 'wcfm-affiliate-referrals':
-                return __('I Miei Referral', 'wcfm-affiliate-pro');
-            case 'wcfm-affiliate-payouts':
-                return __('Pagamenti Affiliate', 'wcfm-affiliate-pro');
-            case 'wcfm-affiliate-links':
-                return __('Link Referral', 'wcfm-affiliate-pro');
-            case 'wcfm-affiliate-creatives':
-                return __('Materiali Promozionali', 'wcfm-affiliate-pro');
+            case 'wcfm-affiliate-pro':
+                return __('Dashboard Affiliate Pro', 'wcfm-affiliate-pro');
+            case 'wcfm-affiliate-pro-referrals':
+                return __('I Miei Referral Pro', 'wcfm-affiliate-pro');
+            case 'wcfm-affiliate-pro-payouts':
+                return __('Pagamenti Affiliate Pro', 'wcfm-affiliate-pro');
+            case 'wcfm-affiliate-pro-links':
+                return __('Link Referral Pro', 'wcfm-affiliate-pro');
+            case 'wcfm-affiliate-pro-creatives':
+                return __('Materiali Promozionali Pro', 'wcfm-affiliate-pro');
         }
 
         return $title;
@@ -151,19 +158,19 @@ class WCFM_Affiliate_WCFM_Integration {
         global $WCFM, $wp;
 
         switch ($endpoint) {
-            case 'wcfm-affiliate':
+            case 'wcfm-affiliate-pro':
                 $this->render_wcfm_affiliate_dashboard();
                 break;
-            case 'wcfm-affiliate-referrals':
+            case 'wcfm-affiliate-pro-referrals':
                 $this->render_wcfm_referrals();
                 break;
-            case 'wcfm-affiliate-payouts':
+            case 'wcfm-affiliate-pro-payouts':
                 $this->render_wcfm_payouts();
                 break;
-            case 'wcfm-affiliate-links':
+            case 'wcfm-affiliate-pro-links':
                 $this->render_wcfm_links();
                 break;
-            case 'wcfm-affiliate-creatives':
+            case 'wcfm-affiliate-pro-creatives':
                 $this->render_wcfm_creatives();
                 break;
         }
@@ -173,7 +180,7 @@ class WCFM_Affiliate_WCFM_Integration {
      * Load WCFM scripts
      */
     public function load_wcfm_scripts(string $endpoint): void {
-        if (strpos($endpoint, 'wcfm-affiliate') !== 0) {
+        if (strpos($endpoint, 'wcfm-affiliate-pro') !== 0) {
             return;
         }
 
@@ -195,7 +202,7 @@ class WCFM_Affiliate_WCFM_Integration {
      * Load WCFM styles
      */
     public function load_wcfm_styles(string $endpoint): void {
-        if (strpos($endpoint, 'wcfm-affiliate') !== 0) {
+        if (strpos($endpoint, 'wcfm-affiliate-pro') !== 0) {
             return;
         }
 
@@ -311,19 +318,19 @@ class WCFM_Affiliate_WCFM_Integration {
                 <div class="wcfm-content">
                     <h2><?php _e('Azioni Rapide', 'wcfm-affiliate-pro'); ?></h2>
                     <div class="wcfm_affiliate_quick_actions">
-                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-referrals'); ?>" class="wcfm_affiliate_action_btn">
+                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro-referrals'); ?>" class="wcfm_affiliate_action_btn">
                             <span class="wcfmfa fa-list"></span>
                             <?php _e('Visualizza Referral', 'wcfm-affiliate-pro'); ?>
                         </a>
-                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-payouts'); ?>" class="wcfm_affiliate_action_btn">
+                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro-payouts'); ?>" class="wcfm_affiliate_action_btn">
                             <span class="wcfmfa fa-credit-card"></span>
                             <?php _e('Richiedi Pagamento', 'wcfm-affiliate-pro'); ?>
                         </a>
-                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-links'); ?>" class="wcfm_affiliate_action_btn">
+                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro-links'); ?>" class="wcfm_affiliate_action_btn">
                             <span class="wcfmfa fa-link"></span>
                             <?php _e('Genera Link', 'wcfm-affiliate-pro'); ?>
                         </a>
-                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-creatives'); ?>" class="wcfm_affiliate_action_btn">
+                        <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro-creatives'); ?>" class="wcfm_affiliate_action_btn">
                             <span class="wcfmfa fa-image"></span>
                             <?php _e('Materiali', 'wcfm-affiliate-pro'); ?>
                         </a>
@@ -457,7 +464,7 @@ class WCFM_Affiliate_WCFM_Integration {
         $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user($user_id);
 
         if (!$affiliate || $affiliate->status !== 'active') {
-            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate'));
+            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate-pro'));
             exit;
         }
         ?>
@@ -485,12 +492,12 @@ class WCFM_Affiliate_WCFM_Integration {
         $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user($user_id);
 
         if (!$affiliate || $affiliate->status !== 'active') {
-            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate'));
+            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate-pro'));
             exit;
         }
 
         $stats = wcfm_affiliate_pro()->affiliates->get_affiliate_stats($affiliate->id);
-        $settings = get_option('wcfm_affiliate_general', []);
+        $settings = get_option('wcfm_aff_pro_general', []);
         $minimum_payout = floatval($settings['minimum_payout'] ?? 50);
         ?>
         <div class="collapse wcfm-collapse">
@@ -564,7 +571,7 @@ class WCFM_Affiliate_WCFM_Integration {
         $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user($user_id);
 
         if (!$affiliate || $affiliate->status !== 'active') {
-            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate'));
+            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate-pro'));
             exit;
         }
         ?>
@@ -619,7 +626,7 @@ class WCFM_Affiliate_WCFM_Integration {
         $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user($user_id);
 
         if (!$affiliate || $affiliate->status !== 'active') {
-            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate'));
+            wp_redirect(wcfm_get_endpoint_url('wcfm-affiliate-pro'));
             exit;
         }
         ?>
@@ -854,7 +861,7 @@ class WCFM_Affiliate_WCFM_Integration {
      * Auto register vendor as affiliate
      */
     public function auto_register_vendor_affiliate(int $vendor_id): void {
-        $settings = get_option('wcfm_affiliate_general', []);
+        $settings = get_option('wcfm_aff_pro_general', []);
 
         if (($settings['auto_approve_vendors'] ?? 'no') !== 'yes') {
             return;
@@ -903,7 +910,7 @@ class WCFM_Affiliate_WCFM_Integration {
             <div class="wcfm_dashboard_widget_content">
                 <span class="wcfm_dashboard_widget_value"><?php echo wc_price($stats['earnings_balance']); ?></span>
                 <span class="wcfm_dashboard_widget_label"><?php _e('Saldo Disponibile', 'wcfm-affiliate-pro'); ?></span>
-                <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate'); ?>" class="wcfm_dashboard_widget_link">
+                <a href="<?php echo wcfm_get_endpoint_url('wcfm-affiliate-pro'); ?>" class="wcfm_dashboard_widget_link">
                     <?php _e('Visualizza Dashboard Affiliate', 'wcfm-affiliate-pro'); ?>
                 </a>
             </div>
