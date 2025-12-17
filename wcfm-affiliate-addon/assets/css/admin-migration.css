@@ -1,0 +1,675 @@
+/**
+ * WCFM Affiliate Pro - Migration Wizard Styles
+ *
+ * @package WCFM_Affiliate_Pro
+ * @since 1.0.0
+ */
+
+/* ==========================================================================
+   Container
+   ========================================================================== */
+
+.wcfm-migration-wrap {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.wcfm-migration-wrap h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    color: #1e293b;
+    margin-bottom: 30px;
+}
+
+.wcfm-migration-wrap .dashicons-migrate {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.migration-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+/* ==========================================================================
+   Header Card
+   ========================================================================== */
+
+.migration-header-card {
+    display: flex;
+    gap: 20px;
+    padding: 24px;
+    background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+    border-radius: 12px;
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+.header-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.header-content h2 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.header-content p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   Steps
+   ========================================================================== */
+
+.migration-step {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.migration-step:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.step-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+.step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #0d9488;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Source Cards
+   ========================================================================== */
+
+.source-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.source-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.source-card:hover {
+    border-color: #0d9488;
+    background: #f0fdfa;
+}
+
+.source-card.selected {
+    border-color: #0d9488;
+    background: #f0fdfa;
+}
+
+.source-card.selected .source-check {
+    opacity: 1;
+    background: #0d9488;
+}
+
+.source-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.source-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #64748b;
+}
+
+.source-card.selected .source-icon {
+    background: #ccfbf1;
+}
+
+.source-card.selected .source-icon svg {
+    stroke: #0d9488;
+}
+
+.source-info {
+    flex: 1;
+}
+
+.source-info h4 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.source-info .affiliates-count {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.source-info .affiliates-count strong {
+    color: #0d9488;
+}
+
+.source-check {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.source-check svg {
+    width: 14px;
+    height: 14px;
+    stroke: #fff;
+}
+
+/* ==========================================================================
+   Preview
+   ========================================================================== */
+
+.preview-container {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.preview-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.preview-stat {
+    background: #fff;
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.preview-stat .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0d9488;
+    display: block;
+}
+
+.preview-stat .stat-label {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+}
+
+.migration-options {
+    margin-bottom: 24px;
+}
+
+.option-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.option-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.option-checkbox .checkmark {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.option-checkbox input:checked + .checkmark {
+    background: #0d9488;
+    border-color: #0d9488;
+}
+
+.option-checkbox input:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.option-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.option-label small {
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 12px;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.preview-actions .dashicons {
+    margin-right: 4px;
+}
+
+/* ==========================================================================
+   Progress
+   ========================================================================== */
+
+.progress-container {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.progress-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.progress-percent {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0d9488;
+}
+
+.progress-bar-container {
+    height: 12px;
+    background: #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #0d9488 0%, #14b8a6 100%);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.progress-status {
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 24px;
+}
+
+.progress-details {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.detail-item {
+    background: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+}
+
+.detail-label {
+    display: block;
+    font-size: 11px;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.detail-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.progress-log-container {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.progress-log-container h4 {
+    color: #94a3b8;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin: 0 0 12px 0;
+}
+
+.progress-log {
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 12px;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+.progress-log .log-entry {
+    padding: 2px 0;
+}
+
+.progress-log .log-entry.success {
+    color: #4ade80;
+}
+
+.progress-log .log-entry.error {
+    color: #f87171;
+}
+
+.progress-log .log-entry.info {
+    color: #60a5fa;
+}
+
+.progress-actions {
+    margin-top: 24px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   Results
+   ========================================================================== */
+
+.results-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.results-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.results-icon.success {
+    background: #d1fae5;
+}
+
+.results-icon.success svg {
+    width: 40px;
+    height: 40px;
+    stroke: #059669;
+}
+
+.results-icon.error {
+    background: #fee2e2;
+}
+
+.results-icon.error svg {
+    stroke: #dc2626;
+}
+
+.results-container h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.results-summary {
+    font-size: 15px;
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+.results-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.results-stat {
+    text-align: center;
+}
+
+.results-stat .value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #0d9488;
+}
+
+.results-stat .label {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+}
+
+.results-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   No Sources
+   ========================================================================== */
+
+.no-sources-found {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.no-sources-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #fef3c7;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-sources-icon svg {
+    width: 40px;
+    height: 40px;
+    stroke: #d97706;
+}
+
+.no-sources-found h3 {
+    font-size: 20px;
+    color: #1e293b;
+    margin-bottom: 12px;
+}
+
+.no-sources-found p {
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+.no-sources-found ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.no-sources-found li {
+    padding: 8px 0;
+    color: #374151;
+}
+
+/* ==========================================================================
+   History
+   ========================================================================== */
+
+.migration-history {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.migration-history h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 16px;
+}
+
+.migration-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.migration-status.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.migration-status.status-in_progress {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.migration-status.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.migration-status.status-failed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.migration-status.status-rolled_back {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .wcfm-migration-wrap {
+        padding: 0 10px;
+    }
+
+    .migration-header-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-icon {
+        margin: 0 auto;
+    }
+
+    .source-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .preview-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .progress-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .results-stats {
+        flex-wrap: wrap;
+    }
+
+    .preview-actions {
+        flex-direction: column;
+    }
+}

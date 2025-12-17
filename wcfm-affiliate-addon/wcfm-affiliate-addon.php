@@ -81,6 +81,7 @@ final class WCFM_Affiliate_Pro {
     public ?WCFM_Affiliate_REST_API $api = null;
     public ?WCFM_Affiliate_Coupons $coupons = null;
     public ?WCFM_Affiliate_Dual_Role $dual_role = null;
+    public ?WCFM_Affiliate_Migration $migration = null;
 
     /**
      * Get single instance
@@ -183,6 +184,7 @@ final class WCFM_Affiliate_Pro {
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-emails.php';
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-coupons.php';
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-dual-role.php';
+        require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-migration.php';
 
         // WCFM Integration
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-wcfm-integration.php';
@@ -196,6 +198,7 @@ final class WCFM_Affiliate_Pro {
             require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-payouts.php';
             require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-reports.php';
             require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-network.php';
+            require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-migration.php';
         }
 
         // Frontend
@@ -220,12 +223,14 @@ final class WCFM_Affiliate_Pro {
         $this->emails = new WCFM_Affiliate_Emails();
         $this->coupons = new WCFM_Affiliate_Coupons();
         $this->dual_role = new WCFM_Affiliate_Dual_Role();
+        $this->migration = new WCFM_Affiliate_Migration();
         $this->wcfm = new WCFM_Affiliate_WCFM_Integration();
         $this->api = new WCFM_Affiliate_REST_API();
 
         if (is_admin()) {
             $this->admin = new WCFM_Affiliate_Admin();
             $this->network = new WCFM_Affiliate_Admin_Network();
+            new WCFM_Affiliate_Admin_Migration();
         }
     }
 
@@ -271,6 +276,10 @@ final class WCFM_Affiliate_Pro {
         // Create database tables
         require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-db.php';
         WCFM_Affiliate_DB::create_tables();
+
+        // Create migrations table
+        require_once WCFM_AFFILIATE_PRO_PATH . 'includes/class-wcfm-affiliate-migration.php';
+        WCFM_Affiliate_Migration::create_migrations_table();
 
         // Set default options
         $this->set_default_options();
