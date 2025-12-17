@@ -14,6 +14,10 @@ if (!defined('ABSPATH')) {
 
 /**
  * Class WCFM_Affiliate_DB
+ *
+ * IMPORTANTE: Questo plugin usa un prefisso UNICO per le tabelle (wcfm_aff_pro_)
+ * per NON interferire con le tabelle esistenti di WCFM Affiliate o AffiliateWP.
+ * Le tabelle sono completamente indipendenti e reversibili.
  */
 class WCFM_Affiliate_DB {
 
@@ -21,6 +25,11 @@ class WCFM_Affiliate_DB {
      * Database version
      */
     const DB_VERSION = '1.0.0';
+
+    /**
+     * Unique table prefix - NON modifica tabelle esistenti
+     */
+    const TABLE_PREFIX = 'wcfm_aff_pro_';
 
     /**
      * Table names
@@ -45,19 +54,22 @@ class WCFM_Affiliate_DB {
     public function __construct() {
         global $wpdb;
 
-        self::$table_affiliates = $wpdb->prefix . 'wcfm_affiliates';
-        self::$table_referrals = $wpdb->prefix . 'wcfm_affiliate_referrals';
-        self::$table_commissions = $wpdb->prefix . 'wcfm_affiliate_commissions';
-        self::$table_payouts = $wpdb->prefix . 'wcfm_affiliate_payouts';
-        self::$table_payout_items = $wpdb->prefix . 'wcfm_affiliate_payout_items';
-        self::$table_clicks = $wpdb->prefix . 'wcfm_affiliate_clicks';
-        self::$table_visits = $wpdb->prefix . 'wcfm_affiliate_visits';
-        self::$table_coupons = $wpdb->prefix . 'wcfm_affiliate_coupons';
-        self::$table_notifications = $wpdb->prefix . 'wcfm_affiliate_notifications';
-        self::$table_settings = $wpdb->prefix . 'wcfm_affiliate_settings';
-        self::$table_tiers = $wpdb->prefix . 'wcfm_affiliate_tiers';
-        self::$table_creatives = $wpdb->prefix . 'wcfm_affiliate_creatives';
-        self::$table_mlm = $wpdb->prefix . 'wcfm_affiliate_mlm';
+        // Usa prefisso UNICO per evitare conflitti con tabelle esistenti
+        $prefix = $wpdb->prefix . self::TABLE_PREFIX;
+
+        self::$table_affiliates = $prefix . 'affiliates';
+        self::$table_referrals = $prefix . 'referrals';
+        self::$table_commissions = $prefix . 'commissions';
+        self::$table_payouts = $prefix . 'payouts';
+        self::$table_payout_items = $prefix . 'payout_items';
+        self::$table_clicks = $prefix . 'clicks';
+        self::$table_visits = $prefix . 'visits';
+        self::$table_coupons = $prefix . 'coupons';
+        self::$table_notifications = $prefix . 'notifications';
+        self::$table_settings = $prefix . 'settings';
+        self::$table_tiers = $prefix . 'tiers';
+        self::$table_creatives = $prefix . 'creatives';
+        self::$table_mlm = $prefix . 'mlm';
 
         // Check for updates
         $this->maybe_upgrade();
@@ -65,16 +77,20 @@ class WCFM_Affiliate_DB {
 
     /**
      * Create all tables
+     *
+     * Le tabelle usano il prefisso UNICO wcfm_aff_pro_ per non interferire
+     * con WCFM Affiliate esistente o AffiliateWP
      */
     public static function create_tables(): void {
         global $wpdb;
 
         $charset_collate = $wpdb->get_charset_collate();
+        $prefix = $wpdb->prefix . self::TABLE_PREFIX;
 
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
         // Affiliates table
-        $sql_affiliates = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliates (
+        $sql_affiliates = "CREATE TABLE IF NOT EXISTS " . $prefix . "affiliates (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id BIGINT(20) UNSIGNED NOT NULL,
             affiliate_code VARCHAR(50) NOT NULL,
@@ -115,7 +131,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_affiliates);
 
         // Referrals table
-        $sql_referrals = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_referrals (
+        $sql_referrals = "CREATE TABLE IF NOT EXISTS " . $prefix . "referrals (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
             order_id BIGINT(20) UNSIGNED DEFAULT NULL,
@@ -150,7 +166,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_referrals);
 
         // Commissions table (for detailed commission tracking)
-        $sql_commissions = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_commissions (
+        $sql_commissions = "CREATE TABLE IF NOT EXISTS " . $prefix . "commissions (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             referral_id BIGINT(20) UNSIGNED NOT NULL,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
@@ -184,7 +200,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_commissions);
 
         // Payouts table
-        $sql_payouts = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_payouts (
+        $sql_payouts = "CREATE TABLE IF NOT EXISTS " . $prefix . "payouts (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
             amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
@@ -210,7 +226,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_payouts);
 
         // Payout items table
-        $sql_payout_items = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_payout_items (
+        $sql_payout_items = "CREATE TABLE IF NOT EXISTS " . $prefix . "payout_items (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             payout_id BIGINT(20) UNSIGNED NOT NULL,
             referral_id BIGINT(20) UNSIGNED NOT NULL,
@@ -226,7 +242,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_payout_items);
 
         // Clicks table
-        $sql_clicks = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_clicks (
+        $sql_clicks = "CREATE TABLE IF NOT EXISTS " . $prefix . "clicks (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
             visit_id BIGINT(20) UNSIGNED DEFAULT NULL,
@@ -255,7 +271,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_clicks);
 
         // Visits table (sessions)
-        $sql_visits = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_visits (
+        $sql_visits = "CREATE TABLE IF NOT EXISTS " . $prefix . "visits (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
             customer_id BIGINT(20) UNSIGNED DEFAULT NULL,
@@ -286,7 +302,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_visits);
 
         // Coupons table
-        $sql_coupons = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_coupons (
+        $sql_coupons = "CREATE TABLE IF NOT EXISTS " . $prefix . "coupons (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
             coupon_id BIGINT(20) UNSIGNED NOT NULL,
@@ -307,7 +323,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_coupons);
 
         // Notifications table
-        $sql_notifications = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_notifications (
+        $sql_notifications = "CREATE TABLE IF NOT EXISTS " . $prefix . "notifications (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             user_id BIGINT(20) UNSIGNED NOT NULL,
             type VARCHAR(50) NOT NULL,
@@ -326,7 +342,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_notifications);
 
         // Affiliate tiers table
-        $sql_tiers = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_tiers (
+        $sql_tiers = "CREATE TABLE IF NOT EXISTS " . $prefix . "tiers (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             name VARCHAR(100) NOT NULL,
             slug VARCHAR(100) NOT NULL,
@@ -354,7 +370,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_tiers);
 
         // Creatives table (banners, links, etc.)
-        $sql_creatives = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_creatives (
+        $sql_creatives = "CREATE TABLE IF NOT EXISTS " . $prefix . "creatives (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             name VARCHAR(255) NOT NULL,
             description TEXT DEFAULT NULL,
@@ -381,7 +397,7 @@ class WCFM_Affiliate_DB {
         dbDelta($sql_creatives);
 
         // MLM structure table
-        $sql_mlm = "CREATE TABLE IF NOT EXISTS " . $wpdb->prefix . "wcfm_affiliate_mlm (
+        $sql_mlm = "CREATE TABLE IF NOT EXISTS " . $prefix . "mlm (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             affiliate_id BIGINT(20) UNSIGNED NOT NULL,
             parent_id BIGINT(20) UNSIGNED NOT NULL,
@@ -400,8 +416,8 @@ class WCFM_Affiliate_DB {
 
         dbDelta($sql_mlm);
 
-        // Update db version
-        update_option('wcfm_affiliate_db_version', self::DB_VERSION);
+        // Update db version - usa nome opzione unico
+        update_option('wcfm_aff_pro_db_version', self::DB_VERSION);
 
         // Create default tier
         self::create_default_tier();
@@ -413,7 +429,7 @@ class WCFM_Affiliate_DB {
     private static function create_default_tier(): void {
         global $wpdb;
 
-        $table = $wpdb->prefix . 'wcfm_affiliate_tiers';
+        $table = $wpdb->prefix . self::TABLE_PREFIX . 'tiers';
 
         // Check if default tier exists
         $exists = $wpdb->get_var("SELECT COUNT(*) FROM $table WHERE is_default = 1");
@@ -439,7 +455,7 @@ class WCFM_Affiliate_DB {
      * Maybe upgrade database
      */
     private function maybe_upgrade(): void {
-        $current_version = get_option('wcfm_affiliate_db_version', '0');
+        $current_version = get_option('wcfm_aff_pro_db_version', '0');
 
         if (version_compare($current_version, self::DB_VERSION, '<')) {
             self::create_tables();
@@ -448,38 +464,43 @@ class WCFM_Affiliate_DB {
 
     /**
      * Drop all tables (for uninstall)
+     *
+     * NOTA: Questa funzione viene chiamata SOLO durante la disinstallazione completa
+     * (non durante la disattivazione). I dati sono preservati se disattivi il plugin.
      */
     public static function drop_tables(): void {
         global $wpdb;
 
+        $prefix = $wpdb->prefix . self::TABLE_PREFIX;
+
         $tables = [
-            $wpdb->prefix . 'wcfm_affiliates',
-            $wpdb->prefix . 'wcfm_affiliate_referrals',
-            $wpdb->prefix . 'wcfm_affiliate_commissions',
-            $wpdb->prefix . 'wcfm_affiliate_payouts',
-            $wpdb->prefix . 'wcfm_affiliate_payout_items',
-            $wpdb->prefix . 'wcfm_affiliate_clicks',
-            $wpdb->prefix . 'wcfm_affiliate_visits',
-            $wpdb->prefix . 'wcfm_affiliate_coupons',
-            $wpdb->prefix . 'wcfm_affiliate_notifications',
-            $wpdb->prefix . 'wcfm_affiliate_tiers',
-            $wpdb->prefix . 'wcfm_affiliate_creatives',
-            $wpdb->prefix . 'wcfm_affiliate_mlm',
+            $prefix . 'affiliates',
+            $prefix . 'referrals',
+            $prefix . 'commissions',
+            $prefix . 'payouts',
+            $prefix . 'payout_items',
+            $prefix . 'clicks',
+            $prefix . 'visits',
+            $prefix . 'coupons',
+            $prefix . 'notifications',
+            $prefix . 'tiers',
+            $prefix . 'creatives',
+            $prefix . 'mlm',
         ];
 
         foreach ($tables as $table) {
             $wpdb->query("DROP TABLE IF EXISTS $table");
         }
 
-        delete_option('wcfm_affiliate_db_version');
+        delete_option('wcfm_aff_pro_db_version');
     }
 
     /**
-     * Get table name
+     * Get table name with unique prefix
      */
     public static function get_table(string $name): string {
         global $wpdb;
-        return $wpdb->prefix . 'wcfm_affiliate_' . $name;
+        return $wpdb->prefix . self::TABLE_PREFIX . $name;
     }
 
     /**

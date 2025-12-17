@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: WCFM Affiliate Pro
+ * Plugin Name: WCFM Affiliate Pro (Independent)
  * Plugin URI: https://aiedintorni.it/wcfm-affiliate-pro
- * Description: Sistema di affiliazione avanzato per WCFM Marketplace con funzionalità multivendor complete. Gestione commissioni multi-livello, tracking referral, payout automatici e dashboard affiliati.
+ * Description: Sistema di affiliazione avanzato INDIPENDENTE per WCFM. NON sovrascrive tabelle esistenti. Usa prefisso unico 'wcfm_aff_pro_'. Completamente reversibile - disattiva senza perdere dati esistenti.
  * Version: 1.0.0
  * Author: IPV Production
  * Author URI: https://aiedintorni.it
@@ -20,18 +20,20 @@
  * @package WCFM_Affiliate_Pro
  * @version 1.0.0
  *
+ * IMPORTANTE - PLUGIN INDIPENDENTE:
+ * ================================
+ * Questo plugin usa prefissi UNICI per:
+ * - Tabelle DB: wplu_wcfm_aff_pro_* (NON tocca wplu_wcfm_affiliate_* o wplu_affiliate_wp_*)
+ * - Opzioni WP: wcfm_aff_pro_* (NON tocca wcfmaf_* o affwp_*)
+ * - Cookie: wcfm_aff_pro_ref (NON tocca wcfm_affiliate_ref o affwp_ref)
+ * - Cron: wcfm_aff_pro_* (hook separati)
+ *
+ * La DISATTIVAZIONE non elimina dati - puoi riattivare quando vuoi.
+ * Solo la DISINSTALLAZIONE (cancella plugin) rimuove tabelle/opzioni.
+ *
  * CHANGELOG:
  * 1.0.0 - 2025-12-17
- * - Initial release
- * - Affiliate registration and management
- * - Multi-level commission system
- * - Referral link tracking with cookies
- * - Payout management with multiple methods
- * - WCFM Marketplace integration
- * - Vendor-specific affiliate programs
- * - Advanced reports and analytics
- * - Email notifications
- * - Multi-language support (IT, EN, FR, DE, ES, PT)
+ * - Initial release (Independent version)
  */
 
 // Prevent direct access
@@ -229,13 +231,13 @@ final class WCFM_Affiliate_Pro {
         add_action('wp_enqueue_scripts', [$this, 'enqueue_frontend_assets']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
 
-        // AJAX handlers
-        add_action('wp_ajax_wcfm_affiliate_action', [$this, 'handle_ajax']);
-        add_action('wp_ajax_nopriv_wcfm_affiliate_action', [$this, 'handle_ajax_nopriv']);
+        // AJAX handlers - usa prefisso unico per evitare conflitti
+        add_action('wp_ajax_wcfm_aff_pro_action', [$this, 'handle_ajax']);
+        add_action('wp_ajax_nopriv_wcfm_aff_pro_action', [$this, 'handle_ajax_nopriv']);
 
-        // Cron jobs
-        add_action('wcfm_affiliate_daily_cron', [$this, 'run_daily_tasks']);
-        add_action('wcfm_affiliate_hourly_cron', [$this, 'run_hourly_tasks']);
+        // Cron jobs - usa prefisso unico per evitare conflitti
+        add_action('wcfm_aff_pro_daily_cron', [$this, 'run_daily_tasks']);
+        add_action('wcfm_aff_pro_hourly_cron', [$this, 'run_hourly_tasks']);
 
         // WooCommerce hooks
         add_action('woocommerce_order_status_completed', [$this, 'process_order_commission'], 10, 1);
@@ -285,27 +287,37 @@ final class WCFM_Affiliate_Pro {
 
     /**
      * Plugin deactivation
+     *
+     * NOTA: La disattivazione NON elimina dati.
+     * Tabelle e opzioni restano intatte per permettere riattivazione.
+     * Solo l'eliminazione completa del plugin (uninstall) rimuove i dati.
      */
     public function deactivate(): void {
         // Clear scheduled cron jobs
-        wp_clear_scheduled_hook('wcfm_affiliate_daily_cron');
-        wp_clear_scheduled_hook('wcfm_affiliate_hourly_cron');
+        wp_clear_scheduled_hook('wcfm_aff_pro_daily_cron');
+        wp_clear_scheduled_hook('wcfm_aff_pro_hourly_cron');
 
         // Flush rewrite rules
         flush_rewrite_rules();
+
+        // NON eliminiamo tabelle o opzioni - il plugin è reversibile
     }
 
     /**
      * Set default plugin options
+     *
+     * Usa prefisso 'wcfm_aff_pro_' per TUTTE le opzioni
+     * per evitare conflitti con WCFM Affiliate esistente
      */
     private function set_default_options(): void {
         $defaults = [
-            'wcfm_affiliate_general' => [
+            // Usa prefisso UNICO wcfm_aff_pro_ per tutte le opzioni
+            'wcfm_aff_pro_general' => [
                 'enable' => 'yes',
                 'registration_type' => 'approval', // auto, approval, invite
                 'cookie_duration' => 30, // days
-                'cookie_name' => 'wcfm_affiliate_ref',
-                'referral_var' => 'ref',
+                'cookie_name' => 'wcfm_aff_pro_ref', // Cookie unico!
+                'referral_var' => 'refpro', // Variabile URL unica!
                 'credit_last_referrer' => 'yes',
                 'require_approval' => 'yes',
                 'auto_approve_vendors' => 'no',
@@ -315,7 +327,7 @@ final class WCFM_Affiliate_Pro {
                 'default_status' => 'pending',
                 'allow_self_referral' => 'no',
             ],
-            'wcfm_affiliate_commission' => [
+            'wcfm_aff_pro_commission' => [
                 'type' => 'percentage', // percentage, flat, tiered
                 'rate' => 10,
                 'flat_amount' => 5,
@@ -333,14 +345,14 @@ final class WCFM_Affiliate_Pro {
                 'exclude_tax' => 'yes',
                 'exclude_discounts' => 'yes',
             ],
-            'wcfm_affiliate_mlm' => [
+            'wcfm_aff_pro_mlm' => [
                 'enable' => 'no',
                 'levels' => 3,
                 'level_rates' => [10, 5, 2],
                 'override_bonus' => 'no',
                 'override_rate' => 2,
             ],
-            'wcfm_affiliate_notifications' => [
+            'wcfm_aff_pro_notifications' => [
                 'admin_new_affiliate' => 'yes',
                 'admin_new_referral' => 'yes',
                 'admin_payout_request' => 'yes',
@@ -350,12 +362,12 @@ final class WCFM_Affiliate_Pro {
                 'affiliate_commission_approved' => 'yes',
                 'affiliate_payout_sent' => 'yes',
             ],
-            'wcfm_affiliate_pages' => [
+            'wcfm_aff_pro_pages' => [
                 'dashboard' => 0,
                 'registration' => 0,
                 'login' => 0,
             ],
-            'wcfm_affiliate_design' => [
+            'wcfm_aff_pro_design' => [
                 'primary_color' => '#00897b',
                 'secondary_color' => '#26a69a',
                 'dashboard_style' => 'modern',
@@ -368,92 +380,94 @@ final class WCFM_Affiliate_Pro {
             }
         }
 
-        // Set version
-        update_option('wcfm_affiliate_pro_version', WCFM_AFFILIATE_PRO_VERSION);
+        // Set version con nome opzione unico
+        update_option('wcfm_aff_pro_version', WCFM_AFFILIATE_PRO_VERSION);
     }
 
     /**
      * Create affiliate user role
+     *
+     * Usa nome ruolo unico per non conflittare con wcfm_affiliate esistente
      */
     private function create_affiliate_role(): void {
-        // Add affiliate role
+        // Add affiliate role con nome UNICO
         add_role(
-            'wcfm_affiliate',
-            __('Affiliato', 'wcfm-affiliate-pro'),
+            'wcfm_aff_pro', // Nome ruolo unico!
+            __('Affiliato Pro', 'wcfm-affiliate-pro'),
             [
                 'read' => true,
                 'edit_posts' => false,
                 'delete_posts' => false,
-                'view_affiliate_dashboard' => true,
-                'view_affiliate_reports' => true,
-                'request_payout' => true,
-                'manage_affiliate_links' => true,
-                'view_affiliate_coupons' => true,
+                'view_aff_pro_dashboard' => true,
+                'view_aff_pro_reports' => true,
+                'request_aff_pro_payout' => true,
+                'manage_aff_pro_links' => true,
+                'view_aff_pro_coupons' => true,
             ]
         );
 
-        // Add capabilities to admin
+        // Add capabilities to admin - usa nomi unici
         $admin = get_role('administrator');
         if ($admin) {
-            $admin->add_cap('manage_affiliates');
-            $admin->add_cap('approve_affiliates');
-            $admin->add_cap('manage_commissions');
-            $admin->add_cap('manage_payouts');
-            $admin->add_cap('view_affiliate_reports');
-            $admin->add_cap('edit_affiliate_settings');
+            $admin->add_cap('manage_aff_pro');
+            $admin->add_cap('approve_aff_pro');
+            $admin->add_cap('manage_aff_pro_commissions');
+            $admin->add_cap('manage_aff_pro_payouts');
+            $admin->add_cap('view_aff_pro_reports');
+            $admin->add_cap('edit_aff_pro_settings');
         }
 
         // Add capabilities to shop manager
         $shop_manager = get_role('shop_manager');
         if ($shop_manager) {
-            $shop_manager->add_cap('manage_affiliates');
-            $shop_manager->add_cap('approve_affiliates');
-            $shop_manager->add_cap('manage_commissions');
-            $shop_manager->add_cap('view_affiliate_reports');
+            $shop_manager->add_cap('manage_aff_pro');
+            $shop_manager->add_cap('approve_aff_pro');
+            $shop_manager->add_cap('manage_aff_pro_commissions');
+            $shop_manager->add_cap('view_aff_pro_reports');
         }
     }
 
     /**
-     * Schedule cron jobs
+     * Schedule cron jobs - usa nomi hook unici
      */
     private function schedule_cron_jobs(): void {
-        // Daily cron
-        if (!wp_next_scheduled('wcfm_affiliate_daily_cron')) {
-            wp_schedule_event(time(), 'daily', 'wcfm_affiliate_daily_cron');
+        // Daily cron - nome unico
+        if (!wp_next_scheduled('wcfm_aff_pro_daily_cron')) {
+            wp_schedule_event(time(), 'daily', 'wcfm_aff_pro_daily_cron');
         }
 
-        // Hourly cron
-        if (!wp_next_scheduled('wcfm_affiliate_hourly_cron')) {
-            wp_schedule_event(time(), 'hourly', 'wcfm_affiliate_hourly_cron');
+        // Hourly cron - nome unico
+        if (!wp_next_scheduled('wcfm_aff_pro_hourly_cron')) {
+            wp_schedule_event(time(), 'hourly', 'wcfm_aff_pro_hourly_cron');
         }
     }
 
     /**
      * Create required pages
+     *
+     * Usa slug UNICI per evitare conflitti con pagine esistenti
+     * Usa shortcode UNICI per evitare conflitti con altri plugin
      */
     private function create_pages(): void {
         $pages = [
-            'affiliate-dashboard' => [
-                'title' => __('Dashboard Affiliato', 'wcfm-affiliate-pro'),
-                'content' => '[wcfm_affiliate_dashboard]',
-                'option' => 'wcfm_affiliate_pages',
+            'affiliate-pro-dashboard' => [  // Slug unico!
+                'title' => __('Dashboard Affiliato Pro', 'wcfm-affiliate-pro'),
+                'content' => '[wcfm_aff_pro_dashboard]',  // Shortcode unico!
                 'key' => 'dashboard',
             ],
-            'affiliate-registration' => [
-                'title' => __('Registrazione Affiliato', 'wcfm-affiliate-pro'),
-                'content' => '[wcfm_affiliate_registration]',
-                'option' => 'wcfm_affiliate_pages',
+            'affiliate-pro-registration' => [  // Slug unico!
+                'title' => __('Registrazione Affiliato Pro', 'wcfm-affiliate-pro'),
+                'content' => '[wcfm_aff_pro_registration]',  // Shortcode unico!
                 'key' => 'registration',
             ],
-            'affiliate-login' => [
-                'title' => __('Login Affiliato', 'wcfm-affiliate-pro'),
-                'content' => '[wcfm_affiliate_login]',
-                'option' => 'wcfm_affiliate_pages',
+            'affiliate-pro-login' => [  // Slug unico!
+                'title' => __('Login Affiliato Pro', 'wcfm-affiliate-pro'),
+                'content' => '[wcfm_aff_pro_login]',  // Shortcode unico!
                 'key' => 'login',
             ],
         ];
 
-        $page_options = get_option('wcfm_affiliate_pages', []);
+        $page_options = get_option('wcfm_aff_pro_pages', []);  // Opzione unica!
 
         foreach ($pages as $slug => $page_data) {
             // Check if page exists
@@ -477,7 +491,7 @@ final class WCFM_Affiliate_Pro {
             }
         }
 
-        update_option('wcfm_affiliate_pages', $page_options);
+        update_option('wcfm_aff_pro_pages', $page_options);  // Opzione unica!
     }
 
     /**

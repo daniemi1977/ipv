@@ -14,6 +14,9 @@ if (!defined('ABSPATH')) {
 
 /**
  * Class WCFM_Affiliate_Referral
+ *
+ * NOTA: Usa opzioni e cookie con prefisso UNICO 'wcfm_aff_pro_'
+ * per non interferire con altri plugin affiliate
  */
 class WCFM_Affiliate_Referral {
 
@@ -26,7 +29,8 @@ class WCFM_Affiliate_Referral {
      * Constructor
      */
     public function __construct() {
-        $this->settings = get_option('wcfm_affiliate_general', []);
+        // Usa nome opzione unico
+        $this->settings = get_option('wcfm_aff_pro_general', []);
 
         $this->init_hooks();
     }
@@ -41,15 +45,15 @@ class WCFM_Affiliate_Referral {
         // Set cookie
         add_action('init', [$this, 'set_referral_cookie'], 5);
 
-        // Track clicks via AJAX
-        add_action('wp_ajax_wcfm_affiliate_track_click', [$this, 'track_click']);
-        add_action('wp_ajax_nopriv_wcfm_affiliate_track_click', [$this, 'track_click']);
+        // Track clicks via AJAX - usa nomi azione unici
+        add_action('wp_ajax_wcfm_aff_pro_track_click', [$this, 'track_click']);
+        add_action('wp_ajax_nopriv_wcfm_aff_pro_track_click', [$this, 'track_click']);
 
-        // Generate referral link AJAX
-        add_action('wp_ajax_wcfm_affiliate_generate_link', [$this, 'generate_link_ajax']);
+        // Generate referral link AJAX - usa nomi azione unici
+        add_action('wp_ajax_wcfm_aff_pro_generate_link', [$this, 'generate_link_ajax']);
 
-        // Shortcode for referral link
-        add_shortcode('wcfm_affiliate_link', [$this, 'referral_link_shortcode']);
+        // Shortcode for referral link - usa nome unico
+        add_shortcode('wcfm_aff_pro_link', [$this, 'referral_link_shortcode']);
     }
 
     /**
@@ -76,8 +80,8 @@ class WCFM_Affiliate_Referral {
             return;
         }
 
-        // Check if already tracked in this session
-        if (isset($_SESSION['wcfm_affiliate_tracked']) && $_SESSION['wcfm_affiliate_tracked'] === $affiliate->id) {
+        // Check if already tracked in this session - usa chiavi sessione uniche
+        if (isset($_SESSION['wcfm_aff_pro_tracked']) && $_SESSION['wcfm_aff_pro_tracked'] === $affiliate->id) {
             return;
         }
 
@@ -91,12 +95,12 @@ class WCFM_Affiliate_Referral {
             // Update affiliate visit count
             wcfm_affiliate_pro()->affiliates->increment_visit_count($affiliate->id);
 
-            // Set session flag
+            // Set session flag - usa chiavi sessione uniche
             if (!session_id()) {
                 session_start();
             }
-            $_SESSION['wcfm_affiliate_tracked'] = $affiliate->id;
-            $_SESSION['wcfm_affiliate_visit_id'] = $visit_id;
+            $_SESSION['wcfm_aff_pro_tracked'] = $affiliate->id;
+            $_SESSION['wcfm_aff_pro_visit_id'] = $visit_id;
         }
     }
 
@@ -705,8 +709,8 @@ class WCFM_Affiliate_Referral {
         // Simple GeoIP lookup - can be extended with external services
         $ip = $this->get_client_ip();
 
-        // Check if we have a cached result
-        $cache_key = 'wcfm_affiliate_geo_' . md5($ip);
+        // Check if we have a cached result - usa prefisso unico
+        $cache_key = 'wcfm_aff_pro_geo_' . md5($ip);
         $country = get_transient($cache_key);
 
         if ($country !== false) {

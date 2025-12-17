@@ -4,6 +4,9 @@
  *
  * @package WCFM_Affiliate_Pro
  * @since 1.0.0
+ *
+ * NOTA: Usa nomi shortcode UNICI con prefisso wcfm_aff_pro_
+ * per evitare conflitti con altri plugin affiliate
  */
 
 if (!defined('ABSPATH')) {
@@ -13,18 +16,21 @@ if (!defined('ABSPATH')) {
 class WCFM_Affiliate_Shortcodes {
 
     public function __construct() {
-        add_shortcode('wcfm_affiliate_dashboard', [$this, 'dashboard_shortcode']);
-        add_shortcode('wcfm_affiliate_register', [$this, 'register_shortcode']);
-        add_shortcode('wcfm_affiliate_login', [$this, 'login_shortcode']);
-        add_shortcode('wcfm_affiliate_link', [$this, 'link_shortcode']);
-        add_shortcode('wcfm_affiliate_stats', [$this, 'stats_shortcode']);
-        add_shortcode('wcfm_affiliate_creatives', [$this, 'creatives_shortcode']);
-        add_shortcode('wcfm_affiliate_leaderboard', [$this, 'leaderboard_shortcode']);
+        // Shortcode UNICI per evitare conflitti
+        add_shortcode('wcfm_aff_pro_dashboard', [$this, 'dashboard_shortcode']);
+        add_shortcode('wcfm_aff_pro_registration', [$this, 'register_shortcode']);
+        add_shortcode('wcfm_aff_pro_register', [$this, 'register_shortcode']); // alias
+        add_shortcode('wcfm_aff_pro_login', [$this, 'login_shortcode']);
+        add_shortcode('wcfm_aff_pro_link', [$this, 'link_shortcode']);
+        add_shortcode('wcfm_aff_pro_stats', [$this, 'stats_shortcode']);
+        add_shortcode('wcfm_aff_pro_creatives', [$this, 'creatives_shortcode']);
+        add_shortcode('wcfm_aff_pro_leaderboard', [$this, 'leaderboard_shortcode']);
     }
 
     public function dashboard_shortcode($atts): string {
         if (!is_user_logged_in()) {
-            $login_page = get_option('wcfm_affiliate_login_page');
+            $pages = get_option('wcfm_aff_pro_pages', []);
+            $login_page = $pages['login'] ?? 0;
             if ($login_page) {
                 return sprintf(
                     '<p>%s <a href="%s">%s</a></p>',
@@ -39,7 +45,8 @@ class WCFM_Affiliate_Shortcodes {
         $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user(get_current_user_id());
 
         if (!$affiliate) {
-            $registration_page = get_option('wcfm_affiliate_registration_page');
+            $pages = get_option('wcfm_aff_pro_pages', []);
+            $registration_page = $pages['registration'] ?? 0;
             if ($registration_page) {
                 return sprintf(
                     '<p>%s <a href="%s">%s</a></p>',
@@ -73,7 +80,8 @@ class WCFM_Affiliate_Shortcodes {
             $affiliate = wcfm_affiliate_pro()->affiliates->get_affiliate_by_user(get_current_user_id());
 
             if ($affiliate) {
-                $dashboard_page = get_option('wcfm_affiliate_dashboard_page');
+                $pages = get_option('wcfm_aff_pro_pages', []);
+                $dashboard_page = $pages['dashboard'] ?? 0;
                 return sprintf(
                     '<p>%s <a href="%s">%s</a></p>',
                     __('Sei già un affiliato.', 'wcfm-affiliate-pro'),
@@ -92,8 +100,8 @@ class WCFM_Affiliate_Shortcodes {
     private function render_registration_form(): string {
         $errors = [];
         if (function_exists('WC') && WC()->session) {
-            $errors = WC()->session->get('wcfm_affiliate_registration_errors', []);
-            WC()->session->set('wcfm_affiliate_registration_errors', []);
+            $errors = WC()->session->get('wcfm_aff_pro_registration_errors', []);
+            WC()->session->set('wcfm_aff_pro_registration_errors', []);
         }
 
         ob_start();
@@ -110,7 +118,7 @@ class WCFM_Affiliate_Shortcodes {
             <?php endif; ?>
 
             <form method="post" class="wcfm-affiliate-form">
-                <?php wp_nonce_field('wcfm_affiliate_register', 'wcfm_affiliate_nonce'); ?>
+                <?php wp_nonce_field('wcfm_aff_pro_register', 'wcfm_aff_pro_nonce'); ?>
 
                 <div class="wcfm-affiliate-form-row wcfm-affiliate-form-row-half">
                     <div class="wcfm-affiliate-form-field">
@@ -168,7 +176,8 @@ class WCFM_Affiliate_Shortcodes {
                 </div>
 
                 <?php
-                $terms_page = get_option('wcfm_affiliate_terms_page');
+                $general_settings = get_option('wcfm_aff_pro_general', []);
+                $terms_page = $general_settings['terms_page'] ?? 0;
                 if ($terms_page):
                 ?>
                 <div class="wcfm-affiliate-form-field">
@@ -183,7 +192,7 @@ class WCFM_Affiliate_Shortcodes {
                 <?php endif; ?>
 
                 <div class="wcfm-affiliate-form-field">
-                    <button type="submit" name="wcfm_affiliate_register" class="wcfm-affiliate-btn wcfm-affiliate-btn-primary">
+                    <button type="submit" name="wcfm_aff_pro_register" class="wcfm-affiliate-btn wcfm-affiliate-btn-primary">
                         <?php _e('Registrati come Affiliato', 'wcfm-affiliate-pro'); ?>
                     </button>
                 </div>
@@ -191,7 +200,8 @@ class WCFM_Affiliate_Shortcodes {
                 <p class="wcfm-affiliate-login-link">
                     <?php _e('Hai già un account?', 'wcfm-affiliate-pro'); ?>
                     <?php
-                    $login_page = get_option('wcfm_affiliate_login_page');
+                    $pages = get_option('wcfm_aff_pro_pages', []);
+                    $login_page = $pages['login'] ?? 0;
                     if ($login_page):
                     ?>
                         <a href="<?php echo get_permalink($login_page); ?>"><?php _e('Accedi', 'wcfm-affiliate-pro'); ?></a>
@@ -249,8 +259,10 @@ class WCFM_Affiliate_Shortcodes {
     }
 
     public function login_shortcode($atts): string {
+        $pages = get_option('wcfm_aff_pro_pages', []);
+
         if (is_user_logged_in()) {
-            $dashboard_page = get_option('wcfm_affiliate_dashboard_page');
+            $dashboard_page = $pages['dashboard'] ?? 0;
             return sprintf(
                 '<p>%s <a href="%s">%s</a></p>',
                 __('Sei già loggato.', 'wcfm-affiliate-pro'),
@@ -259,7 +271,8 @@ class WCFM_Affiliate_Shortcodes {
             );
         }
 
-        $redirect = get_permalink(get_option('wcfm_affiliate_dashboard_page'));
+        $dashboard_page = $pages['dashboard'] ?? 0;
+        $redirect = $dashboard_page ? get_permalink($dashboard_page) : home_url();
 
         ob_start();
         ?>
@@ -276,7 +289,7 @@ class WCFM_Affiliate_Shortcodes {
             <p class="wcfm-affiliate-register-link">
                 <?php _e('Non hai un account?', 'wcfm-affiliate-pro'); ?>
                 <?php
-                $registration_page = get_option('wcfm_affiliate_registration_page');
+                $registration_page = $pages['registration'] ?? 0;
                 if ($registration_page):
                 ?>
                     <a href="<?php echo get_permalink($registration_page); ?>"><?php _e('Registrati', 'wcfm-affiliate-pro'); ?></a>
@@ -364,7 +377,8 @@ class WCFM_Affiliate_Shortcodes {
         }
 
         global $wpdb;
-        $table = $wpdb->prefix . 'wcfm_affiliate_creatives';
+        // Usa prefisso tabelle unico
+        $table = $wpdb->prefix . 'wcfm_aff_pro_creatives';
         $creatives = $wpdb->get_results("SELECT * FROM {$table} WHERE status = 'active' ORDER BY id DESC");
 
         if (empty($creatives)) {
