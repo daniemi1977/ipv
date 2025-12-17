@@ -245,9 +245,9 @@ Proprietario - Tutti i diritti riservati.
 
 ## 👨‍💻 Autore
 
-**Daniele Bissoli**
-- Website: https://ilpuntodivista.com
-- Email: daniele@ilpuntodivista.com
+**Daniele Milone**
+- GitHub: https://github.com/daniemi1977
+- Email: info@ilpuntodivista.com
 
 ---
 

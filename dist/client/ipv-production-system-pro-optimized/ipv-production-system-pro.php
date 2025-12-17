@@ -4,8 +4,8 @@
  * Plugin URI: https://github.com/daniemi1977/ipv
  * Description: Professional video production system for YouTube content creators: multi-source imports, AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration.
  * Version: 10.4.0
- * Author: IPV Team
- * Author URI: https://github.com/daniemi1977/ipv
+ * Author: Daniele Milone
+ * Author URI: https://github.com/daniemi1977
  * Text Domain: ipv-production-system-pro
  * Domain Path: /languages
  * Requires at least: 6.0

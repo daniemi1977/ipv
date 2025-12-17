@@ -4,8 +4,8 @@
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
  * Version: 1.5.0
- * Author: IPV Team
- * Author URI: https://ipv-production-system.com
+ * Author: Daniele Milone
+ * Author URI: https://github.com/daniemi1977
  * Requires at least: 6.0
  * Requires PHP: 8.0
  * WC requires at least: 8.0
