@@ -1,0 +1,582 @@
+/**
+ * WCFM Affiliate Pro - Network Admin Styles
+ *
+ * Additional styling for the MLM network tree visualization.
+ * Works in conjunction with Tailwind CSS and D3.js tree.
+ *
+ * @package WCFM_Affiliate_Pro
+ * @since 1.0.0
+ */
+
+/* ==========================================================================
+   Tree Container
+   ========================================================================== */
+
+#network-tree-container {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    border-radius: 12px;
+}
+
+#network-tree-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    height: 100vh !important;
+    border-radius: 0;
+}
+
+#network-tree-container svg {
+    display: block;
+}
+
+/* ==========================================================================
+   Node Styling
+   ========================================================================== */
+
+.tree-node circle {
+    stroke-width: 3px;
+    cursor: pointer;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: all 0.3s ease;
+}
+
+.tree-node circle:hover {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+    transform: scale(1.1);
+}
+
+.tree-node.node-active circle {
+    fill: #0d9488;
+    stroke: #0f766e;
+}
+
+.tree-node.node-pending circle {
+    fill: #f59e0b;
+    stroke: #d97706;
+}
+
+.tree-node.node-inactive circle {
+    fill: #94a3b8;
+    stroke: #64748b;
+}
+
+.tree-node.node-suspended circle {
+    fill: #ef4444;
+    stroke: #dc2626;
+}
+
+.tree-node.selected circle {
+    stroke: #3b82f6;
+    stroke-width: 4px;
+    animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    }
+}
+
+.tree-node text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11px;
+    fill: #374151;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* ==========================================================================
+   Links/Connections
+   ========================================================================== */
+
+.tree-link {
+    fill: none;
+    stroke: #94a3b8;
+    stroke-width: 2px;
+    stroke-opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.tree-link:hover {
+    stroke: #64748b;
+    stroke-width: 3px;
+    stroke-opacity: 1;
+}
+
+.tree-link.highlighted {
+    stroke: #3b82f6;
+    stroke-width: 3px;
+    stroke-opacity: 1;
+}
+
+/* ==========================================================================
+   Tooltip
+   ========================================================================== */
+
+.node-tooltip {
+    position: absolute;
+    padding: 12px 16px;
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+    pointer-events: none;
+    z-index: 10000;
+    max-width: 280px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+}
+
+.node-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid rgba(15, 23, 42, 0.95);
+}
+
+.node-tooltip .tooltip-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.node-tooltip .tooltip-email {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.node-tooltip .tooltip-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+}
+
+.node-tooltip .tooltip-stat {
+    text-align: center;
+}
+
+.node-tooltip .tooltip-stat-value {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.node-tooltip .tooltip-stat-label {
+    font-size: 10px;
+    color: #94a3b8;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Details Panel
+   ========================================================================== */
+
+#affiliate-details-panel {
+    transition: all 0.3s ease;
+}
+
+#affiliate-details-panel .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 16px;
+}
+
+#affiliate-details-panel .panel-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+#affiliate-details-panel .panel-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+#affiliate-details-panel .panel-close:hover {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+/* ==========================================================================
+   Search Dropdown
+   ========================================================================== */
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.search-dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    transition: background 0.2s ease;
+}
+
+.search-dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.search-dropdown-item:hover {
+    background: #f9fafb;
+}
+
+.search-dropdown-item.selected {
+    background: #eff6ff;
+}
+
+.search-dropdown-item .item-name {
+    font-weight: 500;
+    color: #111827;
+}
+
+.search-dropdown-item .item-email {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.search-dropdown-item .item-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.search-dropdown-item .item-status.status-active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.search-dropdown-item .item-status.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.search-dropdown-item .item-status.status-inactive {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+/* ==========================================================================
+   Move Affiliate Modal
+   ========================================================================== */
+
+.move-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.move-modal {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.move-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.move-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.move-modal-body {
+    padding: 24px;
+}
+
+.move-modal-footer {
+    padding: 16px 24px;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   Stats Cards
+   ========================================================================== */
+
+.stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.stat-card .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.stat-card .stat-icon.icon-teal {
+    background: #ccfbf1;
+    color: #0d9488;
+}
+
+.stat-card .stat-icon.icon-blue {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+.stat-card .stat-icon.icon-amber {
+    background: #fef3c7;
+    color: #f59e0b;
+}
+
+.stat-card .stat-icon.icon-purple {
+    background: #ede9fe;
+    color: #8b5cf6;
+}
+
+.stat-card .stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    line-height: 1;
+}
+
+.stat-card .stat-label {
+    font-size: 13px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* ==========================================================================
+   Toast Notifications
+   ========================================================================== */
+
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 50000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    padding: 16px 20px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toast.toast-success {
+    background: #059669;
+    color: #fff;
+}
+
+.toast.toast-error {
+    background: #dc2626;
+    color: #fff;
+}
+
+.toast.toast-warning {
+    background: #d97706;
+    color: #fff;
+}
+
+.toast.toast-info {
+    background: #2563eb;
+    color: #fff;
+}
+
+.toast-icon {
+    flex-shrink: 0;
+}
+
+.toast-message {
+    flex: 1;
+}
+
+.toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.toast-close:hover {
+    color: #fff;
+}
+
+/* ==========================================================================
+   Loading Spinner
+   ========================================================================== */
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #0d9488;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .network-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #affiliate-details-panel {
+        margin-top: 24px;
+    }
+}
+
+@media (max-width: 640px) {
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-card .stat-value {
+        font-size: 24px;
+    }
+
+    .toast {
+        min-width: auto;
+        margin: 0 16px;
+    }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    #network-tree-container {
+        height: auto !important;
+        page-break-inside: avoid;
+    }
+}
+
+/* ==========================================================================
+   Dark Mode Support (if needed)
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+    .dark-mode #network-tree-container {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    }
+
+    .dark-mode .tree-node text {
+        fill: #e5e7eb;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    }
+
+    .dark-mode .stat-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+
+    .dark-mode .stat-card .stat-value {
+        color: #f9fafb;
+    }
+
+    .dark-mode .stat-card .stat-label {
+        color: #9ca3af;
+    }
+}

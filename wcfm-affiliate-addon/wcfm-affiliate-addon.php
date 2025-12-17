@@ -74,6 +74,7 @@ final class WCFM_Affiliate_Pro {
     public ?WCFM_Affiliate_Payout $payouts = null;
     public ?WCFM_Affiliate_Dashboard $dashboard = null;
     public ?WCFM_Affiliate_Admin $admin = null;
+    public ?WCFM_Affiliate_Admin_Network $network = null;
     public ?WCFM_Affiliate_WCFM_Integration $wcfm = null;
     public ?WCFM_Affiliate_Reports $reports = null;
     public ?WCFM_Affiliate_Emails $emails = null;
@@ -192,6 +193,7 @@ final class WCFM_Affiliate_Pro {
             require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-commissions.php';
             require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-payouts.php';
             require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-reports.php';
+            require_once WCFM_AFFILIATE_PRO_PATH . 'admin/class-wcfm-affiliate-admin-network.php';
         }
 
         // Frontend
@@ -220,6 +222,7 @@ final class WCFM_Affiliate_Pro {
 
         if (is_admin()) {
             $this->admin = new WCFM_Affiliate_Admin();
+            $this->network = new WCFM_Affiliate_Admin_Network();
         }
     }
 
