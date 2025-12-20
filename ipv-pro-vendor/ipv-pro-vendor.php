@@ -1,0 +1,1276 @@
+<?php
+/**
+ * Plugin Name: IPV Pro Vendor System
+ * Plugin URI: https://ipv-production-system.com
+ * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
+ * Version: 1.0.4
+ * Author: IPV Team
+ * Author URI: https://ipv-production-system.com
+ * Requires at least: 6.0
+ * Requires PHP: 8.0
+ * WC requires at least: 8.0
+ * WC tested up to: 9.5
+ * Text Domain: ipv-pro-vendor
+ * Domain Path: /languages
+ * License: GPL v2 or later
+ *
+ * ====================================
+ * CHANGELOG v1.0.4 (2025-12-20) - FIX WIZARD API KEYS
+ * ====================================
+ *
+ * 🔥 FIX CRITICO - API KEYS NON SALVATE DAL WIZARD:
+ * - ✅ Il wizard salvava le chiavi API con nomi opzione errati
+ * - ✅ Wizard usava: ipv_vendor_youtube_api_key, ipv_vendor_openai_api_key
+ * - ✅ Settings/Gateway usano: ipv_youtube_api_key, ipv_openai_api_key
+ *
+ * PROBLEMA RISOLTO:
+ * - ❌ Le chiavi inserite nel wizard non apparivano nelle impostazioni
+ * - ❌ Le API non funzionavano perché le chiavi erano salvate con nomi sbagliati
+ *
+ * SOLUZIONE:
+ * - ✅ Wizard ora salva: ipv_youtube_api_key (era ipv_vendor_youtube_api_key)
+ * - ✅ Wizard ora salva: ipv_openai_api_key (era ipv_vendor_openai_api_key)
+ * - ✅ Wizard ora salva: ipv_supadata_api_key_1 (era ipv_vendor_supadata_key)
+ * - ✅ Rimosso campo supadata_secret non usato
+ * - ✅ Progress check ora usa opzioni corrette
+ *
+ * FILE MODIFICATI:
+ * - includes/class-setup-wizard.php (linee 71, 273-276, 529-542)
+ *
+ * ====================================
+ * CHANGELOG v2.8.2 (2025-12-19) - FIX ATTIVAZIONE LICENZA
+ * ====================================
+ * 
+ * 🔥 FIX CRITICO - ATTIVAZIONE LICENZA:
+ * - ✅ Aggiunto metodo activate_license() mancante in License_Manager
+ * - ✅ Schema licenses aggiornato con campi: variant_slug, credits_remaining, 
+ *   credits_extra, activation_limit, activation_count, last_check
+ * - ✅ Gestione activation_limit (default: 1 sito per licenza)
+ * - ✅ Gestione expires_at (controllo scadenza)
+ * - ✅ Controllo status attivo
+ * - ✅ Log attivazioni
+ * 
+ * PROBLEMA RISOLTO:
+ * - ❌ Errore "Errore server sconosciuto" durante attivazione
+ * - ❌ Metodo activate_license() non esisteva
+ * - ❌ Endpoint restituiva fatal error
+ * 
+ * SOLUZIONE:
+ * - ✅ License_Manager::activate_license() implementato
+ * - ✅ Verifica status, scadenza, limite attivazioni
+ * - ✅ Update domain + activation_count
+ * - ✅ Return license aggiornata
+ * 
+ * FILE MODIFICATI:
+ * - includes/class-license-manager.php (nuovo metodo activate_license)
+ * - includes/class-database.php (schema con nuovi campi)
+ * 
+ * ====================================
+ * CHANGELOG v2.8.1 (2025-12-19) - HOTFIX PARSE ERROR
+ * ====================================
+ * 
+ * 🔥 FIX CRITICO:
+ * - ❌ Rimosso metodo residuo add_golden_prompt_fields_to_checkout()
+ * - ✅ PHP Parse error risolto (unclosed { on line 870)
+ * - 📦 File: includes/class-woocommerce-integration.php
+ * 
+ * PROBLEMA:
+ * - Metodo obsoleto con sintassi PHP mista (<?> senza chiusura)
+ * - Causava: "PHP Parse error: Unclosed '{' on line 870"
+ * 
+ * SOLUZIONE:
+ * - Metodo completamente rimosso
+ * - Nessun impatto funzionale (era già deprecato)
+ * - Checkout funziona normalmente
+ * 
+ * ====================================
+ * CHANGELOG v2.8.0 (2025-12-19) - SISTEMA LICENZE ANNUALI
+ * ====================================
+ * 
+ * BREAKING CHANGES - NUOVO SISTEMA LICENZE:
+ * - ✅ Trial: INVARIATO (no scadenza, 5 crediti, gratis)
+ * - ✅ Basic/Pro/Business/Enterprise: 365 giorni di durata
+ * - ✅ Rinnovo annuale anticipato
+ * - ✅ Crediti accreditati tutti insieme all'inizio
+ * - ✅ Prezzo: Mensile × 11 (arrotondato)
+ * 
+ * PREZZI FINALI:
+ * - Trial: Gratis (5 crediti, no scadenza)
+ * - Basic: 9,99€/mese → 110€/anno (300 crediti)
+ * - Pro: 19,99€/mese → 220€/anno (600 crediti)
+ * - Business: 29,99€/mese → 330€/anno (1200 crediti)
+ * - Enterprise: 39,99€/mese → 440€/anno (1800 crediti)
+ * 
+ * MODIFICHE TECNICHE:
+ * - ✅ License_Manager::create() aggiunto expires_at
+ * - ✅ expires_at = +365 giorni (tranne trial = NULL)
+ * - ✅ credits_remaining = credits_total (tutti insieme)
+ * - ✅ License_Manager::create_license_from_order() nuovo metodo
+ * - ✅ Lettura variant_slug e credits_total da product meta
+ * - ✅ Crediti map aggiornati: 300/600/1200/1800
+ * - ✅ Log migliorato con expires_at
+ * 
+ * WORKFLOW:
+ * 1. Cliente acquista piano annuale
+ * 2. Sistema crea licenza con expires_at = +365 giorni
+ * 3. Tutti i crediti accreditati subito
+ * 4. Dopo 365 giorni: licenza scade
+ * 5. Cliente rinnova (nuovo acquisto)
+ * 6. Trial: nessuna scadenza (come sempre)
+ *
+ * ====================================
+ * CHANGELOG v2.7.0 (2025-12-19) - SWITCH ATTIVAZIONE GOLDEN PROMPT
+ * ====================================
+ * 
+ * IMPROVED:
+ * - ✅ Switch Golden Prompt SEMPRE visibile per ogni licenza
+ * - ✅ toggle_license_activation() crea record se non esiste
+ * - ✅ Vendor attiva/disattiva con un click
+ * - ✅ Icone 🟢 ON / 🔴 OFF per chiarezza
+ * - ✅ Warning "Cliente deve configurare" se attivo ma vuoto
+ * 
+ * WORKFLOW FINALE:
+ * 1. Vendor: IPV Vendor → ✨ Golden Prompt
+ * 2. Lista licenze con switch per ogni licenza
+ * 3. Click switch ON → Attiva Golden Prompt per quella licenza
+ * 4. Cliente vede menu "✨ Golden Prompt Settings" nel suo WP
+ * 5. Cliente configura dati + flags
+ * 6. POST al vendor → Compila template
+ * 7. Cliente usa descrizioni AI (Golden Prompt remoto)
+ *
+ * ====================================
+ * CHANGELOG v2.6.0 (2025-12-19) - GOLDEN PROMPT CLIENT-SIDE CONFIGURATION
+ * ====================================
+ * 
+ * BREAKING CHANGES:
+ * - ❌ RIMOSSO form Golden Prompt dal checkout WooCommerce
+ * - ✅ Cliente configura dal SUO pannello WordPress (client-side)
+ * 
+ * ADDED:
+ * - ✅ API POST /golden-prompt/compile (client invia dati + flags)
+ * - ✅ Vendor compila template universale con dati cliente
+ * - ✅ Vendor applica flags per rimuovere sezioni
+ * - ✅ Golden Prompt sempre REMOTO (mai salvato locale sul client)
+ * 
+ * REMOVED:
+ * - ❌ Form checkout (tutti i campi + 18 checkbox)
+ * - ❌ Salvataggio config in order meta
+ * - ❌ Auto-configurazione in process_addon()
+ * 
+ * NEW WORKFLOW:
+ * 1. Cliente acquista "Golden Prompt Premium" → Solo licenza
+ * 2. Cliente riceve License Key
+ * 3. Cliente va su suo WP: IPV Videos → ✨ Golden Prompt Settings
+ * 4. Cliente compila 13 dati + 18 flags
+ * 5. Click "Salva e Genera" → POST al vendor
+ * 6. Vendor compila + salva Golden Prompt compilato
+ * 7. Cliente usa descrizioni AI (Golden Prompt sempre remoto)
+ * 8. Golden Prompt MAI visibile, solo risultato live
+ *
+ * API ENDPOINTS:
+ * - GET /golden-prompt → Ritorna Golden Prompt compilato
+ * - POST /golden-prompt/compile → Compila con dati + flags cliente
+ * - GET /golden-prompt/check → Verifica esistenza
+ * - GET /golden-prompt/hash → Hash per sync
+ *
+ * ====================================
+ * CHANGELOG v2.5.0 (2025-12-19) - SISTEMA FLAG SEZIONI COMPLETO
+ * ====================================
+ * 
+ * ADDED:
+ * - 🎛️ Sezione "Personalizza Sezioni" nel form checkout
+ * - ✅ 18 checkbox per scegliere sezioni da mostrare (12 sezioni + 6 link social)
+ * - 📊 Grid layout responsive (2 colonne sezioni, 3 colonne social)
+ * - 💡 Tutti flag ATTIVI di default (comportamento backward compatible)
+ * - 🎨 Design viola/gradient per sezione personalizzazione
+ * - 📝 Icone + descrizioni per ogni flag
+ * 
+ * IMPROVED:
+ * - save_license_selector() salva anche 18 boolean flags
+ * - Config Golden Prompt include sia DATI che FLAGS
+ * - Cliente può decidere esattamente cosa mostrare
+ * - Sistema modulare: minimal vs completo
+ * 
+ * FLAGS SUPPORTATI:
+ * Sezioni:
+ * - show_risorse, show_descrizione, show_argomenti
+ * - show_ospiti, show_persone, show_sponsor
+ * - show_chi_siamo, show_contatti, show_indice, show_hashtag
+ * - show_community, show_supporta
+ * 
+ * Link Social:
+ * - show_link_telegram, show_link_facebook, show_link_instagram
+ * - show_link_sito, show_link_donazioni, show_link_youtube
+ *
+ * WORKFLOW:
+ * 1. Cliente acquista Golden Prompt
+ * 2. Compila form: dati + scelta sezioni (checkbox)
+ * 3. Sistema salva: config_json = {dati + flags}
+ * 4. Golden Prompt compilato con dati cliente
+ * 5. Client scarica: Golden Prompt + flags
+ * 6. Client applica flags per filtrare sezioni
+ * 7. ✅ Descrizioni personalizzate perfette!
+ *
+ * ====================================
+ * CHANGELOG v2.4.0 (2025-12-19) - GOLDEN PROMPT CHECKOUT AUTOMATION
+ * ====================================
+ * 
+ * ADDED:
+ * - 🎯 Form Golden Prompt completo al checkout WooCommerce
+ * - ✅ Compilazione automatica template con dati cliente
+ * - 📊 11 campi configurabili (canale, handle, nicchia, social, sponsor, etc)
+ * - 🔄 Zero configurazione manuale necessaria
+ * - 📧 Attivazione immediata post-acquisto
+ * 
+ * IMPROVED:
+ * - process_addon() ora usa dati ordine per auto-config
+ * - save_license_selector() salva config Golden Prompt
+ * - add_license_selector_to_checkout() mostra form se addon=golden_prompt
+ * - Golden Prompt compilato automaticamente con IPV_Vendor_Golden_Prompt_Manager
+ * 
+ * TECHNICAL:
+ * - New method: add_golden_prompt_fields_to_checkout()
+ * - Order meta: _ipv_golden_prompt_config (array with all fields)
+ * - Auto-compilation on woocommerce_order_status_completed
+ * - Fallback to manual config if data missing
+ *
+ * WORKFLOW:
+ * 1. Cliente acquista addon Golden Prompt
+ * 2. Compila form al checkout (11 campi)
+ * 3. Sistema salva dati nell'ordine
+ * 4. Hook on_order_completed triggered
+ * 5. Template compilato automaticamente
+ * 6. Golden Prompt pronto per sync client
+ * 7. ✅ ZERO INTERVENTO MANUALE!
+ *
+ * ====================================
+ * CHANGELOG v2.3.2 (2025-12-19) - MULTI-FORMAT LICENSE SUPPORT
+ * ====================================
+ * 
+ * ADDED:
+ * - Multi-format license key support (both 3 and 5 segments)
+ * - Automatic license key variant detection
+ * - Support for IPV- prefix and without prefix
+ * - Format flexibility: XXXXX-XXXXX-XXXXX OR IPV-XXXXX-XXXXX-XXXXX-XXXXX
+ * 
+ * IMPROVED:
+ * - validate() now searches all key variants
+ * - get_by_key() now searches all key variants  
+ * - generate_license_key() supports 'short' or 'long' format
+ * - Better logging for license key searches
+ * 
+ * TECHNICAL:
+ * - New get_license_key_variants() method
+ * - Smart variant generation algorithm
+ * - Backward compatible with all existing licenses
+ *
+ * ====================================
+ * CHANGELOG v2.3.1 (2025-12-19) - LICENSE DEACTIVATION ENDPOINT
+ * ====================================
+ * 
+ * CRITICAL FIX - Client Cannot Deactivate License:
+ * - Added: REST endpoint POST /license/deactivate
+ * - Added: License_Manager->deactivate($license_key, $site_url) method
+ * - Added: Domain verification before deactivation
+ * - Added: Clear domain binding on successful deactivation
+ * - Fixed: 401 "License key non valida" when client tries to deactivate
+ * - Result: Clients can now properly deactivate their license
+ * 
+ * HOW IT WORKS:
+ * 1. Client sends POST to /ipv-vendor/v1/license/deactivate
+ * 2. Body: { license_key: "IPV-...", site_url: "https://client.com" }
+ * 3. Vendor verifies domain matches stored domain
+ * 4. Clears domain field (allows reactivation elsewhere)
+ * 5. Returns success message
+ * 
+ * SECURITY:
+ * - Only site that activated license can deactivate it
+ * - Domain normalization (strips www, protocol, trailing slash)
+ * - Comprehensive error messages
+ * - Full error logging
+ * 
+ * FILES MODIFIED:
+ * - includes/class-license-manager.php (added deactivate method)
+ * - includes/class-api-endpoints.php (added endpoint + handler)
+ *
+ * ====================================
+ * CHANGELOG v2.0.0 (2025-12-19) - SISTEMA AUTO-INSTALLANTE COMPLETO!
+ * ====================================
+ *
+ * 🚀 SISTEMA CHIAVI IN MANO - AUTO-INSTALL:
+ * - ✅ Database upgrade system con version tracking
+ * - ✅ Automatic schema updates (no manual SQL required!)
+ * - ✅ Multiple fallback methods per column detection
+ * - ✅ Detailed logging (success/fail)
+ * - ✅ Admin notice se upgrade fallisce (con SQL manual fallback)
+ * - ✅ Dismissible error notice
+ * - ✅ Zero configuration required
+ *
+ * 🔧 UPGRADE SYSTEM FEATURES:
+ * - Version tracking: get_option('ipv_vendor_db_version')
+ * - Upgrade functions: upgrade_to_1_9_0() (extensible)
+ * - Column detection: Direct query + SHOW COLUMNS fallback
+ * - Error suppression durante test (no false errors)
+ * - Transient per comunicare errori all'admin
+ * - One-click dismiss dopo fix manuale
+ *
+ * 🎨 ICONE & UX (v1.9.2 features preserved):
+ * - ✅ Solo icone azioni (no testi): ⏸️ 🔄 🗑️
+ * - ✅ Leggenda sopra tabella
+ * - ✅ Switch Golden Prompt (invece bottoni)
+ * - ✅ Tooltip hover su icone
+ * - ✅ Colonna Dominio visibile
+ *
+ * 🔒 DOMAIN BINDING (v1.9.1 features preserved):
+ * - ✅ Domain estratto da site_url su attivazione
+ * - ✅ Domain salvato in wp_ipv_licenses.domain
+ * - ✅ Funziona su prima attivazione + riattivazione
+ *
+ * 📝 TECHNICAL DETAILS:
+ * - Modified: includes/class-auto-installer.php (upgrade system)
+ * - Added: upgrade_to_1_9_0() method
+ * - Added: version_compare() checks
+ * - Added: Error transient system
+ * - Modified: includes/class-admin-dashboard.php (admin notice)
+ * - Added: upgrade_notices() method
+ *
+ * 🎯 INSTALLAZIONE:
+ * 1. Upload plugin
+ * 2. Attiva
+ * 3. Done! (auto-upgrade runs)
+ * 4. Se fallisce → Admin notice con SQL
+ *
+ * 📊 FALLBACK SYSTEM:
+ * Se auto-upgrade fallisce:
+ * - Admin notice visibile
+ * - SQL query fornito
+ * - One-click dismiss
+ * - Logs dettagliati
+ *
+ * ====================================
+ * PREVIOUS VERSIONS (included in v2.0.0):
+ * ====================================
+ *
+ * CHANGELOG v1.9.2 (2025-12-19) - ICONS ONLY + DB FIX!
+ *
+ * 🎨 ICONE AZIONI - SOLO ICONE (NO TESTI):
+ * - ✅ Rimossi testi dai bottoni azioni
+ * - ✅ Solo icone cliccabili: ⏸️ ▶️ 🔄 🗑️
+ * - ✅ Tooltip su hover (es. "Sospendi licenza")
+ * - ✅ Hover effect (opacity 0.6)
+ * - ✅ Font-size 24px per icone
+ * - ✅ Switch ON/OFF per Golden Prompt (invece di bottone)
+ *
+ * 📋 LEGGENDA AZIONI:
+ * - ✅ Sezione sopra tabella licenze
+ * - ✅ Spiega significato di ogni icona
+ * - ✅ Include esempio visuale switch Golden Prompt
+ * - ✅ Design pulito su sfondo grigio
+ *
+ * 🔧 DATABASE FIX - COLONNA DOMAIN:
+ * - ✅ Improved ALTER TABLE check (doppio metodo)
+ * - ✅ Check via SHOW COLUMNS + information_schema
+ * - ✅ Log dettagliato (success/fail)
+ * - ✅ Error handling migliorato
+ *
+ * 📝 TECHNICAL:
+ * - Modified: includes/class-admin-dashboard.php (icone + leggenda)
+ * - Modified: includes/class-auto-installer.php (DB check robusto)
+ * - Removed: Bottoni con testo
+ * - Added: Tooltip hover
+ * - Added: Switch Golden Prompt
+ *
+ * 🚨 MANUAL FIX REQUIRED:
+ * Se la colonna domain non esiste ancora, esegui:
+ *
+ * ```sql
+ * ALTER TABLE wp_ipv_licenses 
+ * ADD COLUMN `domain` varchar(255) NULL 
+ * AFTER `email`;
+ * ```
+ *
+ * ====================================
+ * CHANGELOG v1.9.1 (2025-12-19) - DOMAIN BINDING FIXED!
+ * ====================================
+ *
+ * 🔒 CRITICAL FIX - DOMAIN BINDING:
+ * - ✅ FIXED: Domain now saved on license activation (was missing!)
+ * - ✅ Domain extracted from site_url via parse_url()
+ * - ✅ Domain saved to wp_ipv_licenses.domain column
+ * - ✅ Works on first activation
+ * - ✅ Works on reactivation
+ * - ✅ Log includes domain info
+ *
+ * 📝 TECHNICAL:
+ * - Modified: includes/class-license-manager.php
+ * - Method: activate_license() now extracts and saves domain
+ * - Formula: site_url "https://example.com/path" → domain "example.com"
+ * - SQL: UPDATE licenses SET domain = %s WHERE id = %d
+ *
+ * 🔧 BEFORE v1.9.1:
+ * Client activates → Vendor saves activation → Domain column EMPTY ❌
+ *
+ * ✅ AFTER v1.9.1:
+ * Client activates → Vendor saves activation → Domain column FILLED ✅
+ *
+ * 📊 IMPACT:
+ * - Now domain is "locked" to license automatically
+ * - Visible in vendor admin tables
+ * - Can be used for validation/restrictions
+ *
+ * ====================================
+ * CHANGELOG v1.9.0 (2025-12-19) - LICENSES UX & DOMAIN
+ * ====================================
+ *
+ * 🎯 LICENZE - NUOVA COLONNA DOMINIO:
+ * - ✅ Added: Colonna "domain" nella tabella wp_ipv_licenses
+ * - ✅ Auto ALTER TABLE su upgrade (se colonna non esiste)
+ * - ✅ Campo dominio nel form creazione licenza manuale
+ * - ✅ Dominio visibile in tabella licenze (dashboard + licenses page)
+ * - ✅ Dominio salvato su creazione licenza
+ *
+ * 🎨 ICONE AZIONI (NO PIÙ BOTTONI):
+ * - ✅ ⏸️ Sospendi / ▶️ Attiva (solo icone + tooltip)
+ * - ✅ 🔄 Cambia Piano (solo icona + tooltip)
+ * - ✅ 🗑️ Elimina (solo icona + tooltip)
+ * - ✅ Rimosso testo, solo icone cliccabili
+ * - ✅ Hover effect per feedback visivo
+ *
+ * 🌟 GOLDEN PROMPT SWITCH:
+ * - ✅ Toggle switch ON/OFF invece di bottoni
+ * - ✅ CSS moderno per switch (verde=ON, grigio=OFF)
+ * - ✅ Animazione smooth
+ * - ✅ Click switch → toggle immediato
+ *
+ * 📋 LEGGENDA ICONE:
+ * - ✅ Sezione sopra tabella licenze
+ * - ✅ Spiega significato di ogni icona
+ * - ✅ Design pulito e chiaro
+ *
+ * 📦 FILES MODIFICATI:
+ * - includes/class-auto-installer.php (schema + ALTER TABLE)
+ * - includes/class-admin-dashboard.php (form + tabelle + icone)
+ * - admin/assets/css/modern-vendor.css (switch CSS)
+ *
+ * 🔧 DATABASE:
+ * - Colonna domain aggiunta automaticamente su upgrade
+ * - 100% backward compatible
+ * - Zero data loss
+ *
+ * 📝 TODO WOOCOMMERCE:
+ * - Campo dominio al checkout (da implementare via hook)
+ * - Salvataggio automatico dominio su ordine
+ *
+ * ====================================
+ * CHANGELOG v1.8.0 (2025-12-19) - OPENAI MODEL & ANTIFRAUD ADMIN
+ * ====================================
+ *
+ * 🤖 OPENAI MODEL SELECTION:
+ * - ✅ Added: Dropdown to select OpenAI model in admin panel
+ * - ✅ Available models: GPT-4o, GPT-4o Mini, GPT-4 Turbo, GPT-4, GPT-3.5 Turbo
+ * - ✅ Default: gpt-4o-mini (best quality/price ratio)
+ * - ✅ API Gateway: Uses selected model dynamically
+ * - ✅ Saved in: ipv_openai_model option
+ *
+ * 🛡️ ANTIFRAUD ADMIN PANEL:
+ * - ✅ Added: Security & Antifraud section in settings
+ * - ✅ Rate Limiting controls (enable/disable, max requests, time window)
+ * - ✅ Block Bots toggle (enable/disable bot blocking)
+ * - ✅ Configurable settings (stored in wp_options)
+ * - ✅ Info panel with antifraud system status
+ *
+ * 🔧 TECHNICAL IMPROVEMENTS:
+ * - Modified: class-admin-dashboard.php (settings UI + save/load)
+ * - Modified: class-api-gateway.php (dynamic model + configurable limits)
+ * - Added: 5 new wp_options for settings
+ * - Improved: Rate limiting uses configurable values from admin
+ * - Improved: Bot blocking configurable via admin panel
+ *
+ * 📊 NEW SETTINGS:
+ * - ipv_openai_model (default: gpt-4o-mini)
+ * - ipv_rate_limit_enabled (default: 1)
+ * - ipv_rate_limit_max_requests (default: 100)
+ * - ipv_rate_limit_window (default: 3600)
+ * - ipv_block_bots_enabled (default: 1)
+ *
+ * ====================================
+ * CHANGELOG v1.7.3 (2025-12-19) - DATABASE QUERY FIX
+ * ====================================
+ *
+ * 🔧 ANALYTICS DASHBOARD DATABASE FIX:
+ * - ✅ Fixed: Query cercavano tabelle inesistenti
+ * - ✅ Fixed: ipv_credits_ledger → ipv_credit_ledger (singolare!)
+ * - ✅ Fixed: ipv_license_meta → rimosso (tabella non esistente)
+ * - ✅ Fixed: credits_balance → credits_remaining (colonna corretta)
+ * - ✅ MRR/ARR: Calcolo semplificato senza meta table
+ * - ✅ Tutte le statistiche analytics funzionano ora
+ *
+ * 🔧 ERRORI RISOLTI:
+ * - Table 'ipv_license_meta' doesn't exist ✅ FIXED
+ * - Table 'ipv_credits_ledger' doesn't exist ✅ FIXED
+ * - Unknown column 'credits_balance' ✅ FIXED
+ *
+ * 🔧 TECHNICAL DETAILS:
+ * - Modified: class-analytics-dashboard.php (get_current_stats method)
+ * - Fixed: 4 SQL queries con nomi tabelle/colonne corretti
+ * - Aligned: Analytics con schema database reale
+ *
+ * ====================================
+ * CHANGELOG v1.7.2 (2025-12-19) - SUPADATA GET FIX
+ * ====================================
+ *
+ * 🔧 SUPADATA API TEST METHOD FIX:
+ * - ✅ Fixed: Test usava POST invece di GET
+ * - ✅ Fixed: Parametri in body invece di query string
+ * - ✅ Correct: GET /transcript?url=VIDEO_URL&text=true&mode=native
+ * - ✅ Header: x-api-key (corretto)
+ * - ✅ Endpoint: /transcript (universal, non /youtube/transcript)
+ * - ✅ Mode: native (test veloce senza AI)
+ *
+ * 🔧 TECHNICAL DETAILS:
+ * - Changed: POST → GET method
+ * - Changed: {"video_id":"X"} → ?url=https://youtube.com/...
+ * - Added: text=true parameter
+ * - Added: mode=native parameter
+ * - Removed: Content-Type header (non serve per GET)
+ *
+ * ====================================
+ * CHANGELOG v1.7.1 (2025-12-19) - SUPADATA API FIX
+ * ====================================
+ *
+ * 🔧 SUPADATA API TEST FIX:
+ * - ✅ Fixed: Test API cercava chiavi con nomi sbagliati
+ * - ✅ Usa stesso metodo di API Gateway per trovare chiavi
+ * - ✅ Supporta multi-key rotation (ipv_supadata_api_key_1/2/3)
+ * - ✅ Fallback su chiave hardcoded se non configurata
+ * - ✅ Rimosso requirement "secret" (non più usato)
+ * - ✅ UI aggiornata: mostra stato corretto
+ * - ✅ Test sempre abilitato (usa fallback se serve)
+ *
+ * 🔧 TECHNICAL DETAILS:
+ * - Modified: class-api-tester.php (test_supadata_api method)
+ * - Fixed: Nome opzioni da ipv_vendor_* a ipv_supadata_api_key_*
+ * - Aligned: Test API con API Gateway (stesso lookup logic)
+ * - Removed: Dependency su supadata_secret
+ *
+ * ====================================
+ * CHANGELOG v1.7.0 (2025-12-19) - TOGGLE SWITCH UI
+ * ====================================
+ *
+ * 🎛️ TOGGLE SWITCH ENHANCEMENT:
+ * - ✅ Sostituiti bottoni Attiva/Disattiva con Toggle Switch animato
+ * - 🟢 Stato visuale immediato: Verde ON / Grigio OFF
+ * - ⚡ AJAX update istantaneo senza page reload
+ * - 🎨 Toast notification per conferma azione
+ * - 📊 Colonna separata "🌟 Stato GP" con switch + label
+ * - 🕐 Colonna "Ultimo Aggiornamento" con timestamp completo
+ *
+ * 🔧 TECHNICAL IMPROVEMENTS:
+ * - Modified: class-golden-prompt-admin.php (render_list_page)
+ * - Modified: golden-prompt-admin.js (handleToggleSwitch method)
+ * - Added: showToast notification method
+ * - Improved: UI/UX con instant feedback
+ * - Mantiene: Tutte le features esistenti (wizard, piani, API gateway)
+ *
+ * ✅ BACKWARD COMPATIBLE:
+ * - 100% compatibile con v1.6.4
+ * - Tutti i settings e wizard mantenuti
+ * - Nessun file rimosso
+ * - Solo enhancement UI Golden Prompt
+ *
+ * ====================================
+ * CHANGELOG v1.6.0 (2025-12-17) - GOLDEN PROMPT MODULE
+ * ====================================
+ *
+ * 🎯 GOLDEN PROMPT SYSTEM:
+ * - ✨ Nuovo modulo completo per gestione Golden Prompts per licenze
+ * - 🔧 Auto-configuratore con placeholder per ogni canale YouTube
+ * - 📝 Template universale modificabile dall'admin
+ * - 🚀 Push al client via REST API autenticata
+ * - 🔒 Golden Prompt memorizzato SOLO lato server (sicurezza)
+ * - 📊 Pannello admin dedicato (IPV Vendor → ✨ Golden Prompt)
+ *
+ * 📦 NEW FILES:
+ * - modules/golden-prompt/golden-prompt-module.php: Loader modulo
+ * - modules/golden-prompt/includes/class-golden-prompt-manager.php: Logica business
+ * - modules/golden-prompt/includes/class-golden-prompt-admin.php: Pannello admin
+ * - modules/golden-prompt/includes/class-golden-prompt-api.php: REST API
+ * - modules/golden-prompt/admin/assets/css/golden-prompt-admin.css
+ * - modules/golden-prompt/admin/assets/js/golden-prompt-admin.js
+ *
+ * 🗄️ NEW TABLE:
+ * - ipv_golden_prompts: Configurazione e prompt per ogni licenza
+ *
+ * 🎨 ADMIN FEATURES:
+ * - Lista licenze con stato Golden Prompt
+ * - Bottone ⚙️ Configura per ogni licenza
+ * - Auto-configuratore con 14 campi personalizzabili
+ * - Tab Manuale per incollare prompt custom
+ * - Tab Anteprima per vedere il risultato
+ * - Bottone 🚀 Push per inviare al client
+ * - Modifica Template Universale
+ *
+ * 🔐 SECURITY:
+ * - Golden Prompt mai esposto all'utente finale
+ * - Trasmesso solo via API con license key valida
+ * - Client memorizza offuscato (base64 + reverse)
+ *
+ * ====================================
+ * CHANGELOG v1.5.0 (2025-12-16) - MAJOR UI/UX UPDATE
+ * ====================================
+ *
+ * 🎨 UI/UX MODERNIZATION:
+ * - ✨ Integrato Tailwind CSS v3.4 per design moderno e responsive
+ * - 🎨 Redesign completo Admin Dashboard con UI/UX professionale
+ * - 📱 Mobile-first responsive design ottimizzato per tutti i dispositivi
+ * - 🌈 Sistema di colori moderno (Blue, Green, Amber, Red gradients)
+ * - 💅 Custom scrollbar, smooth transitions, micro-animations
+ *
+ * 📊 DASHBOARD ANALYTICS:
+ * - 📈 Nuova pagina Analytics con Chart.js per visualizzazione dati
+ * - 💰 MRR (Monthly Recurring Revenue) con trend chart 12 mesi
+ * - 📊 ARR (Annual Recurring Revenue) calcolato automaticamente
+ * - 👥 Customer Lifetime Value (LTV) e ARPU metrics
+ * - 📉 Churn Rate tracking con percentuali
+ * - 🎯 Plans Distribution (doughnut chart interattivo)
+ * - ⚡ Credits Usage Chart (bar chart ultimi 7 giorni)
+ * - 🔄 Live stats con AJAX real-time updates
+ *
+ * 🔔 TOAST NOTIFICATIONS:
+ * - ✅ Toast notifications moderne per feedback operazioni
+ * - 🎨 4 tipi: Success (green), Error (red), Warning (yellow), Info (blue)
+ * - ⏱️ Auto-dismiss dopo 4 secondi con animazioni smooth
+ * - 📍 Posizionate top-right con stacking intelligente
+ *
+ * 🛡️ SECURITY & PERFORMANCE:
+ * - 🚦 Rate Limiting API integrato (60-120 req/min per endpoint)
+ *   * License Info: 60 req/min
+ *   * YouTube Gateway: 100 req/min
+ *   * Downloads: 10 req/min
+ *   * Default: 120 req/min
+ * - 📝 Audit Log completo per azioni critiche
+ *   * License create/delete/suspend
+ *   * Credits add/remove/reset
+ *   * Plan changes, refunds
+ *   * Golden Prompt uploads/deletes
+ *   * Config changes, security alerts
+ * - 🔒 IP tracking e identifier-based limiting
+ * - 📊 Rate limit stats e reset capabilities
+ * - 🗄️ Audit log export CSV per compliance
+ *
+ * 🎨 NEW COMPONENTS:
+ * - IPV_Vendor_Modern_Assets: Gestione assets moderni (Tailwind, Alpine.js, Chart.js)
+ * - IPV_Vendor_Analytics_Dashboard: Dashboard analytics completa
+ * - IPV_Vendor_Rate_Limiter: Sistema rate limiting con database tracking
+ * - IPV_Vendor_Audit_Log: Sistema logging azioni critiche con export
+ *
+ * 📦 NEW TABLES:
+ * - ipv_rate_limits: Tracking requests per identifier/endpoint/window
+ * - ipv_audit_log: Log eventi con user, IP, metadata JSON
+ *
+ * 🎨 NEW FILES:
+ * - admin/assets/css/modern-admin.css: Tailwind extensions + custom components
+ * - admin/assets/js/modern-admin.js: Toast, charts, AJAX, utils
+ * - includes/class-modern-assets.php: Assets manager
+ * - includes/class-analytics-dashboard.php: Analytics page renderer
+ * - includes/class-rate-limiter.php: API rate limiting
+ * - includes/class-audit-log.php: Audit logging system
+ *
+ * 🔧 IMPROVEMENTS:
+ * - 🎯 Custom CSS variables per brand colors
+ * - 📐 Grid system responsive (1/2/3/4 columns)
+ * - 🎴 Card components con shadows e hover effects
+ * - 🔘 Button variants (primary, success, danger, secondary, ghost)
+ * - 📝 Form components styled con Tailwind
+ * - 🏷️ Badge system (success, warning, danger, primary, gray)
+ * - 📊 Stat cards con icons, values, change indicators
+ * - ⚙️ Skeleton loaders e shimmer effects
+ * - 🌙 Dark mode support preparato (future implementation)
+ *
+ * ====================================
+ * CHANGELOG v1.4.10 (2025-12-16):
+ * ====================================
+ * - REMOVE: Piano Executive rimosso (non commerciale a 499€/mese)
+ *   - Verrà sostituito da piano White Label personalizzato in futuro
+ * - UPDATE: 7 piani SaaS attivi (Trial, Starter, Professional, Business, Golden Prompt, IPV Pro 10, IPV Pro 100)
+ * - FIX: Sort order aggiornato per tutti i piani rimanenti
+ *
+ * CHANGELOG v1.4.9 (2025-12-16):
+ * - FIX: Configurazione Piani SaaS corretta
+ *   - Trial: 10 crediti gratuiti (once) - NON SCADE MAI
+ *   - Starter: 50 crediti/mese - 9,99€/mese (aggiornato da 25 crediti)
+ *   - Professional: 100 crediti/mese - 29,99€/mese
+ *   - Business: 500 crediti/mese - 79,99€/mese
+ *   - Golden prompt: 150 crediti/mese - 59€/mese (cambiato da once a subscription)
+ *   - IPV Pro - 10: 10 crediti extra - 5€ (once)
+ *   - IPV Pro - 100: 100 crediti extra - 49€ (once)
+ * - CHANGE: Golden Prompt ora è Subscription mensile/annuale
+ *   - Cambiato da "once" (una tantum) a "month" (subscription)
+ *   - Crediti: 150/mese (prima 0)
+ *   - Attivazioni: 5 siti (prima 1)
+ *   - Re-download illimitati (prima 1 solo download)
+ *   - Include tutte le features: transcription, AI, support, API
+ * - FIX: Prezzi allineati con WooCommerce
+ *   - Tutti i prezzi corrispondono ai prodotti configurati
+ *   - Sistema hybrid billing corretto (once vs subscription)
+ *
+ * CHANGELOG v1.4.8 (2025-12-16):
+ * - FEATURE: Sistema Auto-Generazione Golden Prompt
+ *   - Nuova pagina "⚙️ Configura Golden Prompt" per licenze Golden
+ *   - Form predisposto con campi personalizzabili:
+ *     - Nome Canale (obbligatorio)
+ *     - Link Social (Telegram, Facebook, Instagram, Sito, Donazioni)
+ *     - Sponsor (nome + link, opzionale)
+ *     - Testo "Supporta il Canale" (customizzabile)
+ *   - Generazione automatica file .txt personalizzato
+ *   - Sezioni AI-driven: Argomenti, Ospiti, Persone/Enti (estratti dal CLIENT)
+ *   - Pulsante "⚙️ Configura" sostituisce "📎 Carica" nella tabella licenze
+ * - FEATURE: Template Golden Prompt Personalizzato
+ *   - Template completo con tutte le sezioni:
+ *     - Descrizione ottimizzata
+ *     - Argomenti trattati (AI)
+ *     - Ospiti (AI)
+ *     - Persone/Enti menzionati (AI)
+ *     - Sponsor personalizzato
+ *     - Supporta il Canale (custom text)
+ *     - Capitoli/timestamp
+ *     - Link Utili (social personalizzati)
+ *     - Hashtag strategici
+ *   - Generato automaticamente da configurazione admin
+ *   - Salvato come file .txt protetto
+ * - METADATA: Nuovi campi configurazione Golden Prompt
+ *   - _golden_channel_name: Nome canale cliente
+ *   - _golden_telegram: Link Telegram
+ *   - _golden_facebook: Link Facebook
+ *   - _golden_instagram: Link Instagram
+ *   - _golden_website: Sito ufficiale
+ *   - _golden_donations: Link donazioni
+ *   - _golden_sponsor_name: Nome sponsor
+ *   - _golden_sponsor_link: Link sponsor
+ *   - _golden_support_text: Testo call-to-action personalizzato
+ * - UI/UX: Flusso Semplificato
+ *   1. Admin clicca "⚙️ Configura" nella tabella licenze
+ *   2. Compila form con dati cliente
+ *   3. Clicca "✨ Genera Golden Prompt"
+ *   4. Sistema genera file .txt automaticamente
+ *   5. Admin abilita dal toggle nella tabella licenze
+ *   6. CLIENT scarica automaticamente alla prossima sync
+ *
+ * CHANGELOG v1.4.7 (2025-12-16):
+ * - FEATURE: Template BASE Gratuito per Tutti
+ *   - Nuovo template predefinito per tutte le licenze attive
+ *   - Genera solo: Descrizione, Capitoli, Hashtag (versione semplificata)
+ *   - File: /templates/youtube-description-base.txt
+ *   - Disponibile per chi NON acquista Golden Prompt Premium
+ * - FEATURE: Sistema Dual-Template (BASE vs GOLDEN PREMIUM)
+ *   - Template BASE: Gratuito per tutti, funzionalità essenziali
+ *   - Template GOLDEN: Premium personalizzato, formato completo
+ *   - API /license/info include: template_type (base/golden_premium)
+ *   - CLIENT decide automaticamente quale template usare
+ * - FEATURE: Endpoint Download Template BASE
+ *   - GET /wp-json/ipv-vendor/v1/license/download-template-base
+ *   - Disponibile per tutte le licenze attive (non solo Golden)
+ *   - Cache pubblico 1 ora (template statico)
+ *   - Content-Type: text/plain
+ * - FEATURE: Golden Prompt come Script Personalizzato Admin-Managed
+ *   - Sistema completamente riprogettato: Admin carica file per ogni licenza
+ *   - Admin abilita/disabilita Golden prompt con toggle button
+ *   - CLIENT plugin scarica automaticamente quando abilitato
+ *   - File protetto e non visibile direttamente (motore descrizioni AI)
+ * - FEATURE: Admin UI per Gestione Golden Prompt
+ *   - Tabella licenze mostra pulsanti per licenze Golden prompt:
+ *     - "📎 Carica/Modifica": Upload file ZIP (max 50MB)
+ *     - "⭐ Abilita / 🌟 Disabilita": Toggle con colori (giallo/verde)
+ *   - Pagina upload dedicata con form sicuro e validazione
+ *   - Storage sicuro in /wp-content/uploads/ipv-golden-prompts/
+ *   - .htaccess blocca accesso diretto, filename randomizzato
+ * - FEATURE: API Endpoint per CLIENT Plugin
+ *   - GET /wp-json/ipv-vendor/v1/license/download-golden-prompt
+ *   - Verifica: licenza attiva + tipo golden_prompt + file abilitato
+ *   - Serve file ZIP direttamente con headers sicuri
+ *   - Log download con IP e timestamp
+ *   - Nessun limite download (cliente può re-scaricare se reinstalla)
+ * - FEATURE: Metadata Golden Prompt in API /license/info
+ *   - Nuovo oggetto 'golden_prompt' nella risposta
+ *   - Campi: enabled, has_file, can_download, file_info
+ *   - file_info include: size, size_formatted, filename, uploaded_at
+ *   - template_type: 'base' o 'golden_premium'
+ *   - template_description: Descrizione tipo template da usare
+ *   - CLIENT plugin può verificare disponibilità prima di scaricare
+ * - METADATA: Nuovi campi licenza Golden prompt
+ *   - _golden_prompt_enabled: boolean (toggle admin)
+ *   - _golden_prompt_file: percorso file ZIP
+ *   - _golden_prompt_uploaded_at: timestamp upload
+ *   - _golden_prompt_original_filename: nome file originale
+ *   - _golden_prompt_toggled_at: timestamp ultimo toggle
+ *   - _golden_prompt_downloaded_at: timestamp download CLIENT
+ * - SICUREZZA: Sistema protezione file Golden prompt
+ *   - Directory con .htaccess "Deny from all"
+ *   - Filename randomizzato con wp_generate_password(16)
+ *   - Solo scaricabile via API autenticata
+ *   - Validazione file ZIP, max 50MB
+ *   - Vecchio file eliminato automaticamente su nuovo upload
+ *
+ * CHANGELOG v1.4.6 (2025-12-16):
+ * - FEATURE: Golden Prompt come Digital Asset Sicuro (DEPRECATO in v1.4.7)
+ *   - Golden prompt convertito da piano subscription a digital asset
+ *   - Modificato a: €59 una tantum, 0 crediti, 1 solo sito
+ *   - Nuovo tipo prodotto: "digital_asset" con download remoto sicuro
+ *   - Sistema anti-pirateria: 1 solo download consentito per licenza
+ *   - Download legato alla licenza attivata (non copiabile)
+ * - FEATURE: Endpoint API Download Sicuro (DEPRECATO in v1.4.7)
+ *   - Nuovo endpoint: POST /wp-json/ipv-vendor/v1/license/download-asset
+ *   - Genera token sicuro valido 5 minuti
+ *   - Verifica licenza attiva e variant_slug corretto
+ *   - Tracking download count in ipv_license_meta
+ *   - Log timestamp download request
+ *   - Limite download configurabile per prodotto (_ipv_download_limit)
+ * - METADATA: Nuovi campi prodotto WooCommerce (MANTENUTI in v1.4.7)
+ *   - _ipv_product_type: 'digital_asset'
+ *   - _ipv_download_limit: numero massimo download (default: 1)
+ *   - _ipv_remote_download: true (download gestito dal server)
+ * - METADATA: Nuovi campi licenza (DEPRECATI in v1.4.7)
+ *   - _asset_download_count: numero download effettuati
+ *   - _asset_download_requested_at: timestamp ultima richiesta
+ *
+ * CHANGELOG v1.4.5 (2025-12-16):
+ * - FEATURE: Sistema Billing Ibrido Mensile/Annuale + Cambio Piano
+ *   - Piani "once" (Trial, Extra Credits): creano 1 solo prodotto
+ *   - Piani "month" (Subscription): creano 2 prodotti (Mensile + Annuale)
+ *   - Annuale: prezzo × 10 mesi (sconto 16.67%), crediti × 12
+ *   - Metadata: _ipv_billing_type (once/monthly/yearly), _ipv_credits_period
+ *   - Descrizioni prodotti con calcolo risparmio per piani annuali
+ * - FEATURE: 3 Nuovi Piani SaaS
+ *   - Executive: €499/mese, 2000 crediti/mese, 50 attivazioni
+ *   - Golden prompt: €59/mese, 150 crediti/mese, 5 attivazioni (MODIFICATO in v1.4.6)
+ *   - IPV Pro - 100: €49 una tantum, 100 crediti extra che non scadono
+ *   - Rinominato "Crediti Extra" in "IPV Pro - 10" per coerenza
+ * - FEATURE: Sistema Cambio Piano con Anti-Frode (da v1.4.4)
+ *   - Pulsante "🔄 Cambia Piano" in tabella licenze
+ *   - Validazione automatica con 4 regole
+ *   - UI con card colorate (blu=permesso, rosso=bloccato)
+ *   - Creazione ordine WooCommerce per tracciabilità
+ * - MIGLIORAMENTO: Setup Wizard Step 4 mostra tabella piani con entrambe le varianti
+ * - MIGLIORAMENTO: Compatibilità completa con FIXED10 (Trial una tantum, Extra Credits)
+ *
+ * CHANGELOG v1.4.2-FIXED10 (2025-12-15):
+ * - FIX CRITICO: Logica piani Trial e Crediti Extra completamente rivista
+ *   - Trial: 10 crediti di BENVENUTO (una tantum, NON si rinnovano, NON scade mai)
+ *   - Starter/Professional/Business: crediti MENSILI (si rinnovano ogni mese)
+ *   - Extra Credits: pacchetto 10 crediti a 5,00 EUR (0,50 EUR/credito), NON scadono
+ * - Aggiunto piano 'extra_credits' nei default plans
+ * - Descrizioni prodotti completamente riscritte per ogni tipo:
+ *   - Trial: spiega che sono crediti di benvenuto non rinnovabili
+ *   - Extra Credits: spiega prezzo per credito e che non scadono
+ *   - Subscription: spiega che i crediti si rinnovano mensilmente
+ * - Etichetta WooCommerce cambiata da "Crediti Mensili" a "Crediti Totali"
+ * - Product type differenziato: 'trial', 'extra_credits', 'subscription'
+ * - credits_period: 'once' per Trial e Extra Credits, 'month' per subscription
+ *
+ * CHANGELOG v1.4.2-FIXED9 (2025-12-15):
+ * - FIX CRITICO: "Sorry, you are not allowed to access this page" nel wizard
+ *   - Problema: Errore di permessi quando si accede alla pagina Setup Wizard
+ *   - WordPress non riconosceva la pagina come valida perché registrata con parent null
+ *   - Causa: add_submenu_page() usava null come parent, rendendo la pagina orfana
+ *   - Fix: Registrata pagina wizard con parent 'ipv-vendor-dashboard'
+ *   - Ora la pagina del wizard è correttamente collegata al menu principale
+ *   - Corretti tutti i link che puntavano a 'page=ipv-vendor' → 'page=ipv-vendor-dashboard'
+ *   - Link "Vai alla Dashboard" nel wizard ora funziona correttamente
+ *   - Link "IPV Pro Vendor Dashboard" nei prossimi passi corretto
+ *   - Migliorato redirect legacy con priority 1 per eseguire prima di altri hook
+ *   - ERRORE PERMESSI RISOLTO - Wizard ora accessibile al 100%
+ *
+ * CHANGELOG v1.4.2-FIXED8 (2025-12-15):
+ * - FIX CRITICO: "Sorry, you are not allowed to access this page" al Step 4
+ *   - Problema: Errore di permessi quando si clicca "Crea Prodotti Automaticamente"
+ *   - WordPress non trovava l'azione admin_post registrata
+ *   - Causa: Setup Wizard caricato solo dentro blocco is_admin()
+ *   - Admin-post.php viene eseguito prima che is_admin() sia valutato
+ *   - Fix: Spostato caricamento Setup Wizard fuori da is_admin()
+ *   - Ora Setup Wizard si carica sempre in plugins_loaded
+ *   - Hook admin_post_ipv_vendor_create_products sempre disponibile
+ *   - Migliorati messaggi di errore per debug (nonce, permessi, WooCommerce)
+ *   - ERRORE PERMESSI RISOLTO - Creazione prodotti ora funziona
+ *
+ * CHANGELOG v1.4.2-FIXED7 (2025-12-15):
+ * - FIX CRITICO: Metodo render_step_complete() mancante in Setup Wizard
+ *   - Problema: "Call to undefined method IPV_Pro_Vendor_Setup_Wizard::render_step_complete()"
+ *   - Fatal error quando si completa il wizard allo Step 5
+ *   - Causa: Metodo completamente mancante dalla classe
+ *   - Fix: Aggiunto metodo render_step_complete() completo
+ *   - Step 5 ora mostra:
+ *     * Messaggio di successo configurazione
+ *     * Riepilogo prodotti creati/saltati
+ *     * Lista prossimi passi (Piani SaaS, Prodotti, Gateway, API Test, Dashboard)
+ *     * Link rapidi a tutte le sezioni principali
+ *     * Nota importante su aggiornamento prodotti dopo modifica piani
+ *   - ERRORE FATALE RISOLTO - Wizard completabile al 100%
+ *
+ * CHANGELOG v1.4.2-FIXED6 (2025-12-15):
+ * - FIX CRITICO: Parse error in class-setup-wizard.php
+ *   - Problema: "Unmatched '}' in class-setup-wizard.php on line 530"
+ *   - Fatal error PHP parse impediva caricamento plugin
+ *   - Causa: Metodo save_settings() aveva signature mancante e brace orfana
+ *   - Codice POST processing per API keys era orfano (righe 517-530)
+ *   - Fix: Ricreato metodo save_settings() completo
+ *   - Aggiunto handling per youtube_api_key (era mancante)
+ *   - Metodo ora gestisce correttamente tutti i campi Step 2:
+ *     * youtube_api_key
+ *     * openai_api_key
+ *     * supadata_key
+ *     * supadata_secret
+ *   - Rimossa brace orfana alla riga 516
+ *   - PARSE ERROR RISOLTO - Plugin ora si carica correttamente
+ *
+ * CHANGELOG v1.4.2-FIXED5 (2025-12-15):
+ * - REIMPLEMENTAZIONE: Creazione prodotti basata sui Piani SaaS
+ *   - Problema: Prodotti creati con sistema mensile/annuale hardcoded
+ *   - Sistema precedente non leggeva i piani dal database
+ *   - Prezzi e configurazioni erano duplicate nel codice
+ *   - Fix: Riscritta completamente funzione create_products()
+ *   - Ora legge i piani da Plans Manager (option ipv_saas_plans)
+ *   - Prodotti creati dinamicamente basati sui piani attivi
+ *   - Nome prodotto: "IPV Pro - [Nome Piano]" (es. "IPV Pro - Trial")
+ *   - Rimosso sistema billing_type (mensile/annuale) dallo step 4 wizard
+ *   - Wizard mostra tabella piani dal database in tempo reale
+ *   - Descrizioni plain text con crediti, attivazioni e features
+ *   - Metadata: _ipv_plan_slug, _ipv_variant_slug, _ipv_credits_total, _ipv_activation_limit
+ *   - Link a "Gestisci Piani SaaS" nello step 4
+ *   - Prodotti ora allineati ai piani configurati in IPV Pro Vendor → Piani SaaS
+ *
+ * CHANGELOG v1.4.2-FIXED4 (2025-12-15):
+ * - FIX CRITICO: Fatal error nei campi prodotto WooCommerce
+ *   - Problema: "Call to undefined function woocommerce_wp_number()" in class-woocommerce-integration.php:267
+ *   - Causa: La funzione woocommerce_wp_number() non esiste in WooCommerce
+ *   - Fatal error quando si modifica un prodotto nell'admin WooCommerce
+ *   - Fix: Sostituito woocommerce_wp_number() con woocommerce_wp_text_input() con type='number'
+ *   - Campi fixati: Crediti Mensili (_ipv_credits_total) e Limite Attivazioni (_ipv_activation_limit)
+ *   - Rimosso controllo function_exists per woocommerce_wp_number (non esiste)
+ *   - Aggiunto controllo per woocommerce_wp_text_input invece
+ *   - ERRORE FATALE RISOLTO - Ora i prodotti si possono modificare senza crash
+ *
+ * CHANGELOG v1.4.2-FIXED3 (2025-12-15):
+ * - TOOL: Script di migrazione per aggiornare prodotti esistenti
+ *   - Nuovo menu: "🔄 Migra Descrizioni" sotto IPV Pro Vendor
+ *   - Trova automaticamente tutti i prodotti IPV (subscription + extra_credits)
+ *   - Identifica variant (trial, starter, professional, business) da metadata
+ *   - Rileva automaticamente se mensile o annuale dal nome prodotto
+ *   - Applica le nuove descrizioni plain text con ✓ caratteri
+ *   - Aggiorna sia short_description che description
+ *   - Rimuove tutto l'HTML con wp_strip_all_tags()
+ *   - Gestione errori completa con feedback dettagliato
+ *   - Conferma prima dell'esecuzione + warning backup
+ *   - File può essere eliminato dopo l'uso per sicurezza
+ *   - Risolve il problema del testo bianco sui prodotti ESISTENTI
+ *
+ * CHANGELOG v1.4.2-FIXED2 (2025-12-15):
+ * - FIX: Descrizioni prodotti con testo bianco non leggibile
+ *   - Problema: Editor WooCommerce mostrava testo bianco su sfondo bianco
+ *   - Aggiunta short_description separata per ogni prodotto
+ *   - Descrizioni ora in plain text con caratteri ✓ invece di HTML
+ *   - Usato wp_strip_all_tags() per rimuovere formattazione
+ *   - Descrizioni più dettagliate con features elencate
+ *   - Calcolo risparmio annuale mostrato nella descrizione
+ *   - Crediti Extra: descrizione migliorata e più chiara
+ *
+ * CHANGELOG v1.4.2-FIXED (2025-12-15):
+ * - FIX: Trial non più gratuito - Misura anti-spam
+ *   - Trial passa da €0 a €1.99 (sia mensile che annuale)
+ *   - Costo simbolico per prevenire abusi e account spam
+ *   - Descrizione aggiornata: "Costo simbolico di €1.99 come misura anti-spam"
+ *   - Target aggiornato: "Test e demo (anti-spam)"
+ *   - Mantiene 10 crediti mensili per testing completo
+ *
+ * CHANGELOG v1.4.2 (2025-12-15):
+ * - FEATURE: Scelta fatturazione mensile/annuale per prodotti
+ *   - Aggiunto campo radio nello step 4 del wizard: Mensile o Annuale
+ *   - Fatturazione mensile: prezzi standard (€19.95/mese, €49.95/mese, €99.95/mese)
+ *   - Fatturazione annuale: sconto 2 mesi (€199.50/anno, €499.50/anno, €999.50/anno)
+ *   - Annuale = Paghi 10 mesi, ricevi 12 mesi (sconto ~17%)
+ *   - Prodotti creati con suffisso: "IPV Pro - Starter - Mensile" o "IPV Pro - Starter - Annuale"
+ *   - Metadata aggiuntivi: _ipv_billing_type (monthly/yearly), _ipv_billing_period (month/year)
+ *   - Salvataggio preferenza billing type in option: ipv_vendor_billing_type
+ *   - Tabella prezzi con evidenziazione colonna selezionata (jQuery)
+ *
+ * CHANGELOG v1.4.1-FIXED4 (2025-12-15):
+ * - FIX: WooCommerce incompatibility warning
+ *   - Dichiarata compatibilità WooCommerce HPOS (High-Performance Order Storage)
+ *   - Aggiunto hook before_woocommerce_init per FeaturesUtil
+ *   - Compatibilità dichiarata per: custom_order_tables, orders_cache
+ *   - Risolve: "WooCommerce has detected that some of your active plugins are incompatible"
+ *   - Plugin ora pienamente compatibile con WooCommerce 8.0+
+ *
+ * CHANGELOG v1.4.1-FIXED3 (2025-12-15):
+ * - FIX: Creazione automatica prodotti nel wizard non funzionava
+ *   - Aggiunto handler admin_post_ipv_vendor_create_products in setup-wizard
+ *   - Implementato metodo create_products() che crea 5 prodotti WooCommerce
+ *   - Prodotti: Trial (€0, 10 credits), Starter (€19.95, 25 credits),
+ *              Professional (€49.95, 100 credits), Business (€99.95, 500 credits),
+ *              Crediti Extra (€0.35/credit, min 10)
+ *   - Fix: pulsante "Crea Prodotti Automaticamente" ora funzionante
+ * - FIX: Pagina admin inaccessibile (page=ipv-vendor)
+ *   - Aggiunto redirect automatico da page=ipv-vendor a page=ipv-vendor-dashboard
+ *   - Risolve errore "Sorry, you are not allowed to access this page"
+ *   - URL corretto: admin.php?page=ipv-vendor-dashboard
+ *
+ * CHANGELOG v1.4.1-FIXED2 (2025-12-14):
+ * - FIX CRITICO: Class "IPV_Pro_Vendor_Auto_Installer" not found (righe 73, 504)
+ *   - Aggiunto metodo interno get_setup_progress() in setup-wizard
+ *   - Rimossi tutti i riferimenti a IPV_Pro_Vendor_Auto_Installer::get_setup_progress()
+ *   - Setup wizard ora completamente indipendente
+ *   - Risolve fatal error in class-setup-wizard.php:73 e :504
+ *
+ * CHANGELOG v1.4.1-FIXED (2025-12-14):
+ * - FIX CRITICO: Class "IPV_Vendor_API_Gateway" not found
+ *   - Precaricamento classi core PRIMA dell'autoloader
+ *   - require_once per class-api-gateway.php, class-license-manager.php, class-credits-manager.php
+ *   - Risolve fatal error in class-vendor-core.php:51
+ * - FIX CRITICO: Database migration "Unknown column 'site_url'"
+ *   - Aggiunta verifica esistenza colonna site_url prima di ALTER TABLE
+ *   - Se mancante, viene creata automaticamente prima di site_unlock_at
+ *   - Previene errori SQL su upgrade da versioni vecchie
+ * - FIX: Class "IPV_Pro_Vendor_Auto_Installer" not found in redirect (riga 34)
+ *   - Rimossa dipendenza da auto-installer class
+ *   - Check diretto su option 'ipv_vendor_setup_complete'
+ *
+ * CHANGELOG v1.4.1 (2025-12-14):
+ * - CREDITS SYSTEM: Credits split in monthly + extra
+ *   - credits_monthly: Reset ogni mese al valore del piano
+ *   - credits_extra: Persistenti, acquistabili separatamente
+ *   - credits_used_month: Counter per usage mensile
+ * - DATABASE: Nuova tabella ipv_credit_ledger per audit trail
+ *   - Log completo di tutte le transazioni crediti
+ *   - Supporto per grant_monthly, grant_extra, consume, adjust
+ * - ADMIN: Interfaccia completa gestione licenze
+ *   - WP_List_Table per licenze con search e paginazione
+ *   - WP_List_Table per ledger transazioni
+ *   - Admin actions: add credits, reset monthly, unlock site, rebind
+ *   - Site unlock con cooldown 7 giorni
+ *   - CSV export per licenze e ledger
+ * - WOOCOMMERCE: Metabox ordini con info licenza
+ * - MY ACCOUNT: Endpoint acquisto crediti extra (ipv-credits)
+ * - COMPATIBILITÀ: Fix class alias IPV_Vendor_API_Gateway
+ *
+ * CHANGELOG v1.3.18 (2025-12-11):
+ * - FIX CRITICO: Compatibilità PHP 8.x - Risolti deprecation warnings
+ *   - Fix: strpos() e str_replace() ricevevano null invece di string
+ *   - Aggiunto type-safe casting per tutti i get_post_meta()
+ *   - class-woocommerce-integration.php: Validazione crediti e activation limit
+ *   - class-license-manager.php: Safe casting per variant_slug, credits, activation
+ *   - class-plans-manager.php: Protezione display prodotti WooCommerce
+ *   - Eliminati PHP Deprecated warnings nel log
+ *   - Compatibilità totale con PHP 8.0, 8.1, 8.2, 8.3
+ *
+ * CHANGELOG v1.3.17 (2025-12-11):
+ * - FIX CRITICO: Descrizioni prodotti WooCommerce corrotte
+ *   - Nuovo metodo emoji_to_html_entities() in class-plans-manager.php
+ *   - Converti emoji Unicode in HTML entities (compatibile UTF8)
+ *   - Descrizioni prodotti ora strutturate in 4 sezioni
+ *   - Fix: emoji 🎬📊🚀 ora renderizzate correttamente
+ *
+ * CHANGELOG v1.3.11:
+ * - PERFORMANCE: Ottimizzato polling SupaData
+ *   - Intervallo ridotto da 5s a 2s
+ *   - Max attempts ridotto da 30 a 20
+ *   - Tempo massimo polling: 40s invece di 150s
+ *   - Velocità generazione trascrizioni migliorata ~70%
+ */
+
+if ( ! defined( 'ABSPATH' ) ) exit;
+
+// Constants
+define( 'IPV_VENDOR_VERSION', '1.0.4' );
+define( 'IPV_VENDOR_FILE', __FILE__ );
+define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
+define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );
+
+// Load core classes BEFORE autoloader to avoid class not found errors
+require_once IPV_VENDOR_DIR . 'includes/class-auto-configurator.php';
+require_once IPV_VENDOR_DIR . 'includes/class-api-gateway.php'; // CRITICAL: Load before vendor-core
+require_once IPV_VENDOR_DIR . 'includes/class-license-manager.php';
+require_once IPV_VENDOR_DIR . 'includes/class-credits-manager.php';
+
+// PHP 8.1+ Safe Helpers (v1.6.4) - Elimina deprecated warnings
+require_once IPV_VENDOR_DIR . 'includes/ipv-safe.php';
+
+// Declare WooCommerce HPOS compatibility (v1.4.1-FIXED4)
+add_action( 'before_woocommerce_init', function() {
+    if ( class_exists( '\Automattic\WooCommerce\Utilities\FeaturesUtil' ) ) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'orders_cache', __FILE__, true );
+    }
+} );
+
+// Check WooCommerce
+add_action( 'admin_init', 'ipv_vendor_check_woocommerce' );
+function ipv_vendor_check_woocommerce() {
+    if ( ! class_exists( 'WooCommerce' ) ) {
+        add_action( 'admin_notices', function() {
+            echo '<div class="error"><p><strong>IPV Pro Vendor</strong> richiede WooCommerce attivo!</p></div>';
+        });
+        deactivate_plugins( plugin_basename( __FILE__ ) );
+        return;
+    }
+}
+
+// Autoloader
+spl_autoload_register( function( $class ) {
+    if ( strpos( $class, 'IPV_Vendor_' ) === 0 ) {
+        $file = strtolower( str_replace( ['IPV_Vendor_', '_'], ['', '-'], $class ) );
+        $path = IPV_VENDOR_DIR . 'includes/class-' . $file . '.php';
+        if ( file_exists( $path ) ) {
+            require_once $path;
+        }
+    }
+});
+
+// Load core
+require_once IPV_VENDOR_DIR . 'includes/class-vendor-core.php';
+
+// Init
+add_action( 'plugins_loaded', function() {
+    if ( class_exists( 'WooCommerce' ) ) {
+        // v1.4.1 - Database migration
+        require_once IPV_VENDOR_DIR . 'includes/class-db.php';
+        if ( IPV_Vendor_DB::needs_migration() ) {
+            IPV_Vendor_DB::migrate();
+        }
+
+        // Core
+        IPV_Vendor_Core::instance();
+
+        // Setup Wizard (must be loaded before is_admin check for admin-post.php)
+        require_once IPV_VENDOR_DIR . 'includes/class-setup-wizard.php';
+        IPV_Pro_Vendor_Setup_Wizard::init();
+
+        // v1.4.1 - Admin features
+        if ( is_admin() ) {
+
+            require_once IPV_VENDOR_DIR . 'includes/class-admin-actions.php';
+            IPV_Vendor_Admin_Actions::init();
+
+            require_once IPV_VENDOR_DIR . 'includes/class-admin-export.php';
+            IPV_Vendor_Admin_Export::init();
+
+            require_once IPV_VENDOR_DIR . 'includes/class-order-metabox.php';
+            IPV_Vendor_Order_Metabox::init();
+
+            // v1.4.2-FIXED3 - Migration tool for product descriptions
+            if ( file_exists( IPV_VENDOR_DIR . 'includes/migrate-product-descriptions.php' ) ) {
+                require_once IPV_VENDOR_DIR . 'includes/migrate-product-descriptions.php';
+            }
+
+            // v1.6.4 - API Keys Tester
+            require_once IPV_VENDOR_DIR . 'includes/class-api-tester.php';
+        }
+    }
+});
+
+// Activation
+register_activation_hook( __FILE__, function() {
+    if ( ! class_exists( 'WooCommerce' ) ) {
+        deactivate_plugins( plugin_basename( __FILE__ ) );
+        wp_die( 'IPV Pro Vendor richiede WooCommerce. Installa e attiva WooCommerce prima di attivare questo plugin.' );
+    }
+
+    // v1.4.0 - Auto-installer (database tables, defaults, CRON)
+    require_once IPV_VENDOR_DIR . 'includes/class-auto-installer.php';
+    IPV_Pro_Vendor_Auto_Installer::install();
+
+    // v1.3.3 - Auto-configurazione sistema
+    require_once IPV_VENDOR_DIR . 'includes/class-auto-configurator.php';
+    $auto_config = IPV_Vendor_Auto_Configurator::instance();
+    $auto_config->activate();
+
+    // Core activation
+    require_once IPV_VENDOR_DIR . 'includes/class-vendor-core.php';
+    IPV_Vendor_Core::activate();
+});
+
+// Deactivation
+register_deactivation_hook( __FILE__, function() {
+    IPV_Vendor_Core::deactivate();
+});
+
+// Uninstall
+register_uninstall_hook( __FILE__, 'ipv_vendor_uninstall' );
+function ipv_vendor_uninstall() {
+    require_once plugin_dir_path( __FILE__ ) . 'includes/class-auto-installer.php';
+    IPV_Pro_Vendor_Auto_Installer::uninstall();
+}
+
+// Admin notices for auto-configuration
+add_action( 'admin_notices', function() {
+    IPV_Vendor_Auto_Configurator::instance()->show_activation_notice();
+});
+
+// Admin Status Page
+require_once IPV_VENDOR_DIR . 'includes/class-admin-status-page.php';
+add_action( 'plugins_loaded', function() {
+    if ( is_admin() ) {
+        IPV_Vendor_Admin_Status_Page::instance()->init();
+    }
+});
+
+// ============================================
+// GOLDEN PROMPT MODULE v1.6.0
+// ============================================
+if ( file_exists( IPV_VENDOR_DIR . 'modules/golden-prompt/golden-prompt-module.php' ) ) {
+    require_once IPV_VENDOR_DIR . 'modules/golden-prompt/golden-prompt-module.php';
+}
+
+// ============================================
+// DATABASE REPAIR v1.6.1
+// ============================================
+
+// Auto-repair database on admin init if needed
+add_action( 'admin_init', function() {
+    // Check if repair is requested via URL
+    if ( isset( $_GET['ipv_repair_db'] ) && $_GET['ipv_repair_db'] === '1' && current_user_can( 'manage_options' ) ) {
+        check_admin_referer( 'ipv_repair_db' );
+        
+        require_once IPV_VENDOR_DIR . 'includes/class-auto-installer.php';
+        $results = IPV_Pro_Vendor_Auto_Installer::repair_database();
+        
+        set_transient( 'ipv_repair_results', $results, 60 );
+        
+        wp_redirect( admin_url( 'admin.php?page=ipv-vendor-dashboard&repaired=1' ) );
+        exit;
+    }
+    
+    // Auto-repair if DB version is outdated
+    $db_version = get_option( 'ipv_vendor_db_version', '1.0.0' );
+    if ( version_compare( $db_version, '1.6.1', '<' ) ) {
+        require_once IPV_VENDOR_DIR . 'includes/class-auto-installer.php';
+        IPV_Pro_Vendor_Auto_Installer::repair_database();
+    }
+});
+
+// Show repair results notice
+add_action( 'admin_notices', function() {
+    if ( isset( $_GET['repaired'] ) && $_GET['repaired'] === '1' ) {
+        $results = get_transient( 'ipv_repair_results' );
+        if ( $results ) {
+            delete_transient( 'ipv_repair_results' );
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '<p><strong>🔧 Database riparato con successo!</strong></p>';
+            echo '<ul style="margin-left: 20px; list-style: disc;">';
+            foreach ( $results as $r ) {
+                echo '<li>' . esc_html( $r ) . '</li>';
+            }
+            echo '</ul>';
+            echo '</div>';
+        }
+    }
+});
+
+// Periodic health check (ogni 12 ore)
+add_action( 'init', function() {
+    if ( ! wp_next_scheduled( 'ipv_vendor_health_check' ) ) {
+        wp_schedule_event( time(), 'twicedaily', 'ipv_vendor_health_check' );
+    }
+});
+
+add_action( 'ipv_vendor_health_check', function() {
+    IPV_Vendor_Auto_Configurator::instance()->health_check();
+});
