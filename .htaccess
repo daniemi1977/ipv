@@ -1,0 +1,29 @@
+# IPV Pro Vendor - Auto-generated .htaccess
+# v1.3.3 - Authorization Header Fix
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# CRITICAL: Preserve Authorization header
+RewriteCond %{HTTP:Authorization} .+
+RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+# Fallback for X-License-Key
+RewriteCond %{HTTP:X-License-Key} .+
+RewriteRule ^ - [E=HTTP_X_LICENSE_KEY:%{HTTP:X-License-Key}]
+</IfModule>
+
+# Security
+<IfModule mod_autoindex.c>
+Options -Indexes
+</IfModule>
+
+<FilesMatch "^(README\.md|CHANGELOG\.md|composer\.(json|lock)|\.git.*)$">
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+</FilesMatch>
