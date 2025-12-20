@@ -632,30 +632,43 @@ class IPV_Prod_API_Client_Optimized {
 
     /**
      * Deactivate license
+     * v1.0.4 - Always remove local data, even if server fails
      */
     public function deactivate_license() {
         $license_key = $this->get_license_key();
         $site_url = home_url();
 
+        // v1.0.4 - Always remove local data first
+        $this->clear_local_license_data();
+
         if ( empty( $license_key ) ) {
-            return new WP_Error( 'no_license', __( 'Nessuna licenza da deattivare', 'ipv-production-system-pro' ) );
+            // License already cleared
+            return [ 'success' => true, 'message' => 'Licenza rimossa localmente' ];
         }
 
+        // Try to notify server (but don't fail if server is unreachable)
         $response = $this->request( 'license/deactivate', 'POST', [
             'license_key' => $license_key,
             'site_url' => $site_url
         ], 30, [ 'cache' => false ] );
 
-        if ( ! is_wp_error( $response ) ) {
-            // Rimuovi dati licenza locali
-            delete_option( 'ipv_license_key' );
-            delete_option( 'ipv_license_info' );
-            delete_option( 'ipv_license_activated_at' );
+        IPV_Prod_Logger::log( 'Licenza deattivata' );
 
-            IPV_Prod_Logger::log( 'Licenza deattivata' );
-        }
+        // Return success even if server failed - local data is cleared
+        return [ 'success' => true, 'message' => 'Licenza deattivata' ];
+    }
 
-        return $response;
+    /**
+     * v1.0.4 - Clear all local license data
+     */
+    public function clear_local_license_data() {
+        delete_option( 'ipv_license_key' );
+        delete_option( 'ipv_license_info' );
+        delete_option( 'ipv_license_activated_at' );
+        delete_option( 'ipv_license_status' );
+        delete_option( 'ipv_license_valid' );
+        delete_transient( 'ipv_license_check' );
+        delete_transient( 'ipv_credits_info' );
     }
 
     /**

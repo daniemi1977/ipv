@@ -3,7 +3,7 @@
  * Plugin Name: IPV Production System Pro
  * Plugin URI: https://github.com/daniemi1977/ipv
  * Description: Professional video production system for YouTube content creators: multi-source imports, AI-powered transcriptions, automated descriptions with Golden Prompt, video wall with AJAX filters, and Elementor integration.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: IPV Team
  * Author URI: https://github.com/daniemi1977/ipv
  * Text Domain: ipv-production-system-pro
