@@ -44,10 +44,10 @@ class IPV_Vendor_API_Tester {
      * Render test page
      */
     public static function render_page() {
-        // Get current API keys
-        $youtube_key = get_option('ipv_vendor_youtube_api_key', '');
-        $openai_key = get_option('ipv_vendor_openai_api_key', '');
-        
+        // Get current API keys (use same option names as Settings page and API Gateway)
+        $youtube_key = get_option('ipv_youtube_api_key', '');
+        $openai_key = get_option('ipv_openai_api_key', '');
+
         // ✅ Usa lo stesso metodo di API Gateway per SupaData
         $supadata_keys = [
             get_option('ipv_supadata_api_key_1', ''),
@@ -436,7 +436,7 @@ class IPV_Vendor_API_Tester {
      * Test YouTube API
      */
     private static function test_youtube_api() {
-        $api_key = get_option('ipv_vendor_youtube_api_key', '');
+        $api_key = get_option('ipv_youtube_api_key', '');
         
         if (empty($api_key)) {
             return [
@@ -490,7 +490,7 @@ class IPV_Vendor_API_Tester {
      * Test OpenAI API
      */
     private static function test_openai_api() {
-        $api_key = get_option('ipv_vendor_openai_api_key', '');
+        $api_key = get_option('ipv_openai_api_key', '');
         
         if (empty($api_key)) {
             return [

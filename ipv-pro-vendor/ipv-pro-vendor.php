@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -13,6 +13,20 @@
  * Text Domain: ipv-pro-vendor
  * Domain Path: /languages
  * License: GPL v2 or later
+ *
+ * ====================================
+ * CHANGELOG v1.0.6 (2025-12-20) - FIX API TESTER OPTION NAMES
+ * ====================================
+ *
+ * 🔥 FIX - API TESTER NON LEGGEVA LE CHIAVI:
+ * - ✅ API Tester usava option names errati (ipv_vendor_*)
+ * - ✅ Ora usa gli stessi nomi delle Settings (ipv_*)
+ *
+ * PROBLEMA RISOLTO:
+ * - ❌ Test API mostrava "Non configurata" anche con chiavi salvate
+ *
+ * FILE MODIFICATI:
+ * - includes/class-api-tester.php (linee 48-49, 439, 493)
  *
  * ====================================
  * CHANGELOG v1.0.5 (2025-12-20) - FIX REDIRECT AFTER LICENSE CREATION
@@ -1094,7 +1108,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Constants
-define( 'IPV_VENDOR_VERSION', '1.0.5' );
+define( 'IPV_VENDOR_VERSION', '1.0.6' );
 define( 'IPV_VENDOR_FILE', __FILE__ );
 define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );
