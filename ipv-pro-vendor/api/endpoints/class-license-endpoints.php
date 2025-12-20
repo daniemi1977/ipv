@@ -252,62 +252,79 @@ class IPV_Vendor_License_Endpoints {
      * Activate license on a specific site
      */
     public function activate_license( $request ) {
-        $license_key = sanitize_text_field( $request->get_param( 'license_key' ) );
-        $site_url = $request->get_param( 'site_url' );
-        $site_name = sanitize_text_field( $request->get_param( 'site_name' ) ?: '' );
+        try {
+            $license_key = sanitize_text_field( $request->get_param( 'license_key' ) );
+            $site_url = $request->get_param( 'site_url' );
+            $site_name = sanitize_text_field( $request->get_param( 'site_name' ) ?: '' );
 
-        if ( empty( $license_key ) || empty( $site_url ) ) {
+            if ( empty( $license_key ) || empty( $site_url ) ) {
+                return new WP_Error(
+                    'missing_params',
+                    'license_key e site_url sono obbligatori',
+                    [ 'status' => 400 ]
+                );
+            }
+
+            // Valida URL
+            $site_url = $this->validate_site_url( $site_url );
+            if ( is_wp_error( $site_url ) ) {
+                return $site_url;
+            }
+
+            $license_manager = IPV_Vendor_License_Manager::instance();
+            $credits_manager = IPV_Vendor_Credits_Manager::instance();
+
+            $license = $license_manager->activate_license(
+                $license_key,
+                $site_url,
+                $site_name,
+                $this->get_client_ip()
+            );
+
+            if ( is_wp_error( $license ) ) {
+                return $license;
+            }
+
+            $credits_info = $credits_manager->get_credits_info( $license );
+
+            // Log successful activation
+            error_log( sprintf(
+                'IPV Vendor: License %s activated for %s from IP %s',
+                substr( $license_key, 0, 8 ) . '...',
+                $site_url,
+                $this->get_client_ip()
+            ));
+
+            return rest_ensure_response([
+                'success' => true,
+                'message' => 'License attivata con successo',
+                'license' => [
+                    'key' => $license->license_key,
+                    'status' => $license->status,
+                    'variant' => $license->variant_slug,
+                    'email' => $license->email,
+                    'expires_at' => $license->expires_at,
+                    'activation_limit' => (int) $license->activation_limit,
+                    'activation_count' => (int) $license->activation_count,
+                    'credits' => $credits_info
+                ]
+            ]);
+
+        } catch ( Exception $e ) {
+            error_log( 'IPV Vendor License Activation Error: ' . $e->getMessage() );
             return new WP_Error(
-                'missing_params',
-                'license_key e site_url sono obbligatori',
-                [ 'status' => 400 ]
+                'activation_error',
+                'Errore durante attivazione: ' . $e->getMessage(),
+                [ 'status' => 500 ]
+            );
+        } catch ( Error $e ) {
+            error_log( 'IPV Vendor License Activation Fatal Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine() );
+            return new WP_Error(
+                'activation_error',
+                'Errore fatale: ' . $e->getMessage(),
+                [ 'status' => 500 ]
             );
         }
-
-        // Valida URL
-        $site_url = $this->validate_site_url( $site_url );
-        if ( is_wp_error( $site_url ) ) {
-            return $site_url;
-        }
-
-        $license_manager = IPV_Vendor_License_Manager::instance();
-        $credits_manager = IPV_Vendor_Credits_Manager::instance();
-
-        $license = $license_manager->activate_license(
-            $license_key,
-            $site_url,
-            $site_name,
-            $this->get_client_ip()
-        );
-
-        if ( is_wp_error( $license ) ) {
-            return $license;
-        }
-
-        $credits_info = $credits_manager->get_credits_info( $license );
-
-        // Log successful activation
-        error_log( sprintf(
-            'IPV Vendor: License %s activated for %s from IP %s',
-            substr( $license_key, 0, 8 ) . '...',
-            $site_url,
-            $this->get_client_ip()
-        ));
-
-        return rest_ensure_response([
-            'success' => true,
-            'message' => 'License attivata con successo',
-            'license' => [
-                'key' => $license->license_key,
-                'status' => $license->status,
-                'variant' => $license->variant_slug,
-                'email' => $license->email,
-                'expires_at' => $license->expires_at,
-                'activation_limit' => (int) $license->activation_limit,
-                'activation_count' => (int) $license->activation_count,
-                'credits' => $credits_info
-            ]
-        ]);
     }
 
     /**

@@ -525,7 +525,7 @@ class IPV_Vendor_Admin_Dashboard {
                 if ( $inserted ) {
                     // Redirect to avoid nonce expiration on page refresh
                     wp_safe_redirect( add_query_arg( [
-                        'page' => 'ipv-pro-vendor-licenses',
+                        'page' => 'ipv-vendor-licenses',
                         'license_created' => '1',
                         'license_key' => urlencode($license_key),
                         'plan_name' => urlencode($plan['name'] ?? $variant),

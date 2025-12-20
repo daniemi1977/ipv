@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -13,6 +13,21 @@
  * Text Domain: ipv-pro-vendor
  * Domain Path: /languages
  * License: GPL v2 or later
+ *
+ * ====================================
+ * CHANGELOG v1.0.5 (2025-12-20) - FIX REDIRECT AFTER LICENSE CREATION
+ * ====================================
+ *
+ * 🔥 FIX - REDIRECT PAGINA LICENZE:
+ * - ✅ Dopo creazione licenza, redirect usava page name errato
+ * - ✅ Redirect usava: ipv-pro-vendor-licenses (non esiste)
+ * - ✅ Pagina corretta: ipv-vendor-licenses
+ *
+ * PROBLEMA RISOLTO:
+ * - ❌ "Non puoi accedere a questa pagina" dopo creazione licenza
+ *
+ * FILE MODIFICATI:
+ * - includes/class-admin-dashboard.php (linea 528)
  *
  * ====================================
  * CHANGELOG v1.0.4 (2025-12-20) - FIX WIZARD API KEYS
@@ -1079,7 +1094,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // Constants
-define( 'IPV_VENDOR_VERSION', '1.0.4' );
+define( 'IPV_VENDOR_VERSION', '1.0.5' );
 define( 'IPV_VENDOR_FILE', __FILE__ );
 define( 'IPV_VENDOR_DIR', plugin_dir_path( __FILE__ ) );
 define( 'IPV_VENDOR_URL', plugin_dir_url( __FILE__ ) );
