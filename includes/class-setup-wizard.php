@@ -373,18 +373,7 @@ class IPV_Pro_Vendor_Setup_Wizard {
             </div>
         <?php endif; ?>
 
-        <?php if ($wc_subs_installed): ?>
-            <div class="ipv-success-box">
-                <strong>✅ WooCommerce Subscriptions attivo!</strong>
-                <p>Potrai vendere abbonamenti ricorrenti mensili.</p>
-            </div>
-        <?php else: ?>
-            <div class="ipv-warning-box">
-                <strong>⚠️ WooCommerce Subscriptions non trovato</strong>
-                <p>Plugin opzionale ma raccomandato per abbonamenti ricorrenti.</p>
-                <small>Puoi anche vendere licenze one-time senza Subscriptions.</small>
-            </div>
-        <?php endif; ?>
+        <!-- WooCommerce Subscriptions check removed - annual plans only -->
 
         <h3>Configurazione Gateway Pagamento</h3>
         <?php if ($wc_installed): ?>
