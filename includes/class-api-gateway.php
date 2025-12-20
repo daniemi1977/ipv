@@ -487,6 +487,7 @@ class IPV_Vendor_API_Gateway_Optimized {
 
     /**
      * Log API call for audit
+     * v1.0.9 - Fixed column name: video_id (not resource_id)
      */
     private function log_api_call( $license_id, $endpoint, $resource_id, $status, $response_size, $attempts, $cached = false ) {
         if ( ! $this->audit_log_enabled ) {
@@ -499,10 +500,8 @@ class IPV_Vendor_API_Gateway_Optimized {
         $wpdb->insert( $table, [
             'license_id' => $license_id,
             'endpoint' => $endpoint,
-            'resource_id' => substr( $resource_id, 0, 100 ),
+            'video_id' => substr( $resource_id, 0, 50 ),
             'status_code' => $status,
-            'response_size' => $response_size,
-            'attempts' => $attempts,
             'cached' => $cached ? 1 : 0,
             'ip_address' => $this->get_client_ip(),
             'user_agent' => substr( $_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255 ),
