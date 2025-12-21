@@ -87,6 +87,7 @@ final class IPV_Pro_Vendor {
         require_once IPV_VENDOR_PATH . 'includes/class-upgrade-manager.php';
         require_once IPV_VENDOR_PATH . 'includes/class-email-notifications.php';
         require_once IPV_VENDOR_PATH . 'includes/class-woocommerce-integration.php';
+        require_once IPV_VENDOR_PATH . 'includes/class-landing-page.php';
 
         // API endpoints
         if ( file_exists( IPV_VENDOR_PATH . 'api/endpoints/class-wallet-endpoints.php' ) ) {
