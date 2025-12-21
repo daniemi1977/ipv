@@ -3,7 +3,7 @@
  * Plugin Name: IPV Pro Vendor System
  * Plugin URI: https://ipv-production-system.com
  * Description: Sistema completo per vendere IPV Pro Plugin via WooCommerce con API Gateway integrato
- * Version: 1.0.23
+ * Version: 1.0.25
  * Author: IPV Team
  * Author URI: https://ipv-production-system.com
  * Requires at least: 6.0
@@ -13,6 +13,39 @@
  * Text Domain: ipv-pro-vendor
  * Domain Path: /languages
  * License: GPL v2 or later
+ *
+ * ====================================
+ * CHANGELOG v1.0.25 (2025-12-21) - WOODMART DESIGN SYSTEM
+ * ====================================
+ *
+ * 🎨 NUOVO DESIGN GRAFICO WOODMART:
+ * - ✅ Palette colori Woodmart (Primary: #83b735, Secondary: #fbbc34)
+ * - ✅ CSS Variables con design tokens Woodmart
+ * - ✅ Bordi più sottili e leggeri (rgba(0,0,0,0.1))
+ * - ✅ Border-radius più squadrato (5px default)
+ * - ✅ Font Lato invece di Inter
+ * - ✅ Ombre più leggere e subtle
+ * - ✅ Nuovi componenti: tabs, alerts, status indicators
+ * - ✅ Toggle switch con colori Woodmart
+ * - ✅ Plan cards, pagination, empty states
+ *
+ * ====================================
+ * CHANGELOG v1.0.24 (2025-12-21) - LANDING PAGE + ELEMENTOR
+ * ====================================
+ *
+ * 🚀 NUOVE FUNZIONALITÀ:
+ * - ✅ Landing Page Builder con shortcodes
+ * - ✅ 5 Widget Elementor (Hero, Features, How It Works, Pricing, CTA)
+ * - ✅ Wizard importazione landing page 1-click
+ * - ✅ Sistema Email WooCommerce (6 notifiche)
+ * - ✅ Upgrade/Downgrade Manager
+ * - ✅ CSS Design System completo
+ *
+ * SHORTCODES:
+ * - [ipv_hero] [ipv_features] [ipv_how_it_works] [ipv_pricing] [ipv_cta]
+ *
+ * ELEMENTOR:
+ * - Categoria "IPV Pro Vendor" con 5 widget drag&drop
  *
  * ====================================
  * CHANGELOG v1.0.23 (2025-12-21) - FIX SUPADATA ENDPOINT
@@ -1518,6 +1551,19 @@ add_action( 'plugins_loaded', function() {
 if ( file_exists( IPV_VENDOR_DIR . 'modules/golden-prompt/golden-prompt-module.php' ) ) {
     require_once IPV_VENDOR_DIR . 'modules/golden-prompt/golden-prompt-module.php';
 }
+
+// ============================================
+// LANDING PAGE & ELEMENTOR WIDGETS v1.0.24
+// ============================================
+require_once IPV_VENDOR_DIR . 'includes/class-landing-page.php';
+require_once IPV_VENDOR_DIR . 'includes/class-landing-import-wizard.php';
+require_once IPV_VENDOR_DIR . 'includes/class-elementor-widgets.php';
+
+// ============================================
+// EMAIL NOTIFICATIONS v1.0.24
+// ============================================
+require_once IPV_VENDOR_DIR . 'includes/class-email-notifications.php';
+require_once IPV_VENDOR_DIR . 'includes/class-upgrade-manager.php';
 
 // ============================================
 // DATABASE REPAIR v1.6.1

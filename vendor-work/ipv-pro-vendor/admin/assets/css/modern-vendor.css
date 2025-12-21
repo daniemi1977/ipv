@@ -1,5 +1,10 @@
+/**
+ * IPV Pro Vendor - Additional Styles
+ * Woodmart-inspired Design
+ * @version 2.0.0
+ */
 
-/* v1.9.0 - Toggle Switch Golden Prompt */
+/* Toggle Switch - Woodmart Style */
 .ipv-switch {
     position: relative;
     display: inline-block;
@@ -21,8 +26,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cbd5e1;
-    transition: .3s;
+    background-color: var(--color-gray-300, #bbb);
+    transition: all 0.25s ease;
     border-radius: 24px;
 }
 
@@ -34,12 +39,13 @@
     left: 3px;
     bottom: 3px;
     background-color: white;
-    transition: .3s;
+    transition: all 0.25s ease;
     border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .ipv-switch input:checked + .ipv-switch-slider {
-    background-color: #10b981;
+    background-color: var(--wd-primary-color, #83b735);
 }
 
 .ipv-switch input:checked + .ipv-switch-slider:before {
@@ -47,5 +53,300 @@
 }
 
 .ipv-switch:hover .ipv-switch-slider {
-    opacity: 0.8;
+    opacity: 0.85;
+}
+
+/* Vendor Dashboard Header */
+.ipv-vendor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: var(--wd-main-bgcolor, #fff);
+    border-bottom: 1px solid var(--wd-border-color, rgba(0, 0, 0, 0.1));
+    margin-bottom: 1.5rem;
+}
+
+.ipv-vendor-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--wd-title-color, #242424);
+}
+
+.ipv-vendor-logo img {
+    height: 32px;
+    width: auto;
+}
+
+/* License Status Cards - Woodmart Style */
+.ipv-license-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--wd-brd-radius, 5px);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.ipv-license-status.active {
+    background-color: rgba(131, 183, 53, 0.15);
+    color: var(--wd-primary-color-hover, #6fa02d);
+}
+
+.ipv-license-status.expired {
+    background-color: rgba(214, 36, 50, 0.15);
+    color: #c41e2a;
+}
+
+.ipv-license-status.pending {
+    background-color: rgba(251, 188, 52, 0.15);
+    color: #b8941f;
+}
+
+/* Quick Actions Grid */
+.ipv-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.ipv-quick-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: var(--wd-main-bgcolor, #fff);
+    border: 1px solid var(--wd-border-color, rgba(0, 0, 0, 0.1));
+    border-radius: var(--wd-brd-radius, 5px);
+    text-decoration: none;
+    color: var(--wd-text-color, #333);
+    transition: all 0.25s ease;
+}
+
+.ipv-quick-action:hover {
+    border-color: var(--wd-primary-color, #83b735);
+    transform: translateY(-2px);
+}
+
+.ipv-quick-action-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(131, 183, 53, 0.1);
+    border-radius: var(--wd-brd-radius, 5px);
+    color: var(--wd-primary-color, #83b735);
+    margin-bottom: 0.75rem;
+}
+
+.ipv-quick-action-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* Credit Usage Bar - Woodmart Style */
+.ipv-credit-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--color-gray-200, #f1f1f1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.ipv-credit-bar-fill {
+    height: 100%;
+    background-color: var(--wd-primary-color, #83b735);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.ipv-credit-bar-fill.warning {
+    background-color: var(--wd-secondary-color, #fbbc34);
+}
+
+.ipv-credit-bar-fill.danger {
+    background-color: var(--wd-danger, #D62432);
+}
+
+/* Plan Selector - Woodmart Style */
+.ipv-plan-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.ipv-plan-card {
+    background: var(--wd-main-bgcolor, #fff);
+    border: 2px solid var(--wd-border-color, rgba(0, 0, 0, 0.1));
+    border-radius: var(--wd-brd-radius, 5px);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.ipv-plan-card:hover {
+    border-color: var(--wd-primary-color, #83b735);
+}
+
+.ipv-plan-card.popular {
+    border-color: var(--wd-primary-color, #83b735);
+}
+
+.ipv-plan-card.popular::before {
+    content: 'POPULAR';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--wd-primary-color, #83b735);
+    color: #fff;
+    padding: 0.25rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: var(--wd-brd-radius-sm, 3px);
+}
+
+.ipv-plan-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--wd-title-color, #242424);
+    margin-bottom: 0.5rem;
+}
+
+.ipv-plan-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--wd-title-color, #242424);
+}
+
+.ipv-plan-price span {
+    font-size: 1rem;
+    color: var(--color-gray-500, #767676);
+    font-weight: 400;
+}
+
+.ipv-plan-features {
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.ipv-plan-feature {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--wd-border-color, rgba(0, 0, 0, 0.1));
+    font-size: 0.875rem;
+    color: var(--color-gray-600, #666);
+}
+
+.ipv-plan-feature:last-child {
+    border-bottom: none;
+}
+
+.ipv-plan-feature svg {
+    color: var(--wd-primary-color, #83b735);
+    flex-shrink: 0;
+}
+
+/* Notification Dot */
+.ipv-notification-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--wd-danger, #D62432);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+/* Data Table Enhancements */
+.ipv-data-highlight {
+    font-weight: 700;
+    color: var(--wd-primary-color, #83b735);
+}
+
+.ipv-data-muted {
+    color: var(--color-gray-500, #767676);
+    font-size: 0.8125rem;
+}
+
+/* Woodmart-style Pagination */
+.ipv-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.ipv-pagination-btn {
+    min-width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--wd-border-color, rgba(0, 0, 0, 0.1));
+    background: var(--wd-main-bgcolor, #fff);
+    color: var(--wd-text-color, #333);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+}
+
+.ipv-pagination-btn:hover {
+    border-color: var(--wd-primary-color, #83b735);
+    color: var(--wd-primary-color, #83b735);
+}
+
+.ipv-pagination-btn.active {
+    background: var(--wd-primary-color, #83b735);
+    border-color: var(--wd-primary-color, #83b735);
+    color: #fff;
+}
+
+.ipv-pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Empty State - Woodmart Style */
+.ipv-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--color-gray-500, #767676);
+}
+
+.ipv-empty-state-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1rem;
+    opacity: 0.5;
+}
+
+.ipv-empty-state-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--wd-title-color, #242424);
+    margin-bottom: 0.5rem;
+}
+
+.ipv-empty-state-text {
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
 }
