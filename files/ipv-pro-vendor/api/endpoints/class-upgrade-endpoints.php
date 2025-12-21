@@ -136,8 +136,9 @@ class IPV_Vendor_Upgrade_Endpoints {
                 continue;
             }
 
-            // Skip trial for non-trial users (can't downgrade to trial)
-            if ( $slug === 'trial' && $current_plan_slug !== 'trial' ) {
+            // Trial è SOLO un piano di benvenuto - non può essere selezionato
+            // Gli utenti Trial possono solo fare UPGRADE, non esistono downgrade verso Trial
+            if ( $slug === 'trial' ) {
                 continue;
             }
 
@@ -149,9 +150,14 @@ class IPV_Vendor_Upgrade_Endpoints {
             $plan_credits = $plan['credits'];
             $plan_price = $plan['price'];
 
-            // Determine if upgrade or downgrade
-            $is_upgrade = $plan_credits > $current_credits || $plan_price > $current_price;
-            $type = $is_upgrade ? 'upgrade' : 'downgrade';
+            // Per utenti Trial: tutti i piani sono upgrade
+            // Per altri utenti: confronta crediti/prezzo
+            if ( $current_plan_slug === 'trial' ) {
+                $type = 'upgrade'; // Dal Trial si può solo salire
+            } else {
+                $is_upgrade = $plan_credits > $current_credits || $plan_price > $current_price;
+                $type = $is_upgrade ? 'upgrade' : 'downgrade';
+            }
 
             // Calculate price difference (pro-rata for upgrades)
             $price_diff = $plan_price - $current_price;

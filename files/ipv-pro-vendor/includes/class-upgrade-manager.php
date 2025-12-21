@@ -103,12 +103,16 @@ class IPV_Vendor_Upgrade_Manager {
         $current_price = $current_plan ? $current_plan['price'] : 0;
 
         // Get available plans
+        // NOTA: Trial è SOLO un piano di benvenuto - non può mai essere selezionato come downgrade
+        // Gli utenti Trial possono solo fare UPGRADE verso piani a pagamento
         $upgrades = [];
         $downgrades = [];
+        $is_trial_user = ( $license->variant_slug === 'trial' );
 
         foreach ( $all_plans as $slug => $plan ) {
             if ( empty( $plan['is_active'] ) ) continue;
             if ( $slug === $license->variant_slug ) continue;
+            // Trial non è mai un'opzione selezionabile
             if ( $slug === 'trial' ) continue;
             if ( strpos( $slug, 'extra_credits' ) !== false || $slug === 'golden_prompt' ) continue;
 
@@ -118,7 +122,10 @@ class IPV_Vendor_Upgrade_Manager {
             $plan['credits_diff'] = $plan['credits'] - $current_credits;
             $plan['product_id'] = $this->get_product_for_plan( $slug );
 
-            if ( $plan['credits'] > $current_credits || $plan['price'] > $current_price ) {
+            // Utenti Trial: possono solo fare upgrade (non esistono downgrade)
+            if ( $is_trial_user ) {
+                $upgrades[] = $plan;
+            } elseif ( $plan['credits'] > $current_credits || $plan['price'] > $current_price ) {
                 $upgrades[] = $plan;
             } else {
                 $downgrades[] = $plan;
