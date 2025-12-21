@@ -511,6 +511,13 @@ class IPV_Vendor_Upgrade_Manager {
             [ '%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s' ]
         );
 
+        // Refresh license object with new data
+        $license->variant_slug = $target_plan_slug;
+        $license->credits_remaining = $new_credits_remaining;
+
+        // Trigger email notification
+        do_action( 'ipv_plan_downgraded', $license, $old_plan, $target_plan_slug );
+
         wp_send_json_success([
             'message' => 'Piano aggiornato con successo',
             'new_plan' => $target_plan_slug,
