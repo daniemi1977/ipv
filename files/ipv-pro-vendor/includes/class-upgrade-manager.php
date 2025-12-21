@@ -89,6 +89,9 @@ class IPV_Vendor_Upgrade_Manager {
      * Upgrade page content
      */
     public function upgrade_content() {
+        // Load Tailwind CSS CDN
+        wp_enqueue_script( 'tailwindcss', 'https://cdn.tailwindcss.com', [], null );
+
         $license = $this->get_user_license();
 
         if ( ! $license ) {
@@ -140,44 +143,53 @@ class IPV_Vendor_Upgrade_Manager {
         $credits_info = $credits_manager->get_credits_info( $license );
 
         ?>
-        <div class="ipv-upgrade-page">
-            <h2><?php esc_html_e( 'Gestione Piano IPV Pro', 'ipv-pro-vendor' ); ?></h2>
+        <div class="max-w-5xl mx-auto py-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <svg class="w-7 h-7 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+                <?php esc_html_e( 'Gestione Piano IPV Pro', 'ipv-pro-vendor' ); ?>
+            </h2>
 
             <!-- Current Plan -->
-            <div class="ipv-current-plan-section">
-                <h3><?php esc_html_e( 'Il Tuo Piano Attuale', 'ipv-pro-vendor' ); ?></h3>
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4"><?php esc_html_e( 'Il Tuo Piano Attuale', 'ipv-pro-vendor' ); ?></h3>
 
-                <div class="ipv-current-plan-card">
-                    <div class="ipv-plan-badge"><?php esc_html_e( 'Piano Attivo', 'ipv-pro-vendor' ); ?></div>
-
-                    <div class="ipv-plan-header">
-                        <span class="ipv-plan-name"><?php echo esc_html( $current_plan['name'] ?? ucfirst( $license->variant_slug ) ); ?></span>
-                        <span class="ipv-plan-price">
-                            <?php if ( $current_price > 0 ) : ?>
-                                €<?php echo number_format( $current_price, 2, ',', '.' ); ?>
-                                <small>/<?php echo esc_html( $this->get_period_label( $current_plan['price_period'] ?? 'year' ) ); ?></small>
-                            <?php else : ?>
-                                <?php esc_html_e( 'Gratuito', 'ipv-pro-vendor' ); ?>
-                            <?php endif; ?>
-                        </span>
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 text-white relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+                        <?php esc_html_e( 'Piano Attivo', 'ipv-pro-vendor' ); ?>
                     </div>
 
-                    <div class="ipv-plan-stats">
-                        <div class="ipv-stat">
-                            <span class="ipv-stat-value"><?php echo esc_html( $current_credits ); ?></span>
-                            <span class="ipv-stat-label"><?php esc_html_e( 'Crediti/periodo', 'ipv-pro-vendor' ); ?></span>
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                        <div>
+                            <span class="text-3xl font-bold"><?php echo esc_html( $current_plan['name'] ?? ucfirst( $license->variant_slug ) ); ?></span>
+                            <div class="text-white/80 mt-1">
+                                <?php if ( $current_price > 0 ) : ?>
+                                    €<?php echo number_format( $current_price, 2, ',', '.' ); ?>
+                                    <span class="text-sm">/<?php echo esc_html( $this->get_period_label( $current_plan['price_period'] ?? 'year' ) ); ?></span>
+                                <?php else : ?>
+                                    <?php esc_html_e( 'Gratuito', 'ipv-pro-vendor' ); ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                        <div class="ipv-stat">
-                            <span class="ipv-stat-value"><?php echo esc_html( $credits_info['credits_remaining'] ); ?></span>
-                            <span class="ipv-stat-label"><?php esc_html_e( 'Crediti rimasti', 'ipv-pro-vendor' ); ?></span>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <span class="block text-2xl font-bold"><?php echo esc_html( $current_credits ); ?></span>
+                            <span class="text-sm text-white/80"><?php esc_html_e( 'Crediti/periodo', 'ipv-pro-vendor' ); ?></span>
                         </div>
-                        <div class="ipv-stat">
-                            <span class="ipv-stat-value"><?php echo esc_html( $license->activation_count ); ?>/<?php echo esc_html( $license->activation_limit ); ?></span>
-                            <span class="ipv-stat-label"><?php esc_html_e( 'Siti attivi', 'ipv-pro-vendor' ); ?></span>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <span class="block text-2xl font-bold"><?php echo esc_html( $credits_info['credits_remaining'] ); ?></span>
+                            <span class="text-sm text-white/80"><?php esc_html_e( 'Crediti rimasti', 'ipv-pro-vendor' ); ?></span>
                         </div>
-                        <div class="ipv-stat">
-                            <span class="ipv-stat-value"><?php echo esc_html( $credits_info['days_until_reset'] ); ?></span>
-                            <span class="ipv-stat-label"><?php esc_html_e( 'Giorni al reset', 'ipv-pro-vendor' ); ?></span>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <span class="block text-2xl font-bold"><?php echo esc_html( $license->activation_count ); ?>/<?php echo esc_html( $license->activation_limit ); ?></span>
+                            <span class="text-sm text-white/80"><?php esc_html_e( 'Siti attivi', 'ipv-pro-vendor' ); ?></span>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <span class="block text-2xl font-bold"><?php echo esc_html( $credits_info['days_until_reset'] ); ?></span>
+                            <span class="text-sm text-white/80"><?php esc_html_e( 'Giorni al reset', 'ipv-pro-vendor' ); ?></span>
                         </div>
                     </div>
                 </div>
@@ -185,54 +197,67 @@ class IPV_Vendor_Upgrade_Manager {
 
             <!-- Upgrade Options -->
             <?php if ( ! empty( $upgrades ) ) : ?>
-            <div class="ipv-upgrade-section">
-                <h3>
-                    <span class="dashicons dashicons-arrow-up-alt"></span>
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                    </svg>
                     <?php esc_html_e( 'Upgrade - Più Crediti e Funzionalità', 'ipv-pro-vendor' ); ?>
                 </h3>
 
-                <div class="ipv-plans-grid">
+                <div class="grid md:grid-cols-3 gap-6">
                     <?php foreach ( $upgrades as $plan ) : ?>
-                        <div class="ipv-plan-card ipv-upgrade-card">
+                        <div class="bg-white border-2 border-green-500 rounded-xl p-6 relative hover:shadow-lg transition-shadow">
                             <?php if ( $plan['slug'] === 'professional' ) : ?>
-                                <div class="ipv-plan-popular"><?php esc_html_e( 'Popolare', 'ipv-pro-vendor' ); ?></div>
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                    <?php esc_html_e( 'Popolare', 'ipv-pro-vendor' ); ?>
+                                </div>
                             <?php endif; ?>
 
-                            <div class="ipv-plan-header">
-                                <span class="ipv-plan-name"><?php echo esc_html( $plan['name'] ); ?></span>
-                                <span class="ipv-plan-price">
+                            <div class="text-center mb-4">
+                                <h4 class="text-xl font-bold text-gray-800"><?php echo esc_html( $plan['name'] ); ?></h4>
+                                <div class="text-3xl font-bold text-indigo-600 mt-2">
                                     €<?php echo number_format( $plan['price'], 2, ',', '.' ); ?>
-                                    <small>/<?php echo esc_html( $this->get_period_label( $plan['price_period'] ?? 'year' ) ); ?></small>
-                                </span>
+                                    <span class="text-sm font-normal text-gray-500">/<?php echo esc_html( $this->get_period_label( $plan['price_period'] ?? 'year' ) ); ?></span>
+                                </div>
                             </div>
 
-                            <div class="ipv-plan-credits">
-                                <strong><?php echo esc_html( $plan['credits'] ); ?></strong>
-                                <?php esc_html_e( 'crediti/', 'ipv-pro-vendor' ); ?><?php echo esc_html( $this->get_period_label( $plan['credits_period'] ?? 'year' ) ); ?>
-                                <span class="ipv-credits-diff positive">+<?php echo esc_html( $plan['credits_diff'] ); ?></span>
+                            <div class="bg-gray-100 rounded-lg p-3 text-center mb-4">
+                                <span class="text-2xl font-bold text-indigo-600"><?php echo esc_html( $plan['credits'] ); ?></span>
+                                <span class="text-gray-600"><?php esc_html_e( 'crediti/', 'ipv-pro-vendor' ); ?><?php echo esc_html( $this->get_period_label( $plan['credits_period'] ?? 'year' ) ); ?></span>
+                                <span class="inline-block ml-2 bg-green-100 text-green-700 px-2 py-1 rounded text-sm font-semibold">+<?php echo esc_html( $plan['credits_diff'] ); ?></span>
                             </div>
 
-                            <ul class="ipv-plan-features">
-                                <li><span class="dashicons dashicons-yes"></span> <?php echo esc_html( $plan['activations'] ); ?> <?php esc_html_e( 'siti attivabili', 'ipv-pro-vendor' ); ?></li>
+                            <ul class="space-y-2 mb-6 text-sm text-gray-600">
+                                <li class="flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    <?php echo esc_html( $plan['activations'] ); ?> <?php esc_html_e( 'siti attivabili', 'ipv-pro-vendor' ); ?>
+                                </li>
                                 <?php if ( ! empty( $plan['features']['priority_support'] ) ) : ?>
-                                    <li><span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Supporto prioritario', 'ipv-pro-vendor' ); ?></li>
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        <?php esc_html_e( 'Supporto prioritario', 'ipv-pro-vendor' ); ?>
+                                    </li>
                                 <?php endif; ?>
                                 <?php if ( ! empty( $plan['features']['api_access'] ) ) : ?>
-                                    <li><span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Accesso API', 'ipv-pro-vendor' ); ?></li>
+                                    <li class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        <?php esc_html_e( 'Accesso API', 'ipv-pro-vendor' ); ?>
+                                    </li>
                                 <?php endif; ?>
                             </ul>
 
-                            <div class="ipv-plan-action">
+                            <div>
                                 <?php if ( $plan['product_id'] ) : ?>
                                     <a href="<?php echo esc_url( add_query_arg([
                                         'add-to-cart' => $plan['product_id'],
                                         'ipv_upgrade_license' => $license->license_key
-                                    ], wc_get_checkout_url()) ); ?>" class="button button-primary ipv-upgrade-btn">
+                                    ], wc_get_checkout_url()) ); ?>" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
                                         <?php esc_html_e( 'Upgrade a', 'ipv-pro-vendor' ); ?> <?php echo esc_html( $plan['name'] ); ?>
-                                        <span class="ipv-price-diff">+€<?php echo number_format( $plan['price_diff'], 2, ',', '.' ); ?></span>
+                                        <span class="block text-sm font-normal opacity-90">+€<?php echo number_format( $plan['price_diff'], 2, ',', '.' ); ?></span>
                                     </a>
                                 <?php else : ?>
-                                    <a href="<?php echo esc_url( home_url( '/ipv-pro/#pricing' ) ); ?>" class="button button-primary">
+                                    <a href="<?php echo esc_url( home_url( '/ipv-pro/#pricing' ) ); ?>" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors">
                                         <?php esc_html_e( 'Vedi Offerta', 'ipv-pro-vendor' ); ?>
                                     </a>
                                 <?php endif; ?>
@@ -245,41 +270,45 @@ class IPV_Vendor_Upgrade_Manager {
 
             <!-- Downgrade Options -->
             <?php if ( ! empty( $downgrades ) ) : ?>
-            <div class="ipv-downgrade-section">
-                <h3>
-                    <span class="dashicons dashicons-arrow-down-alt"></span>
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                    </svg>
                     <?php esc_html_e( 'Downgrade - Riduci Piano', 'ipv-pro-vendor' ); ?>
                 </h3>
 
-                <div class="ipv-downgrade-notice">
-                    <span class="dashicons dashicons-warning"></span>
-                    <?php esc_html_e( 'Il downgrade ridurrà i tuoi crediti mensili. I crediti rimanenti verranno adeguati al nuovo piano.', 'ipv-pro-vendor' ); ?>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 flex items-center gap-3 text-yellow-800">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <span><?php esc_html_e( 'Il downgrade ridurrà i tuoi crediti mensili. I crediti rimanenti verranno adeguati al nuovo piano.', 'ipv-pro-vendor' ); ?></span>
                 </div>
 
-                <div class="ipv-plans-grid ipv-downgrade-grid">
+                <div class="grid md:grid-cols-3 gap-6">
                     <?php foreach ( $downgrades as $plan ) : ?>
-                        <div class="ipv-plan-card ipv-downgrade-card">
-                            <div class="ipv-plan-header">
-                                <span class="ipv-plan-name"><?php echo esc_html( $plan['name'] ); ?></span>
-                                <span class="ipv-plan-price">
+                        <div class="bg-gray-50 border-2 border-yellow-400 rounded-xl p-6 hover:shadow-lg transition-shadow">
+                            <div class="text-center mb-4">
+                                <h4 class="text-xl font-bold text-gray-800"><?php echo esc_html( $plan['name'] ); ?></h4>
+                                <div class="text-2xl font-bold text-gray-600 mt-2">
                                     <?php if ( $plan['price'] > 0 ) : ?>
                                         €<?php echo number_format( $plan['price'], 2, ',', '.' ); ?>
-                                        <small>/<?php echo esc_html( $this->get_period_label( $plan['price_period'] ?? 'year' ) ); ?></small>
+                                        <span class="text-sm font-normal text-gray-500">/<?php echo esc_html( $this->get_period_label( $plan['price_period'] ?? 'year' ) ); ?></span>
                                     <?php else : ?>
                                         <?php esc_html_e( 'Gratuito', 'ipv-pro-vendor' ); ?>
                                     <?php endif; ?>
-                                </span>
+                                </div>
                             </div>
 
-                            <div class="ipv-plan-credits">
-                                <strong><?php echo esc_html( $plan['credits'] ); ?></strong>
-                                <?php esc_html_e( 'crediti/', 'ipv-pro-vendor' ); ?><?php echo esc_html( $this->get_period_label( $plan['credits_period'] ?? 'year' ) ); ?>
-                                <span class="ipv-credits-diff negative"><?php echo esc_html( $plan['credits_diff'] ); ?></span>
+                            <div class="bg-white rounded-lg p-3 text-center mb-4">
+                                <span class="text-2xl font-bold text-gray-700"><?php echo esc_html( $plan['credits'] ); ?></span>
+                                <span class="text-gray-600"><?php esc_html_e( 'crediti/', 'ipv-pro-vendor' ); ?><?php echo esc_html( $this->get_period_label( $plan['credits_period'] ?? 'year' ) ); ?></span>
+                                <span class="inline-block ml-2 bg-red-100 text-red-700 px-2 py-1 rounded text-sm font-semibold"><?php echo esc_html( $plan['credits_diff'] ); ?></span>
                             </div>
 
-                            <div class="ipv-plan-action">
+                            <div>
                                 <button type="button"
-                                        class="button ipv-downgrade-btn"
+                                        class="w-full text-center bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors ipv-downgrade-btn"
                                         data-plan="<?php echo esc_attr( $plan['slug'] ); ?>"
                                         data-name="<?php echo esc_attr( $plan['name'] ); ?>"
                                         data-credits="<?php echo esc_attr( $plan['credits'] ); ?>">
@@ -293,25 +322,35 @@ class IPV_Vendor_Upgrade_Manager {
             <?php endif; ?>
 
             <!-- Extra Credits CTA -->
-            <div class="ipv-extra-credits-cta">
-                <h3><?php esc_html_e( 'Hai bisogno di crediti extra senza cambiare piano?', 'ipv-pro-vendor' ); ?></h3>
-                <p><?php esc_html_e( 'Acquista pacchetti di crediti aggiuntivi che non scadono mai.', 'ipv-pro-vendor' ); ?></p>
-                <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-wallet' ) ); ?>" class="button">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 text-center">
+                <h3 class="text-xl font-bold text-gray-800 mb-2"><?php esc_html_e( 'Hai bisogno di crediti extra senza cambiare piano?', 'ipv-pro-vendor' ); ?></h3>
+                <p class="text-gray-600 mb-4"><?php esc_html_e( 'Acquista pacchetti di crediti aggiuntivi che non scadono mai.', 'ipv-pro-vendor' ); ?></p>
+                <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-wallet' ) ); ?>" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
                     <?php esc_html_e( 'Vai al Portafoglio Crediti', 'ipv-pro-vendor' ); ?>
                 </a>
             </div>
         </div>
 
         <!-- Downgrade Confirmation Modal -->
-        <div id="ipv-downgrade-modal" class="ipv-modal" style="display: none;">
-            <div class="ipv-modal-content">
-                <span class="ipv-modal-close">&times;</span>
-                <h3><?php esc_html_e( 'Conferma Downgrade', 'ipv-pro-vendor' ); ?></h3>
-                <p id="ipv-downgrade-message"></p>
-                <div class="ipv-modal-preview" id="ipv-downgrade-preview"></div>
-                <div class="ipv-modal-actions">
-                    <button type="button" class="button ipv-modal-cancel"><?php esc_html_e( 'Annulla', 'ipv-pro-vendor' ); ?></button>
-                    <button type="button" class="button button-primary ipv-confirm-downgrade"><?php esc_html_e( 'Conferma Downgrade', 'ipv-pro-vendor' ); ?></button>
+        <div id="ipv-downgrade-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" style="display: none;">
+            <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800"><?php esc_html_e( 'Conferma Downgrade', 'ipv-pro-vendor' ); ?></h3>
+                    <button type="button" class="ipv-modal-close text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <p id="ipv-downgrade-message" class="text-gray-600 mb-6"></p>
+                <div id="ipv-downgrade-preview" class="mb-6"></div>
+                <div class="flex gap-3">
+                    <button type="button" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors ipv-modal-cancel">
+                        <?php esc_html_e( 'Annulla', 'ipv-pro-vendor' ); ?>
+                    </button>
+                    <button type="button" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors ipv-confirm-downgrade">
+                        <?php esc_html_e( 'Conferma Downgrade', 'ipv-pro-vendor' ); ?>
+                    </button>
                 </div>
             </div>
         </div>
@@ -379,13 +418,20 @@ class IPV_Vendor_Upgrade_Manager {
      * Render no license message
      */
     private function render_no_license() {
+        // Load Tailwind CSS CDN
+        wp_enqueue_script( 'tailwindcss', 'https://cdn.tailwindcss.com', [], null );
         ?>
-        <div class="ipv-no-license">
-            <h2><?php esc_html_e( 'Nessuna Licenza Attiva', 'ipv-pro-vendor' ); ?></h2>
-            <p><?php esc_html_e( 'Non hai ancora una licenza IPV Pro attiva. Acquista una licenza per iniziare.', 'ipv-pro-vendor' ); ?></p>
-            <a href="<?php echo esc_url( home_url( '/ipv-pro/' ) ); ?>" class="button button-primary">
-                <?php esc_html_e( 'Acquista Licenza', 'ipv-pro-vendor' ); ?>
-            </a>
+        <div class="max-w-2xl mx-auto py-12 text-center">
+            <div class="bg-white border-2 border-yellow-400 rounded-xl p-8">
+                <svg class="w-16 h-16 mx-auto text-yellow-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3"><?php esc_html_e( 'Nessuna Licenza Attiva', 'ipv-pro-vendor' ); ?></h2>
+                <p class="text-gray-600 mb-6"><?php esc_html_e( 'Non hai ancora una licenza IPV Pro attiva. Acquista una licenza per iniziare.', 'ipv-pro-vendor' ); ?></p>
+                <a href="<?php echo esc_url( home_url( '/ipv-pro/' ) ); ?>" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors">
+                    <?php esc_html_e( 'Acquista Licenza', 'ipv-pro-vendor' ); ?>
+                </a>
+            </div>
         </div>
         <?php
     }

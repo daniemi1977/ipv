@@ -3,9 +3,9 @@
  * IPV Customer Portal
  *
  * Gestisce integrazione My Account WooCommerce per clienti IPV Pro
+ * Versione con Tailwind CSS
  *
- * v1.1.0 - Aggiunto sistema Wallet/Portafoglio crediti
- * v1.0.5 - Fix ricerca licenze anche per email
+ * @version 2.0.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
@@ -22,115 +22,68 @@ class IPV_Vendor_Customer_Portal {
     }
 
     public function __construct() {
-        // Add custom endpoint
         add_action( 'init', [ $this, 'add_endpoints' ] );
-
-        // Add menu items
         add_filter( 'woocommerce_account_menu_items', [ $this, 'add_menu_items' ] );
-
-        // Add content for endpoints
         add_action( 'woocommerce_account_ipv-licenses_endpoint', [ $this, 'licenses_content' ] );
         add_action( 'woocommerce_account_ipv-wallet_endpoint', [ $this, 'wallet_content' ] );
-
-        // Dashboard widget
         add_action( 'woocommerce_account_dashboard', [ $this, 'dashboard_widget' ] );
-
-        // Enqueue styles
-        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_styles' ] );
-
-        // Claim license AJAX
+        add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
         add_action( 'wp_ajax_ipv_claim_license', [ $this, 'ajax_claim_license' ] );
-
-        // Flush rewrite rules on activation
         register_activation_hook( IPV_VENDOR_FILE, [ $this, 'flush_rewrite_rules' ] );
     }
 
-    /**
-     * Add custom endpoints
-     */
     public function add_endpoints() {
         add_rewrite_endpoint( 'ipv-licenses', EP_ROOT | EP_PAGES );
         add_rewrite_endpoint( 'ipv-wallet', EP_ROOT | EP_PAGES );
     }
 
-    /**
-     * Flush rewrite rules
-     */
     public function flush_rewrite_rules() {
         $this->add_endpoints();
         flush_rewrite_rules();
     }
 
-    /**
-     * Add menu items to My Account
-     */
     public function add_menu_items( $items ) {
         $new_items = [];
-
         foreach ( $items as $key => $value ) {
             $new_items[ $key ] = $value;
-
-            // Add after dashboard
             if ( $key === 'dashboard' ) {
                 $new_items['ipv-licenses'] = __( 'Licenze IPV Pro', 'ipv-pro-vendor' );
                 $new_items['ipv-wallet'] = __( 'Portafoglio Crediti', 'ipv-pro-vendor' );
             }
         }
-
         return $new_items;
     }
 
-    /**
-     * Get licenses for current user
-     * v1.0.5 - Cerca anche per email se non trova per user_id
-     */
     private function get_user_licenses( $user_id = null ) {
         global $wpdb;
-
-        if ( ! $user_id ) {
-            $user_id = get_current_user_id();
-        }
-
-        if ( ! $user_id ) {
-            return [];
-        }
+        if ( ! $user_id ) $user_id = get_current_user_id();
+        if ( ! $user_id ) return [];
 
         $user = get_userdata( $user_id );
         $user_email = $user ? $user->user_email : '';
 
-        // Cerca licenze per user_id O per email
         $licenses = $wpdb->get_results( $wpdb->prepare(
             "SELECT * FROM {$wpdb->prefix}ipv_licenses
-            WHERE user_id = %d
-            OR (user_id = 0 AND email = %s)
+            WHERE user_id = %d OR (user_id = 0 AND email = %s)
             ORDER BY created_at DESC",
-            $user_id,
-            $user_email
+            $user_id, $user_email
         ) );
 
-        // Auto-associa licenze trovate per email all'user_id
         foreach ( $licenses as $license ) {
             if ( $license->user_id == 0 && $license->email === $user_email ) {
                 $wpdb->update(
                     $wpdb->prefix . 'ipv_licenses',
                     [ 'user_id' => $user_id ],
-                    [ 'id' => $license->id ],
-                    [ '%d' ],
-                    [ '%d' ]
+                    [ 'id' => $license->id ]
                 );
-                $license->user_id = $user_id;
             }
         }
 
         return $licenses;
     }
 
-    /**
-     * Get total wallet balance for user
-     */
     private function get_wallet_balance( $user_id = null ) {
         $licenses = $this->get_user_licenses( $user_id );
-
         $total_credits = 0;
         $total_remaining = 0;
 
@@ -149,46 +102,27 @@ class IPV_Vendor_Customer_Portal {
         ];
     }
 
-    /**
-     * Get credit ledger for user
-     */
     private function get_credit_ledger( $user_id = null, $limit = 50 ) {
         global $wpdb;
-
         $licenses = $this->get_user_licenses( $user_id );
-
-        if ( empty( $licenses ) ) {
-            return [];
-        }
+        if ( empty( $licenses ) ) return [];
 
         $license_keys = array_column( $licenses, 'license_key' );
         $placeholders = implode( ',', array_fill( 0, count( $license_keys ), '%s' ) );
 
-        $ledger = $wpdb->get_results( $wpdb->prepare(
+        return $wpdb->get_results( $wpdb->prepare(
             "SELECT * FROM {$wpdb->prefix}ipv_credit_ledger
             WHERE license_key IN ($placeholders)
-            ORDER BY created_at DESC
-            LIMIT %d",
+            ORDER BY created_at DESC LIMIT %d",
             array_merge( $license_keys, [ $limit ] )
         ) );
-
-        return $ledger;
     }
 
-    /**
-     * Enqueue styles
-     */
-    public function enqueue_styles() {
-        if ( ! is_account_page() ) {
-            return;
-        }
+    public function enqueue_scripts() {
+        if ( ! is_account_page() ) return;
 
-        wp_enqueue_style(
-            'ipv-customer-portal',
-            IPV_VENDOR_URL . 'assets/css/customer-portal.css',
-            [],
-            IPV_VENDOR_VERSION
-        );
+        // Tailwind CDN
+        wp_enqueue_script( 'tailwindcss', 'https://cdn.tailwindcss.com', [], null );
 
         wp_enqueue_script(
             'ipv-customer-portal',
@@ -201,11 +135,6 @@ class IPV_Vendor_Customer_Portal {
         wp_localize_script( 'ipv-customer-portal', 'ipv_portal', [
             'ajax_url' => admin_url( 'admin-ajax.php' ),
             'nonce' => wp_create_nonce( 'ipv_portal_nonce' ),
-            'i18n' => [
-                'claiming' => __( 'Associazione in corso...', 'ipv-pro-vendor' ),
-                'claimed' => __( 'Licenza associata!', 'ipv-pro-vendor' ),
-                'error' => __( 'Errore durante l\'associazione', 'ipv-pro-vendor' ),
-            ]
         ] );
     }
 
@@ -219,21 +148,27 @@ class IPV_Vendor_Customer_Portal {
 
         if ( empty( $licenses ) ) {
             ?>
-            <div class="ipv-dashboard-widget ipv-no-license">
-                <h3><span class="dashicons dashicons-admin-network"></span> IPV Production System</h3>
-                <p><?php esc_html_e( 'Non hai ancora una licenza IPV Pro.', 'ipv-pro-vendor' ); ?></p>
-                <a href="<?php echo esc_url( home_url( '/ipv-pro/' ) ); ?>" class="button">
+            <div class="bg-gray-100 rounded-xl p-6 mb-6">
+                <h3 class="text-lg font-bold text-indigo-600 mb-3 flex items-center gap-2">
+                    <span>🎬</span> IPV Production System
+                </h3>
+                <p class="text-gray-600 mb-4"><?php esc_html_e( 'Non hai ancora una licenza IPV Pro.', 'ipv-pro-vendor' ); ?></p>
+                <a href="<?php echo esc_url( home_url( '/ipv-pro/' ) ); ?>"
+                   class="inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                     <?php esc_html_e( 'Acquista Ora', 'ipv-pro-vendor' ); ?>
                 </a>
 
-                <!-- Claim License Form -->
-                <div class="ipv-claim-license-form" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
-                    <p><strong><?php esc_html_e( 'Hai già una licenza?', 'ipv-pro-vendor' ); ?></strong></p>
-                    <form id="ipv-claim-license-form">
-                        <input type="text" name="license_key" placeholder="<?php esc_attr_e( 'Inserisci la tua license key', 'ipv-pro-vendor' ); ?>" required />
-                        <button type="submit" class="button"><?php esc_html_e( 'Associa Licenza', 'ipv-pro-vendor' ); ?></button>
+                <div class="mt-6 pt-4 border-t border-gray-300">
+                    <p class="font-semibold mb-2"><?php esc_html_e( 'Hai già una licenza?', 'ipv-pro-vendor' ); ?></p>
+                    <form id="ipv-claim-license-form" class="flex gap-2">
+                        <input type="text" name="license_key"
+                               placeholder="<?php esc_attr_e( 'Inserisci license key', 'ipv-pro-vendor' ); ?>"
+                               class="flex-1 px-3 py-2 border rounded-lg" required />
+                        <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900">
+                            <?php esc_html_e( 'Associa', 'ipv-pro-vendor' ); ?>
+                        </button>
                     </form>
-                    <p class="ipv-claim-result"></p>
+                    <p class="ipv-claim-result mt-2 text-sm"></p>
                 </div>
             </div>
             <?php
@@ -241,25 +176,29 @@ class IPV_Vendor_Customer_Portal {
         }
 
         ?>
-        <div class="ipv-dashboard-widget">
-            <h3><span class="dashicons dashicons-admin-network"></span> IPV Production System</h3>
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-6 mb-6 text-white">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <span>🎬</span> IPV Production System
+            </h3>
 
-            <div class="ipv-stats-grid">
-                <div class="ipv-stat">
-                    <span class="ipv-stat-value"><?php echo count( $active_licenses ); ?></span>
-                    <span class="ipv-stat-label"><?php esc_html_e( 'Licenze Attive', 'ipv-pro-vendor' ); ?></span>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-white/20 rounded-lg p-4 text-center">
+                    <span class="block text-3xl font-bold"><?php echo count( $active_licenses ); ?></span>
+                    <span class="text-sm opacity-90"><?php esc_html_e( 'Licenze Attive', 'ipv-pro-vendor' ); ?></span>
                 </div>
-                <div class="ipv-stat">
-                    <span class="ipv-stat-value"><?php echo esc_html( $wallet['credits_remaining'] ); ?></span>
-                    <span class="ipv-stat-label"><?php esc_html_e( 'Crediti Disponibili', 'ipv-pro-vendor' ); ?></span>
+                <div class="bg-white/20 rounded-lg p-4 text-center">
+                    <span class="block text-3xl font-bold"><?php echo esc_html( $wallet['credits_remaining'] ); ?></span>
+                    <span class="text-sm opacity-90"><?php esc_html_e( 'Crediti Disponibili', 'ipv-pro-vendor' ); ?></span>
                 </div>
             </div>
 
-            <div class="ipv-widget-actions">
-                <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-licenses' ) ); ?>" class="button">
+            <div class="flex gap-3">
+                <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-licenses' ) ); ?>"
+                   class="flex-1 text-center px-4 py-2 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100">
                     <?php esc_html_e( 'Gestisci Licenze', 'ipv-pro-vendor' ); ?>
                 </a>
-                <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-wallet' ) ); ?>" class="button">
+                <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-wallet' ) ); ?>"
+                   class="flex-1 text-center px-4 py-2 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100">
                     <?php esc_html_e( 'Portafoglio', 'ipv-pro-vendor' ); ?>
                 </a>
             </div>
@@ -273,129 +212,159 @@ class IPV_Vendor_Customer_Portal {
     public function licenses_content() {
         $licenses = $this->get_user_licenses();
         ?>
-        <div class="ipv-licenses-page">
-            <h2><?php esc_html_e( 'Le Tue Licenze IPV Pro', 'ipv-pro-vendor' ); ?></h2>
+        <div class="max-w-4xl">
+            <h2 class="text-2xl font-bold mb-6"><?php esc_html_e( 'Le Tue Licenze IPV Pro', 'ipv-pro-vendor' ); ?></h2>
 
             <?php if ( empty( $licenses ) ) : ?>
-                <div class="ipv-no-licenses">
-                    <p><?php esc_html_e( 'Non hai ancora licenze IPV Pro associate al tuo account.', 'ipv-pro-vendor' ); ?></p>
+                <div class="bg-gray-100 rounded-xl p-8 text-center">
+                    <p class="text-gray-600 mb-6"><?php esc_html_e( 'Non hai ancora licenze IPV Pro.', 'ipv-pro-vendor' ); ?></p>
 
-                    <!-- Claim License Form -->
-                    <div class="ipv-claim-license-section">
-                        <h3><?php esc_html_e( 'Hai già una licenza?', 'ipv-pro-vendor' ); ?></h3>
-                        <p><?php esc_html_e( 'Se hai acquistato una licenza con un\'altra email, puoi associarla qui.', 'ipv-pro-vendor' ); ?></p>
-                        <form id="ipv-claim-license-form" class="ipv-claim-form">
-                            <input type="text" name="license_key" placeholder="<?php esc_attr_e( 'Inserisci la tua license key', 'ipv-pro-vendor' ); ?>" required />
-                            <button type="submit" class="button button-primary"><?php esc_html_e( 'Associa Licenza', 'ipv-pro-vendor' ); ?></button>
+                    <div class="bg-white rounded-lg p-6 max-w-md mx-auto">
+                        <h3 class="font-semibold mb-3"><?php esc_html_e( 'Hai già una licenza?', 'ipv-pro-vendor' ); ?></h3>
+                        <form id="ipv-claim-license-form">
+                            <input type="text" name="license_key"
+                                   placeholder="<?php esc_attr_e( 'Inserisci license key', 'ipv-pro-vendor' ); ?>"
+                                   class="w-full px-4 py-3 border rounded-lg mb-3" required />
+                            <button type="submit" class="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700">
+                                <?php esc_html_e( 'Associa Licenza', 'ipv-pro-vendor' ); ?>
+                            </button>
                         </form>
-                        <p class="ipv-claim-result"></p>
+                        <p class="ipv-claim-result mt-3 text-sm"></p>
                     </div>
 
-                    <p style="margin-top: 30px;">
-                        <a href="<?php echo esc_url( home_url( '/ipv-pro/' ) ); ?>" class="button button-primary">
-                            <?php esc_html_e( 'Acquista una Licenza', 'ipv-pro-vendor' ); ?>
-                        </a>
-                    </p>
+                    <a href="<?php echo esc_url( home_url( '/ipv-pro/' ) ); ?>"
+                       class="inline-block mt-6 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700">
+                        <?php esc_html_e( 'Acquista una Licenza', 'ipv-pro-vendor' ); ?>
+                    </a>
                 </div>
             <?php else : ?>
 
                 <?php foreach ( $licenses as $license ) :
-                    $credits_manager = IPV_Vendor_Credits_Manager::instance();
-                    $credits_info = $credits_manager->get_credits_info( $license );
+                    $credits_manager = class_exists( 'IPV_Vendor_Credits_Manager' ) ? IPV_Vendor_Credits_Manager::instance() : null;
+                    $credits_info = $credits_manager ? $credits_manager->get_credits_info( $license ) : [
+                        'credits_remaining' => $license->credits_remaining,
+                        'credits_total' => $license->credits_total,
+                        'percentage' => $license->credits_total > 0 ? round( ( $license->credits_remaining / $license->credits_total ) * 100 ) : 0,
+                        'status' => 'ok',
+                        'reset_date_formatted' => '-',
+                        'days_until_reset' => 0
+                    ];
 
-                    // Get activations
                     global $wpdb;
                     $activations = $wpdb->get_results( $wpdb->prepare(
                         "SELECT * FROM {$wpdb->prefix}ipv_activations
-                        WHERE license_id = %d AND is_active = 1
-                        ORDER BY activated_at DESC",
+                        WHERE license_id = %d AND is_active = 1",
                         $license->id
                     ) );
+
+                    $status_colors = [
+                        'active' => 'border-green-500 bg-green-50',
+                        'expired' => 'border-red-500 bg-red-50',
+                        'cancelled' => 'border-gray-400 bg-gray-50'
+                    ];
+                    $status_class = $status_colors[ $license->status ] ?? 'border-gray-400';
                     ?>
 
-                    <div class="ipv-license-card ipv-status-<?php echo esc_attr( $license->status ); ?>">
-                        <div class="ipv-license-header">
-                            <div class="ipv-license-info">
-                                <span class="ipv-license-variant"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $license->variant_slug ) ) ); ?></span>
-                                <span class="ipv-license-status ipv-status-<?php echo esc_attr( $license->status ); ?>">
+                    <div class="border-l-4 <?php echo $status_class; ?> rounded-xl shadow-md mb-6 overflow-hidden">
+                        <!-- Header -->
+                        <div class="bg-gray-100 px-6 py-4 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-lg"><?php echo esc_html( ucfirst( str_replace( '_', ' ', $license->variant_slug ) ) ); ?></span>
+                                <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                    <?php echo $license->status === 'active' ? 'bg-green-200 text-green-800' : 'bg-gray-200 text-gray-600'; ?>">
                                     <?php echo esc_html( ucfirst( $license->status ) ); ?>
                                 </span>
                             </div>
-                            <div class="ipv-license-key">
-                                <code><?php echo esc_html( substr( $license->license_key, 0, 8 ) . '...' . substr( $license->license_key, -4 ) ); ?></code>
-                                <button class="ipv-copy-key" data-key="<?php echo esc_attr( $license->license_key ); ?>" title="<?php esc_attr_e( 'Copia', 'ipv-pro-vendor' ); ?>">
-                                    <span class="dashicons dashicons-clipboard"></span>
+                            <div class="flex items-center gap-2">
+                                <code class="bg-white px-3 py-1 rounded text-sm">
+                                    <?php echo esc_html( substr( $license->license_key, 0, 8 ) . '...' . substr( $license->license_key, -4 ) ); ?>
+                                </code>
+                                <button class="ipv-copy-key p-2 hover:bg-gray-200 rounded" data-key="<?php echo esc_attr( $license->license_key ); ?>" title="Copia">
+                                    📋
                                 </button>
                             </div>
                         </div>
 
-                        <div class="ipv-license-body">
-                            <!-- Credits Section -->
-                            <div class="ipv-credits-section">
-                                <h4><?php esc_html_e( 'Crediti Mensili', 'ipv-pro-vendor' ); ?></h4>
-                                <div class="ipv-credits-bar">
-                                    <div class="ipv-credits-progress ipv-credits-<?php echo esc_attr( $credits_info['status'] ); ?>"
-                                         style="width: <?php echo esc_attr( $credits_info['percentage'] ); ?>%">
-                                    </div>
-                                </div>
-                                <div class="ipv-credits-stats">
-                                    <span class="ipv-credits-remaining">
-                                        <strong><?php echo esc_html( $credits_info['credits_remaining'] ); ?></strong> / <?php echo esc_html( $credits_info['credits_total'] ); ?> <?php esc_html_e( 'crediti', 'ipv-pro-vendor' ); ?>
-                                    </span>
-                                    <span class="ipv-credits-reset">
-                                        <?php esc_html_e( 'Reset:', 'ipv-pro-vendor' ); ?> <?php echo esc_html( $credits_info['reset_date_formatted'] ); ?>
-                                        (<?php echo esc_html( $credits_info['days_until_reset'] ); ?> <?php esc_html_e( 'giorni', 'ipv-pro-vendor' ); ?>)
+                        <div class="p-6">
+                            <!-- Credits -->
+                            <div class="mb-6">
+                                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                    <span><?php esc_html_e( 'Crediti Mensili', 'ipv-pro-vendor' ); ?></span>
+                                    <span>
+                                        <strong class="text-gray-900"><?php echo esc_html( $credits_info['credits_remaining'] ); ?></strong>
+                                        / <?php echo esc_html( $credits_info['credits_total'] ); ?>
                                     </span>
                                 </div>
+                                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                                    <?php
+                                    $bar_color = match( $credits_info['status'] ?? 'ok' ) {
+                                        'ok' => 'bg-green-500',
+                                        'low' => 'bg-yellow-500',
+                                        'critical' => 'bg-orange-500',
+                                        'depleted' => 'bg-red-500',
+                                        default => 'bg-green-500'
+                                    };
+                                    ?>
+                                    <div class="h-full <?php echo $bar_color; ?> transition-all"
+                                         style="width: <?php echo esc_attr( $credits_info['percentage'] ); ?>%"></div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    <?php esc_html_e( 'Reset:', 'ipv-pro-vendor' ); ?>
+                                    <?php echo esc_html( $credits_info['reset_date_formatted'] ); ?>
+                                    (<?php echo esc_html( $credits_info['days_until_reset'] ); ?> <?php esc_html_e( 'giorni', 'ipv-pro-vendor' ); ?>)
+                                </p>
                             </div>
 
-                            <!-- Activations Section -->
-                            <div class="ipv-activations-section">
-                                <h4>
-                                    <?php esc_html_e( 'Siti Attivati', 'ipv-pro-vendor' ); ?>
-                                    <span class="ipv-activation-count">
+                            <!-- Activations -->
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-semibold text-sm"><?php esc_html_e( 'Siti Attivati', 'ipv-pro-vendor' ); ?></span>
+                                    <span class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
                                         <?php echo esc_html( $license->activation_count ); ?> / <?php echo esc_html( $license->activation_limit ); ?>
                                     </span>
-                                </h4>
+                                </div>
 
                                 <?php if ( ! empty( $activations ) ) : ?>
-                                    <ul class="ipv-activations-list">
+                                    <ul class="space-y-2">
                                         <?php foreach ( $activations as $activation ) : ?>
-                                            <li>
-                                                <span class="ipv-site-url"><?php echo esc_html( $activation->site_url ); ?></span>
-                                                <span class="ipv-site-date"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $activation->activated_at ) ) ); ?></span>
+                                            <li class="flex justify-between bg-gray-50 px-3 py-2 rounded text-sm">
+                                                <span class="text-indigo-600"><?php echo esc_html( $activation->site_url ); ?></span>
+                                                <span class="text-gray-400"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $activation->activated_at ) ) ); ?></span>
                                             </li>
                                         <?php endforeach; ?>
                                     </ul>
                                 <?php else : ?>
-                                    <p class="ipv-no-activations"><?php esc_html_e( 'Nessun sito ancora attivato.', 'ipv-pro-vendor' ); ?></p>
+                                    <p class="text-gray-500 text-sm italic"><?php esc_html_e( 'Nessun sito ancora attivato.', 'ipv-pro-vendor' ); ?></p>
                                 <?php endif; ?>
                             </div>
 
-                            <!-- License Details -->
-                            <div class="ipv-license-details">
-                                <div class="ipv-detail">
-                                    <span class="ipv-detail-label"><?php esc_html_e( 'Email:', 'ipv-pro-vendor' ); ?></span>
-                                    <span class="ipv-detail-value"><?php echo esc_html( $license->email ); ?></span>
+                            <!-- Details -->
+                            <div class="grid grid-cols-3 gap-4 text-sm border-t pt-4">
+                                <div>
+                                    <span class="text-gray-500 block"><?php esc_html_e( 'Email:', 'ipv-pro-vendor' ); ?></span>
+                                    <span class="font-medium"><?php echo esc_html( $license->email ); ?></span>
                                 </div>
-                                <div class="ipv-detail">
-                                    <span class="ipv-detail-label"><?php esc_html_e( 'Creata:', 'ipv-pro-vendor' ); ?></span>
-                                    <span class="ipv-detail-value"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $license->created_at ) ) ); ?></span>
+                                <div>
+                                    <span class="text-gray-500 block"><?php esc_html_e( 'Creata:', 'ipv-pro-vendor' ); ?></span>
+                                    <span class="font-medium"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $license->created_at ) ) ); ?></span>
                                 </div>
                                 <?php if ( $license->expires_at ) : ?>
-                                    <div class="ipv-detail">
-                                        <span class="ipv-detail-label"><?php esc_html_e( 'Scadenza:', 'ipv-pro-vendor' ); ?></span>
-                                        <span class="ipv-detail-value"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $license->expires_at ) ) ); ?></span>
+                                    <div>
+                                        <span class="text-gray-500 block"><?php esc_html_e( 'Scadenza:', 'ipv-pro-vendor' ); ?></span>
+                                        <span class="font-medium"><?php echo esc_html( date_i18n( 'd/m/Y', strtotime( $license->expires_at ) ) ); ?></span>
                                     </div>
                                 <?php endif; ?>
                             </div>
                         </div>
 
-                        <div class="ipv-license-footer">
-                            <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-wallet' ) ); ?>" class="button">
+                        <!-- Footer -->
+                        <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t">
+                            <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'ipv-wallet' ) ); ?>"
+                               class="px-4 py-2 border rounded-lg hover:bg-gray-100">
                                 <?php esc_html_e( 'Storico Crediti', 'ipv-pro-vendor' ); ?>
                             </a>
-                            <a href="<?php echo esc_url( home_url( '/ipv-pro/#downloads' ) ); ?>" class="button button-primary">
+                            <a href="<?php echo esc_url( home_url( '/ipv-pro/#downloads' ) ); ?>"
+                               class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                                 <?php esc_html_e( 'Download Plugin', 'ipv-pro-vendor' ); ?>
                             </a>
                         </div>
@@ -403,11 +372,12 @@ class IPV_Vendor_Customer_Portal {
 
                 <?php endforeach; ?>
 
-                <!-- Buy More Credits -->
-                <div class="ipv-buy-more">
-                    <h3><?php esc_html_e( 'Hai bisogno di più crediti?', 'ipv-pro-vendor' ); ?></h3>
-                    <p><?php esc_html_e( 'Acquista crediti extra o fai upgrade del tuo piano per aumentare i crediti mensili.', 'ipv-pro-vendor' ); ?></p>
-                    <a href="<?php echo esc_url( home_url( '/ipv-pro/#pricing' ) ); ?>" class="button button-primary">
+                <!-- Buy More -->
+                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white text-center">
+                    <h3 class="text-xl font-bold mb-2"><?php esc_html_e( 'Hai bisogno di più crediti?', 'ipv-pro-vendor' ); ?></h3>
+                    <p class="opacity-90 mb-4"><?php esc_html_e( 'Acquista crediti extra o fai upgrade del tuo piano.', 'ipv-pro-vendor' ); ?></p>
+                    <a href="<?php echo esc_url( home_url( '/ipv-pro/#pricing' ) ); ?>"
+                       class="inline-block px-6 py-3 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100">
                         <?php esc_html_e( 'Acquista Crediti', 'ipv-pro-vendor' ); ?>
                     </a>
                 </div>
@@ -427,59 +397,49 @@ class IPV_Vendor_Customer_Portal {
         $active_licenses = array_filter( $licenses, fn( $l ) => $l->status === 'active' );
 
         ?>
-        <div class="ipv-wallet-page">
-            <h2><?php esc_html_e( 'Portafoglio Crediti', 'ipv-pro-vendor' ); ?></h2>
+        <div class="max-w-5xl">
+            <h2 class="text-2xl font-bold mb-6"><?php esc_html_e( 'Portafoglio Crediti', 'ipv-pro-vendor' ); ?></h2>
 
-            <!-- Wallet Summary -->
-            <div class="ipv-wallet-summary">
-                <div class="ipv-wallet-card ipv-wallet-balance">
-                    <div class="ipv-wallet-icon">
-                        <span class="dashicons dashicons-money-alt"></span>
-                    </div>
-                    <div class="ipv-wallet-info">
-                        <span class="ipv-wallet-value"><?php echo esc_html( $wallet['credits_remaining'] ); ?></span>
-                        <span class="ipv-wallet-label"><?php esc_html_e( 'Crediti Disponibili', 'ipv-pro-vendor' ); ?></span>
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white border rounded-xl p-5 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">💰</div>
+                    <div>
+                        <span class="block text-2xl font-bold"><?php echo esc_html( $wallet['credits_remaining'] ); ?></span>
+                        <span class="text-sm text-gray-500"><?php esc_html_e( 'Disponibili', 'ipv-pro-vendor' ); ?></span>
                     </div>
                 </div>
-
-                <div class="ipv-wallet-card ipv-wallet-used">
-                    <div class="ipv-wallet-icon">
-                        <span class="dashicons dashicons-chart-bar"></span>
-                    </div>
-                    <div class="ipv-wallet-info">
-                        <span class="ipv-wallet-value"><?php echo esc_html( $wallet['credits_used'] ); ?></span>
-                        <span class="ipv-wallet-label"><?php esc_html_e( 'Crediti Utilizzati', 'ipv-pro-vendor' ); ?></span>
+                <div class="bg-white border rounded-xl p-5 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-2xl">📊</div>
+                    <div>
+                        <span class="block text-2xl font-bold"><?php echo esc_html( $wallet['credits_used'] ); ?></span>
+                        <span class="text-sm text-gray-500"><?php esc_html_e( 'Utilizzati', 'ipv-pro-vendor' ); ?></span>
                     </div>
                 </div>
-
-                <div class="ipv-wallet-card ipv-wallet-total">
-                    <div class="ipv-wallet-icon">
-                        <span class="dashicons dashicons-database"></span>
-                    </div>
-                    <div class="ipv-wallet-info">
-                        <span class="ipv-wallet-value"><?php echo esc_html( $wallet['total_credits'] ); ?></span>
-                        <span class="ipv-wallet-label"><?php esc_html_e( 'Crediti Totali Mensili', 'ipv-pro-vendor' ); ?></span>
+                <div class="bg-white border rounded-xl p-5 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">🗄️</div>
+                    <div>
+                        <span class="block text-2xl font-bold"><?php echo esc_html( $wallet['total_credits'] ); ?></span>
+                        <span class="text-sm text-gray-500"><?php esc_html_e( 'Totali', 'ipv-pro-vendor' ); ?></span>
                     </div>
                 </div>
-
-                <div class="ipv-wallet-card ipv-wallet-licenses">
-                    <div class="ipv-wallet-icon">
-                        <span class="dashicons dashicons-admin-network"></span>
-                    </div>
-                    <div class="ipv-wallet-info">
-                        <span class="ipv-wallet-value"><?php echo count( $active_licenses ); ?></span>
-                        <span class="ipv-wallet-label"><?php esc_html_e( 'Licenze Attive', 'ipv-pro-vendor' ); ?></span>
+                <div class="bg-white border rounded-xl p-5 flex items-center gap-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">🔑</div>
+                    <div>
+                        <span class="block text-2xl font-bold"><?php echo count( $active_licenses ); ?></span>
+                        <span class="text-sm text-gray-500"><?php esc_html_e( 'Licenze', 'ipv-pro-vendor' ); ?></span>
                     </div>
                 </div>
             </div>
 
-            <!-- Credits Progress -->
-            <div class="ipv-wallet-progress-section">
-                <h3><?php esc_html_e( 'Utilizzo Crediti', 'ipv-pro-vendor' ); ?></h3>
-                <div class="ipv-wallet-progress-bar">
-                    <div class="ipv-wallet-progress" style="width: <?php echo esc_attr( $wallet['percentage'] ); ?>%"></div>
+            <!-- Progress Bar -->
+            <div class="bg-white border rounded-xl p-6 mb-8">
+                <h3 class="font-semibold mb-3"><?php esc_html_e( 'Utilizzo Crediti', 'ipv-pro-vendor' ); ?></h3>
+                <div class="h-5 bg-gray-200 rounded-full overflow-hidden mb-2">
+                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all"
+                         style="width: <?php echo esc_attr( $wallet['percentage'] ); ?>%"></div>
                 </div>
-                <p class="ipv-wallet-progress-text">
+                <p class="text-sm text-gray-600">
                     <?php printf(
                         esc_html__( 'Hai utilizzato %1$d di %2$d crediti (%3$d%% disponibile)', 'ipv-pro-vendor' ),
                         $wallet['credits_used'],
@@ -490,112 +450,74 @@ class IPV_Vendor_Customer_Portal {
             </div>
 
             <!-- Buy Credits CTA -->
-            <div class="ipv-wallet-cta">
-                <h3><?php esc_html_e( 'Ricarica il tuo Portafoglio', 'ipv-pro-vendor' ); ?></h3>
-                <p><?php esc_html_e( 'Acquista crediti extra per continuare a generare trascrizioni anche dopo aver esaurito i crediti mensili.', 'ipv-pro-vendor' ); ?></p>
-                <div class="ipv-wallet-cta-buttons">
-                    <a href="<?php echo esc_url( home_url( '/prodotto/ipv-extra-credits-50/' ) ); ?>" class="button">
-                        <?php esc_html_e( '50 Crediti Extra', 'ipv-pro-vendor' ); ?>
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8 text-white text-center mb-8">
+                <h3 class="text-xl font-bold mb-2"><?php esc_html_e( 'Ricarica il tuo Portafoglio', 'ipv-pro-vendor' ); ?></h3>
+                <p class="opacity-90 mb-4"><?php esc_html_e( 'Acquista crediti extra che non scadono mai.', 'ipv-pro-vendor' ); ?></p>
+                <div class="flex justify-center gap-3 flex-wrap">
+                    <a href="<?php echo esc_url( home_url( '/prodotto/ipv-pro-crediti-extra-10/' ) ); ?>"
+                       class="px-5 py-2 bg-white/20 border-2 border-white/50 rounded-lg hover:bg-white/30">
+                        10 Crediti - €5
                     </a>
-                    <a href="<?php echo esc_url( home_url( '/prodotto/ipv-extra-credits-100/' ) ); ?>" class="button">
-                        <?php esc_html_e( '100 Crediti Extra', 'ipv-pro-vendor' ); ?>
-                    </a>
-                    <a href="<?php echo esc_url( home_url( '/prodotto/ipv-extra-credits-200/' ) ); ?>" class="button button-primary">
-                        <?php esc_html_e( '200 Crediti Extra', 'ipv-pro-vendor' ); ?>
+                    <a href="<?php echo esc_url( home_url( '/prodotto/ipv-pro-crediti-extra-100/' ) ); ?>"
+                       class="px-5 py-2 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100">
+                        100 Crediti - €45
                     </a>
                 </div>
             </div>
 
-            <!-- Credit Ledger / History -->
-            <div class="ipv-wallet-history">
-                <h3><?php esc_html_e( 'Storico Transazioni', 'ipv-pro-vendor' ); ?></h3>
+            <!-- Transaction History -->
+            <div class="bg-white border rounded-xl p-6">
+                <h3 class="font-semibold mb-4"><?php esc_html_e( 'Storico Transazioni', 'ipv-pro-vendor' ); ?></h3>
 
                 <?php if ( empty( $ledger ) ) : ?>
-                    <p class="ipv-no-transactions"><?php esc_html_e( 'Nessuna transazione registrata.', 'ipv-pro-vendor' ); ?></p>
+                    <p class="text-gray-500 text-center py-8"><?php esc_html_e( 'Nessuna transazione registrata.', 'ipv-pro-vendor' ); ?></p>
                 <?php else : ?>
-                    <table class="ipv-ledger-table">
-                        <thead>
-                            <tr>
-                                <th><?php esc_html_e( 'Data', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Tipo', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Crediti', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Saldo', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Note', 'ipv-pro-vendor' ); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ( $ledger as $transaction ) :
-                                $is_positive = $transaction->amount > 0;
-                                ?>
-                                <tr class="<?php echo $is_positive ? 'ipv-credit' : 'ipv-debit'; ?>">
-                                    <td><?php echo esc_html( date_i18n( 'd/m/Y H:i', strtotime( $transaction->created_at ) ) ); ?></td>
-                                    <td>
-                                        <span class="ipv-transaction-type ipv-type-<?php echo esc_attr( $transaction->type ); ?>">
-                                            <?php echo esc_html( $this->get_transaction_type_label( $transaction->type ) ); ?>
-                                        </span>
-                                    </td>
-                                    <td class="ipv-transaction-amount <?php echo $is_positive ? 'positive' : 'negative'; ?>">
-                                        <?php echo $is_positive ? '+' : ''; ?><?php echo esc_html( $transaction->amount ); ?>
-                                    </td>
-                                    <td><?php echo esc_html( $transaction->balance_after ); ?></td>
-                                    <td><?php echo esc_html( $transaction->note ?: '-' ); ?></td>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase"><?php esc_html_e( 'Data', 'ipv-pro-vendor' ); ?></th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase"><?php esc_html_e( 'Tipo', 'ipv-pro-vendor' ); ?></th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase"><?php esc_html_e( 'Crediti', 'ipv-pro-vendor' ); ?></th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase"><?php esc_html_e( 'Saldo', 'ipv-pro-vendor' ); ?></th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase"><?php esc_html_e( 'Note', 'ipv-pro-vendor' ); ?></th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y">
+                                <?php foreach ( $ledger as $tx ) :
+                                    $is_positive = $tx->amount > 0;
+                                    $type_labels = [
+                                        'transcript' => 'Trascrizione',
+                                        'purchase' => 'Acquisto',
+                                        'reset' => 'Reset Mensile',
+                                        'bonus' => 'Bonus',
+                                        'upgrade' => 'Upgrade',
+                                        'downgrade' => 'Downgrade',
+                                        'extra' => 'Crediti Extra',
+                                    ];
+                                    ?>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-3 text-sm"><?php echo esc_html( date_i18n( 'd/m/Y H:i', strtotime( $tx->created_at ) ) ); ?></td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2 py-1 rounded text-xs font-medium
+                                                <?php echo $is_positive ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'; ?>">
+                                                <?php echo esc_html( $type_labels[ $tx->type ] ?? ucfirst( $tx->type ) ); ?>
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 font-semibold <?php echo $is_positive ? 'text-green-600' : 'text-red-600'; ?>">
+                                            <?php echo $is_positive ? '+' : ''; ?><?php echo esc_html( $tx->amount ); ?>
+                                        </td>
+                                        <td class="px-4 py-3 text-sm"><?php echo esc_html( $tx->balance_after ); ?></td>
+                                        <td class="px-4 py-3 text-sm text-gray-500"><?php echo esc_html( $tx->note ?: '-' ); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 <?php endif; ?>
             </div>
-
-            <!-- Per-License Breakdown -->
-            <?php if ( count( $active_licenses ) > 1 ) : ?>
-                <div class="ipv-wallet-breakdown">
-                    <h3><?php esc_html_e( 'Dettaglio per Licenza', 'ipv-pro-vendor' ); ?></h3>
-                    <table class="ipv-breakdown-table">
-                        <thead>
-                            <tr>
-                                <th><?php esc_html_e( 'Licenza', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Piano', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Crediti Disponibili', 'ipv-pro-vendor' ); ?></th>
-                                <th><?php esc_html_e( 'Prossimo Reset', 'ipv-pro-vendor' ); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ( $active_licenses as $license ) :
-                                $credits_manager = IPV_Vendor_Credits_Manager::instance();
-                                $credits_info = $credits_manager->get_credits_info( $license );
-                                ?>
-                                <tr>
-                                    <td><code><?php echo esc_html( substr( $license->license_key, 0, 8 ) . '...' ); ?></code></td>
-                                    <td><?php echo esc_html( ucfirst( str_replace( '_', ' ', $license->variant_slug ) ) ); ?></td>
-                                    <td>
-                                        <?php echo esc_html( $credits_info['credits_remaining'] ); ?> / <?php echo esc_html( $credits_info['credits_total'] ); ?>
-                                    </td>
-                                    <td><?php echo esc_html( $credits_info['reset_date_formatted'] ); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
         </div>
         <?php
-    }
-
-    /**
-     * Get transaction type label
-     */
-    private function get_transaction_type_label( $type ) {
-        $labels = [
-            'transcript' => __( 'Trascrizione', 'ipv-pro-vendor' ),
-            'purchase' => __( 'Acquisto', 'ipv-pro-vendor' ),
-            'reset' => __( 'Reset Mensile', 'ipv-pro-vendor' ),
-            'bonus' => __( 'Bonus', 'ipv-pro-vendor' ),
-            'refund' => __( 'Rimborso', 'ipv-pro-vendor' ),
-            'upgrade' => __( 'Upgrade Piano', 'ipv-pro-vendor' ),
-            'extra' => __( 'Crediti Extra', 'ipv-pro-vendor' ),
-        ];
-
-        return $labels[ $type ] ?? ucfirst( $type );
     }
 
     /**
@@ -605,11 +527,10 @@ class IPV_Vendor_Customer_Portal {
         check_ajax_referer( 'ipv_portal_nonce', 'nonce' );
 
         if ( ! is_user_logged_in() ) {
-            wp_send_json_error( [ 'message' => __( 'Devi essere loggato per associare una licenza.', 'ipv-pro-vendor' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Devi essere loggato.', 'ipv-pro-vendor' ) ] );
         }
 
         $license_key = sanitize_text_field( $_POST['license_key'] ?? '' );
-
         if ( empty( $license_key ) ) {
             wp_send_json_error( [ 'message' => __( 'License key obbligatoria.', 'ipv-pro-vendor' ) ] );
         }
@@ -618,7 +539,6 @@ class IPV_Vendor_Customer_Portal {
         $user_id = get_current_user_id();
         $user = get_userdata( $user_id );
 
-        // Find license
         $license = $wpdb->get_row( $wpdb->prepare(
             "SELECT * FROM {$wpdb->prefix}ipv_licenses WHERE license_key = %s",
             $license_key
@@ -628,21 +548,14 @@ class IPV_Vendor_Customer_Portal {
             wp_send_json_error( [ 'message' => __( 'License key non trovata.', 'ipv-pro-vendor' ) ] );
         }
 
-        // Check if already associated to another user
         if ( $license->user_id > 0 && $license->user_id !== $user_id ) {
-            wp_send_json_error( [ 'message' => __( 'Questa licenza è già associata a un altro account.', 'ipv-pro-vendor' ) ] );
+            wp_send_json_error( [ 'message' => __( 'Licenza già associata a un altro account.', 'ipv-pro-vendor' ) ] );
         }
 
-        // Associate license to current user
         $wpdb->update(
             $wpdb->prefix . 'ipv_licenses',
-            [
-                'user_id' => $user_id,
-                'email' => $user->user_email
-            ],
-            [ 'id' => $license->id ],
-            [ '%d', '%s' ],
-            [ '%d' ]
+            [ 'user_id' => $user_id, 'email' => $user->user_email ],
+            [ 'id' => $license->id ]
         );
 
         wp_send_json_success( [
@@ -652,5 +565,4 @@ class IPV_Vendor_Customer_Portal {
     }
 }
 
-// Initialize
 IPV_Vendor_Customer_Portal::instance();
